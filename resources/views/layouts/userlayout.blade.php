@@ -36,51 +36,25 @@
                                 <span class="nav-link-title"> Home </span>
                             </a>
                         </li>
-
-                        @if (Auth::user()->role == 'admin')
-
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
                                 data-bs-auto-close="false" role="button" aria-expanded="false">
                                 <i class="fa fa-user pe-3"></i>
-                                <span class="nav-link-title"> User Management </span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('admin.showAdmins') }}">
-                                    Admins
-                                </a>
-                                <a class="dropdown-item" href="{{ route('admin.showUsers') }}">
-                                    Others
-                                </a>
-                            </div>
-                        </li>
-
-                        @elseif (Auth::user()->role == 'vendor')
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                                data-bs-auto-close="false" role="button" aria-expanded="false">
-                                <i class="fa fa-user pe-3"></i>
-                                <span class="nav-link-title"> Feri Applications </span>
+                                <span class="nav-link-title"> Feri Application </span>
                             </a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="#">
-                                    Latest
+                                    Apply
                                 </a>
                                 <a class="dropdown-item" href="#">
                                     History
                                 </a>
                             </div>
                         </li>
-                        @endif
-
                     </ul>
                 </div>
             </div>
         </aside>
-
-
-
         <!-- <aside class="navbar navbar-vertical navbar-expand-sm" data-bs-theme="dark">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -131,8 +105,7 @@
                                 </div>
                             </a>
                             <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end flex-row order-md-last">
-                                <a href="{{ route(Auth::user()->role . '.showProfile') }}"
-                                    class="dropdown-item">Profile</a>
+                                <a href="{{ route('transporter.showProfile') }}" class="dropdown-item">Profile</a>
                                 <a href="#" class="dropdown-item">Feedback</a>
                                 <div class="dropdown-divider"></div>
                                 <a href="./settings.html" class="dropdown-item">Settings</a>

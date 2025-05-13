@@ -31,12 +31,12 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Email address</label>
-                    <input type="email" name="email" value="{{ old('name') }}" class="form-control"
+                    <input type="email" name="email" value="{{ old('email') }}" class="form-control"
                         placeholder="Enter email" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Company</label>
-                    <input type="text" name="company" value="{{ old('name') }}" class="form-control"
+                    <input type="text" name="company" value="{{ old('company') }}" class="form-control"
                         placeholder="Enter Company" required>
                 </div>
                 <div class="mb-3">

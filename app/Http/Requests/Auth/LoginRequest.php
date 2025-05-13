@@ -16,7 +16,30 @@ class LoginRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $userId = $this->route('id');
+        $user = User::find($userId);
+
+        if (!$user) {
+            return false;
+        }
+
+        $this->userModel = $user;
+
+        return hash_equals((string) $userId, (string) $user->getKey()) &&
+               hash_equals((string) $this->route('hash'), sha1($user->getEmailForVerification()));
+    }
+
+    public function fulfill()
+    {
+        if (!$this->userModel->hasVerifiedEmail()) {
+            $this->userModel->markEmailAsVerified();
+            event(new Verified($this->userModel));
+        }
+    }
+
+    public function user()
+    {
+        return $this->userModel;
     }
 
     /**

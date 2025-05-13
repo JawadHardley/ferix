@@ -9,23 +9,13 @@
         <div class="card card-md">
             <div class="card-body">
                 <h2 class="h2 text-center mb-4">Admin Login</h2>
-                @if(session('message'))
-                <!-- <div class="col-12"> -->
-                <div class="alert alert-{{ session('status') === 'success' ? 'success' : 'danger' }} alert-dismissible"
-                    role="alert">
-                    <div class="alert-icon">
-                        <i class="fa fa-check"></i>
-                    </div>
-                    {{ session('message') }}
-                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
-                </div>
-                <!-- </div> -->
-                @endif
+                <x-errorshow />
                 <form action="{{ route('admin.login') }}" method="POST" autocomplete="off" novalidate="">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Email address</label>
-                        <input type="email" name="email" class="form-control" placeholder="Enter email">
+                        <input type="email" name="email" class="form-control" placeholder="Enter email"
+                            value="{{ old('email') }}">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>

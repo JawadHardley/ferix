@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     this.innerHTML = type === 'password' ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>';
   });
 
+
   
   const toggle2 = document.getElementById('togglePassword2');
   const password2 = document.getElementById('password2');
@@ -52,3 +53,4 @@ document.addEventListener("DOMContentLoaded", function () {
     // Toggle icon (optional)
     this.innerHTML = type === 'password' ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>';
   });
+
