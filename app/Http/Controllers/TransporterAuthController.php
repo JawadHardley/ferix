@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use App\Models\feriApp;
+use App\Models\Company;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
@@ -12,6 +15,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\mainmail;
 use App\Mail\CustomVerifyEmail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TransporterAuthController extends Controller
 {
@@ -67,7 +72,8 @@ class TransporterAuthController extends Controller
     // Show transporter registration form
     public function showRegisterForm()
     {
-        return view('transporter.register');
+        $records = Company::all();
+        return view('transporter.register', compact('records'));
     }
 
     // Handle transporter registration
@@ -75,7 +81,7 @@ class TransporterAuthController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'company' => ['required', 'string'],
+            'company' => ['required', 'integer', 'exists:companies,id'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:6'],
         ]);
@@ -90,7 +96,7 @@ class TransporterAuthController extends Controller
         ]);
 
         // Send email verification notification
-        event(new Registered($user));
+        // event(new Registered($user));
 
         // Auth::login($user);
 
@@ -105,7 +111,12 @@ class TransporterAuthController extends Controller
     // Show profile
     public function showProfile()
     {
-        return view('transporter.userprofile');
+        $company = Company::find(Auth::user()->company); // Get the company by ID
+
+        return view('transporter.userprofile', [
+            'company' => $company,
+        ]);
+        // return view('transporter.userprofile');
     }
 
     // update user profile
@@ -189,5 +200,246 @@ class TransporterAuthController extends Controller
                 'status' => 'success',
                 'message' => 'Password Updated successfully.',
             ]);
+    }
+
+    // Show feri application form
+    public function applyferi()
+    {
+        return view('transporter.applyferi');
+    }
+
+    // Store method to save cargo entry
+    public function feriApp(Request $request)
+    {
+        // Validate incoming data
+        $validatedData = $request->validate([
+            'transport_mode' => 'required|string|max:255',
+            'transporter_company' => 'required|string|max:255',
+            'entry_border_drc' => 'required|string|max:255',
+            'truck_details' => 'required|string|max:255',
+            'arrival_station' => 'required|string|max:255',
+            'final_destination' => 'required|string|max:255',
+            'importer_name' => 'required|string|max:255',
+            'importer_phone' => 'required|string|max:20',
+            'importer_email' => 'nullable|email|max:255',
+            'fix_number' => 'nullable|string|max:255',
+            'exporter_name' => 'required|string|max:255',
+            'exporter_phone' => 'required|string|max:20',
+            'exporter_email' => 'nullable|email|max:255',
+            'cf_agent' => 'required|string|max:255',
+            'cf_agent_contact' => 'required|string|max:255',
+            'cargo_description' => 'required|string',
+            'hs_code' => 'required|string|max:100',
+            'package_type' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+            'company_ref' => 'nullable|string|max:255',
+            'cargo_origin' => 'nullable|string|max:255',
+            'customs_decl_no' => 'nullable|string|max:255',
+            'manifest_no' => 'nullable|string|max:255',
+            'occ_bivac' => 'nullable|string|max:255',
+            'instructions' => 'nullable|string',
+            // Extra values
+            'fob_currency' => 'nullable|string|max:50',
+            'fob_value' => 'nullable|string|max:100',
+            'incoterm' => 'nullable|string|max:50',
+            'freight_currency' => 'nullable|string|max:50',
+            'freight_value' => 'nullable|string|max:100',
+            'insurance_currency' => 'nullable|string|max:50',
+            'insurance_value' => 'nullable|string|max:100',
+            'additional_fees_currency' => 'nullable|string|max:50',
+            'additional_fees_value' => 'nullable|string|max:100',
+            'documents_upload' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480', // max 20MB
+        ]);
+
+        // Add user_id to the validated data
+        try {
+            // Add user_id to the validated data
+            $validatedData['user_id'] = Auth::id();
+            $validatedData['status'] = 1;
+
+            // Handle file upload
+            if ($request->hasFile('documents_upload')) {
+                $file = $request->file('documents_upload');
+                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('feri_documents', $filename, 'public'); // stores in storage/app/public/feri_documents
+                $validatedData['documents_upload'] = $path;
+            }
+
+            // dd($validatedData);
+            // Create cargo entry
+            // dd($col = feriApp::create($validatedData));
+            feriApp::create($validatedData);
+
+            // Redirect or respond as needed
+            return redirect()
+                ->back()
+                ->with([
+                    'status' => 'success',
+                    'message' => 'Feri application sent successfully!',
+                ]);
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'Failed to submit application. ' . $e->getMessage()]);
+        }
+    }
+
+    // Show lists of applications
+    public function showApps()
+    {
+        $records = feriApp::where('user_id', Auth::user()->id)->simplePaginate(10);
+
+        // Add applicant name and certificate file to each record
+        $records->getCollection()->transform(function ($record) {
+            // Add applicant name
+            $record->applicant = User::find($record->user_id)->name ?? 'Unknown Applicant';
+
+            // Fetch the latest certificate for the application
+            $latestCertificate = Certificate::where('application_id', $record->id)->where('type', 'certificate')->latest()->first();
+
+            // Attach certificate data to the record if it exists
+            if ($latestCertificate) {
+                $record->certificateFile = $latestCertificate->file ?? null;
+            } else {
+                $record->certificateFile = null; // Default to null if no certificate exists
+            }
+
+            return $record;
+        });
+
+        return view('transporter.applications', compact('records'));
+    }
+
+    // Show single application
+    public function showApp($id)
+    {
+        $record = feriApp::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        // Add company name to the record
+        $record->applicant = User::find(Auth::user()->id)->name ?? 'Unknown Applicant';
+
+        // / Fetch the latest draft certificate for the application
+        $latestDraft = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
+
+        // Fetch the latest certificate for the application
+        $latestCertificate = Certificate::where('application_id', $id)->where('type', 'certificate')->latest()->first();
+
+        // Attach draft data to the record if it exists
+        if ($latestDraft) {
+            $record->applicationFile = $latestDraft->file ?? null;
+            $record->type = $latestDraft->type ?? null;
+        }
+
+        // Attach certificate data to the record if it exists
+        if ($latestCertificate) {
+            $record->certificateFile = $latestCertificate->file ?? null;
+        }
+
+        return view('transporter.viewapplication', compact('record'));
+    }
+
+    public function destroyApp($id)
+    {
+        feriApp::destroy($id);
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Application Deleted successfully!.',
+        ]);
+    }
+
+    // update user profile
+    public function editApp(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        // Find the specific feriApp record
+        $feriApp = feriApp::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        // Check if the status is not 1
+        if ($feriApp->status != 1 || $user->id != $feriApp->user_id) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'You cannot edit this application because its status does not allow editing.',
+            ]);
+        }
+
+        // Validate incoming data
+        $validatedData = $request->validate([
+            'transport_mode' => 'required|string|max:255',
+            'transporter_company' => 'required|string|max:255',
+            'entry_border_drc' => 'required|string|max:255',
+            'truck_details' => 'required|string|max:255',
+            'arrival_station' => 'required|string|max:255',
+            'final_destination' => 'required|string|max:255',
+            'importer_name' => 'required|string|max:255',
+            'importer_phone' => 'required|string|max:20',
+            'importer_email' => 'nullable|email|max:255',
+            'fix_number' => 'nullable|string|max:255',
+            'exporter_name' => 'required|string|max:255',
+            'exporter_phone' => 'required|string|max:20',
+            'exporter_email' => 'nullable|email|max:255',
+            'cf_agent' => 'required|string|max:255',
+            'cf_agent_contact' => 'required|string|max:255',
+            'cargo_description' => 'required|string',
+            'hs_code' => 'required|string|max:100',
+            'package_type' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+            'company_ref' => 'nullable|string|max:255',
+            'cargo_origin' => 'nullable|string|max:255',
+            'customs_decl_no' => 'nullable|string|max:255',
+            'manifest_no' => 'nullable|string|max:255',
+            'occ_bivac' => 'nullable|string|max:255',
+            'instructions' => 'nullable|string',
+            // Extra values
+            'fob_currency' => 'nullable|string|max:50',
+            'fob_value' => 'nullable|string|max:100',
+            'incoterm' => 'nullable|string|max:50',
+            'freight_currency' => 'nullable|string|max:50',
+            'freight_value' => 'nullable|string|max:100',
+            'insurance_currency' => 'nullable|string|max:50',
+            'insurance_value' => 'nullable|string|max:100',
+            'additional_fees_currency' => 'nullable|string|max:50',
+            'additional_fees_value' => 'nullable|string|max:100',
+            'documents_upload' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480', // max 20MB
+        ]);
+
+        // Handle file upload if necessary
+        if ($request->hasFile('documents_upload')) {
+            $file = $request->file('documents_upload');
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('feri_documents', $filename, 'public');
+            $validatedData['documents_upload'] = $path;
+        }
+
+        // Update the feriApp record with validated data
+        $feriApp->update($validatedData);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Application Updated successfully.',
+        ]);
+    }
+
+    public function process3(Request $request, $id)
+    {
+        // Check if the current user has the role of 'vendor' or 'admin'
+        $user = Auth::user();
+        if (!in_array($user->role, ['transporter', 'admin'])) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'You are not authorized to perform this action.',
+            ]);
+        }
+
+        // Find the specific feriApp record
+        $feriApp = feriApp::findOrFail($id);
+
+        // Update the status to 2
+        $feriApp->update(['status' => 4]);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Application status updated successfully.',
+        ]);
     }
 }

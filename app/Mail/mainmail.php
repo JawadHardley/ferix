@@ -10,6 +10,11 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
+// this is only for password reset emails
+// this is only for password reset emails
+// this is only for password reset emails
+// this is only for password reset emails
+
 class mainmail extends Mailable
 {
     use Queueable, SerializesModels;
@@ -18,9 +23,10 @@ class mainmail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($user)
+    public function __construct($user, $resetUrl)
     {
         $this->user = $user;
+        $this->resetUrl = $resetUrl;
     }
 
     /**
@@ -28,7 +34,7 @@ class mainmail extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Welcome to Ferix io.');
+        return new Envelope(subject: 'Reset Password Notification');
     }
 
     /**
@@ -40,6 +46,7 @@ class mainmail extends Mailable
             markdown: 'mail.mainmail',
             with: [
                 'user' => $this->user,
+                'resetUrl' => $this->resetUrl,
             ],
         );
     }

@@ -69,6 +69,9 @@ $front = asset('images/img-1.jpg');
                                 </form>
                             </div>
                         </div>
+                        <a href="#" class="badge bg-azure-lt ms-2 px-3 py-2 fs-3 text-decoration-none" id="themeToggle">
+                            <i class="fa fa-moon" id="themeIcon"></i>
+                        </a>
                     </div>
 
                     @else
@@ -80,10 +83,10 @@ $front = asset('images/img-1.jpg');
                         <a href="{{ route('transporter.register') }}" class="btn btn-primary">
                             Register
                         </a>
-                        @endauth
                         <a href="#" class="badge bg-azure-lt ms-2 px-3 py-2 fs-3 text-decoration-none" id="themeToggle">
                             <i class="fa fa-moon" id="themeIcon"></i>
                         </a>
+                        @endauth
                     </div>
                 </nav>
                 @endif

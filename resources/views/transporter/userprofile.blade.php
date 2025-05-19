@@ -88,7 +88,7 @@
                                     <div class="col-md">
                                         <div class="form-label">Company</div>
                                         <input type="text" name="company" class="form-control"
-                                            value="{{ Auth::user()->company }}">
+                                            value="{{ $company->name }}" disabled>
                                     </div>
                                 </div>
 

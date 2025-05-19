@@ -60,7 +60,7 @@
                                 @if ($record->user_auth == 1)
                                 <span class="badge bg-success me-1"></span> Active
                                 @else
-                                <span class="badge bg-danger me-1"></span> Blocked
+                                <span class="status-dot status-dot-animated status-red me-1"></span> Blocked
                                 @endif
                             </td>
                             <td class="text-end">

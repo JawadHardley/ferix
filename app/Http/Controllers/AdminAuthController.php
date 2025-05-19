@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use App\Models\feriApp;
+use App\Models\Company;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
@@ -12,6 +15,9 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\mainmail;
 use App\Mail\CustomVerifyEmail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class AdminAuthController extends Controller
 {
@@ -156,6 +162,11 @@ class AdminAuthController extends Controller
     // verify email
     public function verifyNotice()
     {
+        // dd(Auth::user()->email_verified_at);
+        if (Auth::user()->email_verified_at) {
+            return redirect()->route(Auth::user()->role . '' . '.dashboard');
+        }
+
         return view('auth.verify-email');
     }
 
@@ -196,6 +207,16 @@ class AdminAuthController extends Controller
                     'status' => 'error',
                     'message' => 'The password is incorrect.',
                 ]);
+        }
+
+        // Check if email has changed
+        $emailChanged = $request->email !== $user->email;
+        $user->email = $request->email;
+
+        if ($emailChanged) {
+            $user->email_verified_at = null;
+            // Optionally send new verification email
+            $user->sendEmailVerificationNotification();
         }
 
         $user->update([
@@ -287,5 +308,162 @@ class AdminAuthController extends Controller
                 'status' => 'success',
                 'message' => 'Password Updated successfully.',
             ]);
+    }
+
+    public function showLinkRequestForm()
+    {
+        return view('forgotpassword');
+    }
+
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        $token = Str::random(64);
+
+        DB::table('password_reset_tokens')->updateOrInsert(['email' => $request->email], ['token' => $token, 'created_at' => now()]);
+        $resetUrl = url('/reset-password/' . $token . '?email=' . urlencode($user->email));
+
+        // Send Email
+        Mail::to($user->email)->send(new mainmail($user, $resetUrl));
+
+        // return back()->with('status', 'We have emailed your password reset link!');
+        return back()->with([
+            'status' => 'success',
+            'message' => 'We have emailed your password reset link!.',
+        ]);
+    }
+
+    public function showResetForm($token)
+    {
+        return view('resetpassword', ['token' => $token]);
+    }
+
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'token' => 'required',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $record = DB::table('password_reset_tokens')->where('email', $request->email)->where('token', $request->token)->first();
+
+        if (!$record || Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+            return back()->withErrors(['token' => 'This reset token is invalid or has expired.']);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        // return redirect()->route('login')->with('status', 'Your password has been successfully reset!');
+
+        if ($user->role == 'admin') {
+            return redirect()
+                ->route('admin.login')
+                ->with([
+                    'status' => 'success',
+                    'message' => 'Your password has been successfully reset!.',
+                ]);
+        } elseif ($user->role == 'vendor') {
+            return redirect()
+                ->route('vendor.login')
+                ->with([
+                    'status' => 'success',
+                    'message' => 'Your password has been successfully reset!.',
+                ]);
+        } else {
+            return redirect()
+                ->route('transporter.login')
+                ->with([
+                    'status' => 'success',
+                    'message' => 'Your password has been successfully reset!.',
+                ]);
+        }
+    }
+
+    // only about the company
+    // only about the company
+    // only about the company
+    // only about the company
+    // only about the company
+
+    public function addCompanies()
+    {
+        return view('admin.addcompany');
+    }
+
+    public function showCompanies()
+    {
+        // $companies = Company::all();
+        $records = Company::simplePaginate(10);
+        return view('admin.showcompanies', compact('records'));
+    }
+
+    public function storeCompany(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email',
+            'type' => 'required|string|max:255',
+            'address' => 'nullable|string|max:500',
+        ]);
+        
+        Company::create($request->only(['name', 'type', 'email', 'address']));
+
+        return back()
+                ->with([
+                    'status' => 'success',
+                    'message' => 'Company added successfully!.',
+                ]);
+        
+    }
+
+    public function showCompany($id)
+    {
+        $record = Company::findOrFail($id);
+        return view('admin.showcompany', compact('record'));
+    }
+
+    public function updateCompany(Request $request, $id)
+    {
+        $company = Company::findOrFail($id);
+        // $company->update($request->all());
+        // return response()->json($company);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email',
+            'type' => 'required|string|max:255',
+            'address' => 'nullable|string|max:500',
+        ]);
+        
+        $company->update([
+            'name' => $request->name,
+            'type' => $request->type,
+            'email' => $request->email,
+            'address' => $request->address,
+        ]);
+
+        return back()
+            ->with([
+                'status' => 'success',
+                'message' => 'Company Updated successfully.',
+            ]);
+    }
+
+    public function destroyCompany($id)
+    {
+        Company::destroy($id);
+        return back()
+                ->with([
+                    'status' => 'success',
+                    'message' => 'Company Deleted successfully!.',
+                ]);
     }
 }

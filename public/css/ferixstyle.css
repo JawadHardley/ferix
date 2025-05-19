@@ -1,0 +1,132 @@
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.stepper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 2px;
+    width: 100%;
+    background: #e5e7eb;
+    z-index: 1;
+}
+
+.progress {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 2px;
+    background: #3b82f6;
+    transition: width 0.3s ease;
+    z-index: 2;
+}
+
+.step {
+    width: 2rem;
+    height: 2rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    color: #6b7280;
+    position: relative;
+    z-index: 3;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.step.completed {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+}
+
+input.error,
+select.error {
+    border-color: #ef4444;
+}
+
+.error-message {
+    display: none;
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.error-message.visible {
+    display: block;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+label[for="terms"],
+input[type=checkbox] {
+    display: inline;
+    width: auto;
+}
+
+.btn-prev {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.btn-prev:hover:not(:disabled) {
+    background: #d1d5db;
+}
+
+.btn-next {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-next:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.success-message {
+    text-align: center;
+    display: none;
+}
+
+.success-message.active {
+    display: block;
+}
+
+.success-message h2 {
+    color: #059669;
+    margin-bottom: 1rem;
+}
+
+.success-message p {
+    color: #374151;
+}

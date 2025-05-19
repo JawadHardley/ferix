@@ -34,11 +34,23 @@
                     <input type="email" name="email" value="{{ old('email') }}" class="form-control"
                         placeholder="Enter email" required>
                 </div>
-                <div class="mb-3">
+
+                <!-- <div class="mb-3">
                     <label class="form-label">Company</label>
                     <input type="text" name="company" value="{{ old('company') }}" class="form-control"
                         placeholder="Enter Company" required>
+                </div> -->
+
+                <div class="mb-3">
+                    <label class="form-label">Company</label>
+                    <select class="form-select" name="company">
+                        <option value="">-- select --</option>
+                        @foreach($records as $record)
+                        <option value="{{ $record->id }}">{{ $record->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Password</label>
                     <div class="input-group input-group-flat">

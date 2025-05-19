@@ -24,6 +24,9 @@
                                 placeholder="Password" autocomplete="off">
                             <x-password-toggle />
                         </div>
+                        <p class="p-2 fs-5 text-end">
+                            <a href="{{ route('password.request') }}" class="text-decoration-none">Forgot password?</a>
+                        </p>
                     </div>
                     <div class="mb-2">
                         <label class="form-check">

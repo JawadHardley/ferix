@@ -10,7 +10,8 @@
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.2.0/dist/css/tabler.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-    <link rel="stylesheet" href="{{ asset('css/ferixstyle.css') }}" />
+    <link rel="stylesheet"
+        href="{{ asset('css/ferixstyle.css') }}?v={{ filemtime(public_path('js/ferixstyle.js')) }}" />
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 </head>
 
@@ -31,7 +32,7 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav pt-lg-3">
                         <li class="nav-item">
-                            <a class="nav-link" href="./dashboard">
+                            <a class="nav-link" href="{{ route(Auth::user()->role . '' .  '.dashboard') }}">
                                 <i class="fa fa-house pe-3"></i>
                                 <span class="nav-link-title"> Home </span>
                             </a>
@@ -55,6 +56,23 @@
                             </div>
                         </li>
 
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                data-bs-auto-close="false" role="button" aria-expanded="false">
+                                <i class="fa fa-briefcase pe-3"></i>
+                                <span class="nav-link-title"> Company Management </span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{{ route('admin.addCompany') }}">
+                                    Add Company
+                                </a>
+                                <a class="dropdown-item" href="{{ route('admin.showCompanies') }}">
+                                    List Companies
+                                </a>
+                            </div>
+                        </li>
+
                         @elseif (Auth::user()->role == 'vendor')
 
                         <li class="nav-item dropdown">
@@ -64,7 +82,7 @@
                                 <span class="nav-link-title"> Feri Applications </span>
                             </a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="{{ route('vendor.showApps') }}">
                                     Latest
                                 </a>
                                 <a class="dropdown-item" href="#">
@@ -126,7 +144,7 @@
                                     <i class="fa fa-user"></i>
                                 </span>
                                 <div class="d-none d-xl-block ps-2">
-                                    <div>{{ Auth::user()->name }}</div>
+                                    <div>{{ ucwords(Auth::user()->name) }}</div>
                                     <div class="mt-1 small text-secondary">{{ Auth::user()->role }}</div>
                                 </div>
                             </a>
@@ -152,7 +170,7 @@
         </div>
         <div class="page-wrapper">
             <div class="page-body">
-                <div class="container-xl">
+                <div class="container-fluid">
                     @yield('content')
                 </div>
             </div>
@@ -162,8 +180,8 @@
     <!-- <script src="{{ asset('js/ferixstyle.js') }}"></script> -->
     <script src="{{ asset('js/ferixstyle.js') }}?v={{ filemtime(public_path('js/ferixstyle.js')) }}"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script> -->
-    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"> -->
-    </script>
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js">
+    </script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384..."
         crossorigin="anonymous"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>

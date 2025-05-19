@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use App\Models\feriApp;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
@@ -12,6 +14,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\mainmail;
 use App\Mail\CustomVerifyEmail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class VendorAuthController extends Controller
 {
@@ -133,6 +137,16 @@ class VendorAuthController extends Controller
                 ]);
         }
 
+        // Check if email has changed
+        $emailChanged = $request->email !== $user->email;
+        $user->email = $request->email;
+
+        if ($emailChanged) {
+            $user->email_verified_at = null;
+            // Optionally send new verification email
+            $user->sendEmailVerificationNotification();
+        }
+
         $user->update([
             'name' => $request->name,
             'company' => $request->company,
@@ -179,5 +193,197 @@ class VendorAuthController extends Controller
                 'status' => 'success',
                 'message' => 'Password Updated successfully.',
             ]);
+    }
+
+    // Show lists of applications
+    // public function showApps()
+    // {
+    //     $records = feriApp::simplePaginate(10);
+
+    //     // Add company name to each record
+    //     $applicant = User::find(Auth::user()->id)->name ?? 'Unknown Applicant';
+    //     $records->getCollection()->transform(function ($record) use ($applicant) {
+    //         $record->applicant = $applicant;
+    //         return $record;
+    //     });
+
+    //     return view('vendor.applications', compact('records'));
+    // }
+
+    public function showApps()
+    {
+        $records = feriApp::simplePaginate(10);
+
+        // Add applicant name to each record
+        $records->getCollection()->transform(function ($record) {
+            $record->applicantName = User::find($record->user_id)->name ?? 'Unknown Applicant';
+            return $record;
+        });
+        // dd($records);
+        return view('vendor.applications', compact('records'));
+    }
+
+    // Show single application
+    public function showApp($id)
+    {
+        $record = feriApp::where('id', $id)->firstOrFail();
+
+        // Add applicant name to the record
+        $record->applicant = User::find($record->user_id)->name ?? 'Unknown Applicant';
+
+        // Fetch the latest draft certificate for the application
+        $latestDraft = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
+
+        // Fetch the latest certificate for the application
+        $latestCertificate = Certificate::where('application_id', $id)->where('type', 'certificate')->latest()->first();
+
+        // Attach draft data to the record if it exists
+        if ($latestDraft) {
+            $record->applicationFile = $latestDraft->file ?? null;
+            $record->type = $latestDraft->type ?? null;
+        }
+
+        // Attach certificate data to the record if it exists
+        if ($latestCertificate) {
+            $record->certificateFile = $latestCertificate->file ?? null;
+        }
+
+        return view('vendor.viewapplication', compact('record'));
+    }
+
+    public function destroyApp($id)
+    {
+        feriApp::destroy($id);
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Application Deleted successfully!.',
+        ]);
+    }
+
+    public function process1(Request $request, $id)
+    {
+        // Check if the current user has the role of 'vendor' or 'admin'
+        $user = Auth::user();
+        if (!in_array($user->role, ['vendor', 'admin'])) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'You are not authorized to perform this action.',
+            ]);
+        }
+
+        // Find the specific feriApp record
+        $feriApp = feriApp::findOrFail($id);
+
+        // Update the status to 2
+        $feriApp->update(['status' => 2]);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Application status updated successfully.',
+        ]);
+    }
+
+    public function process2(Request $request, $id)
+    {
+        // Check if the current user has the role of 'vendor' or 'admin'
+        $user = Auth::user();
+        if (!in_array($user->role, ['vendor', 'admin'])) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'You are not authorized to perform this action.',
+            ]);
+        }
+
+        // Validate the file (limit to PDF and max size 5MB)
+        $request->validate([
+            'file' => 'required|mimes:pdf|max:20480', // max:20480 KB = 20 MB
+        ]);
+
+        // Find the specific feriApp record
+        $feriApp = feriApp::findOrFail($id);
+
+        // Check if the status is 2
+        if ($feriApp->status != 2) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'The application status must be accepted to proceed.',
+            ]);
+        }
+
+        // Handle file upload
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('certificates', $fileName, 'public');
+        }
+
+        // Update the status to 3
+        $feriApp->update(['status' => 3]);
+
+        // Add a new entry in the Certificates table
+        Certificate::create([
+            'user_id' => $user->id,
+            'application_id' => $id,
+            'type' => 'draft',
+            'file' => $filePath, // Save the file path
+        ]);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Application updated successfully.',
+        ]);
+    }
+
+    public function process3(Request $request, $id)
+    {
+        // Check if the current user has the role of 'vendor' or 'admin'
+        $user = Auth::user();
+        if (!in_array($user->role, ['vendor', 'admin'])) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'You are not authorized to perform this action.',
+            ]);
+        }
+
+        // Validate the file (limit to PDF and max size 5MB)
+        $request->validate([
+            'file' => 'required|mimes:pdf|max:20480', // max:20480 KB = 20 MB
+        ]);
+
+        // Find the specific feriApp record
+        $feriApp = feriApp::findOrFail($id);
+
+        // Check if the status is 2
+        if ($feriApp->status != 4) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'The application status must be accepted to proceed.',
+            ]);
+        }
+
+        // Handle file upload
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('certificates', $fileName, 'public');
+        }
+
+        // Update the status to 3
+        $feriApp->update(['status' => 5]);
+
+        // Add a new entry in the Certificates table
+        Certificate::create([
+            'user_id' => $user->id,
+            'application_id' => $id,
+            'type' => 'certificate',
+            'file' => $filePath, // Save the file path
+        ]);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Application updated successfully.',
+        ]);
     }
 }
