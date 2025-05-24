@@ -24,6 +24,7 @@
                             <th>Type</th>
                             <th>Document</th>
                             <th>Status</th>
+                            <th>Query</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -51,22 +52,26 @@
                             <td>
                                 {{ ucfirst($record->transport_mode) }}
                             </td>
-                            <td class="text-center">
+                            <td class="text-start">
                                 @if ($record->status == 1 || $record->status == 2)
                                 <i class="fa fa-spinner" data-bs-toggle="tooltip" data-bs-placement="top"
                                     title="In progress"></i>
                                 @endif
 
                                 @if ($record->status == 3 || $record->status == 4)
-                                <a href="#" class="text-decoration-none">
+                                <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}"
+                                    class="text-decoration-none" download>
                                     <i class="fa fa-file" data-bs-toggle="tooltip" data-bs-placement="top"
                                         title="Draft"></i>
                                 </a>
                                 @endif
 
                                 @if ($record->status == 5)
-                                <i class="fa fa-certificate" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Draft"></i>
+                                <a href="{{ route('certificate.download', ['id' => $record->id]) }}"
+                                    class="text-decoration-none" download>
+                                    <i class="fa fa-certificate" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Certificate"></i>
+                                </a>
                                 @endif
                             </td>
                             <td>
@@ -81,6 +86,13 @@
                                 @elseif ($record->status == 5)
                                 <span class="status-dot status-dot-animated status-green me-1"></span> Complete
                                 @endif
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fa fa-bell"></i>
+                                    <span class="badge bg-red mb-2"></span>
+                                </a>
+                            </td>
                             <td class="text-end">
                                 <span class="dropdown">
                                     <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport"

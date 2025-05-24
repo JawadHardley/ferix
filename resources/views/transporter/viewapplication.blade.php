@@ -1,6 +1,12 @@
 @extends('layouts.userlayout')
 @section('content')
 
+@php
+$unreadChats = $chats->filter(function ($chat) {
+return $chat->user_id !== Auth::id() && $chat->read === 0;
+});
+@endphp
+
 
 
 
@@ -13,7 +19,7 @@
 
                 @if ($record->status == 5)
                 <div class="ribbon ribbon-top ribbon-end bg-success">
-                    <i class="fa fa-award fs-2"></i>
+                    <i class="fa fa-certificate fs-3"></i>
                 </div>
                 @endif
 
@@ -31,12 +37,16 @@
 
             </div>
             <div class="col text-end">
-                <button type="button" class="btn btn-outline-primary position-relative me-3">
+                <button type="button" class="btn btn-outline-primary position-relative me-3" data-bs-toggle="modal"
+                    data-bs-target="#chat">
                     <i class="fa fa-message"></i>
+                    @if ($unreadChats->isNotEmpty())
                     <span
                         class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
                         <span class="visually-hidden">New alerts</span>
                     </span>
+                    @endif
+
                 </button>
 
                 @if ($record->status == 1)
@@ -53,7 +63,7 @@
                     <span class="d-none d-md-inline">Approve</span> <i class="fa fa-circle-check ms-md-3"></i>
                 </button>
                 @elseif ($record->status == 4)
-                4
+                <!-- 4 -->
                 @elseif ($record->status == 5)
                 <!-- <button class="btn btn-outline-primary">
                     <i class="fa fa-award fs-3"></i>
@@ -74,6 +84,27 @@
                 <div class="list-group list-group-transparent nav nav-tabs card-header-tabs" data-bs-toggle="tabs"
                     role="tablist">
 
+                    @if($record->applicationFile && !$record->certificateFile)
+                    <div class="nav-item border border-dark border-opacity-50" role="presentation">
+                        <a href="#tabs-home-7"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Draft
+                            <i class="fa fa-circle-down ms-2"></i>
+                        </a>
+                    </div>
+                    @endif
+
+                    @if($record->certificateFile)
+                    <div class="nav-item border border-dark border-opacity-50" role="presentation">
+                        <a href="#tabs-home-8" class="list-group-item list-group-item-action nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Certificate
+                            <i class="fa fa-circle-down text-end ms-2"></i>
+
+                        </a>
+                    </div>
+                    @endif
 
                     <div class="nav-item" role="presentation">
                         <a href="#tabs-home-1"
@@ -124,26 +155,6 @@
                     </div>
 
 
-                    @if($record->applicationFile)
-                    <div class="nav-item" role="presentation">
-                        <a href="#tabs-home-7"
-                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
-                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                            Draft
-                        </a>
-                    </div>
-                    @endif
-
-                    @if($record->certificateFile)
-                    <div class="nav-item bg-dark text-light" role="presentation">
-                        <a href="#tabs-home-8"
-                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
-                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                            Certificate
-                            <i class="fa fa-download ms-2 fs-2"></i>
-                        </a>
-                    </div>
-                    @endif
 
                 </div>
                 <!-- <h4 class="subheader mt-4">#Leave</h4>
@@ -154,7 +165,8 @@
         </div>
         <div class="col-12 col-md-10 d-flex flex-column tab-content">
             <div class="card-body tab-pane fade active show" id="tabs-home-1" role="tabpanel">
-                <form action="{{ route('transporter.editApp', ['id' => $record->id]) }}" method="POST">
+                <form action="{{ route('transporter.editApp', ['id' => $record->id]) }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
 
                     <!-- <h2 class="mb-4">#</h2> -->
@@ -383,93 +395,111 @@
                         <input type="text" name="additional_fees_value" class="form-control"
                             value="{{ $record->additional_fees_value }}">
                     </div>
-                    <div class="col-12 mb-3 col-lg-6">
-                        <div class="form-label">Documents Upload</div>
-                        <input type="text" name="documents_upload" class="form-control"
-                            value="{{ $record->documents_upload }}">
+                    <div
+                        class="col-12 mb-3 col-lg-{{ $record->status == 1 ? '3' : ($record->status != 1 ? '6' : '') }}">
+                        <div class="form-label">Document</div>
+                        <a href="{{ route('file.downloadfile', ['id' => $record->id]) }}" download>
+                            <div class="card py-1">
+                                <div class="card-body p-1">
+                                    Download
+                                    File
+                                </div>
+                                <div class="ribbon ribbon-top">
+                                    <i class="fa fa-file"></i>
+                                </div>
+                        </a>
                     </div>
+                </div>
 
-                    <!-- <div class="col-12 mb-3 col-lg-3">
+                @if($record->status == 1)
+
+                <div class="col-12 mb-3 col-lg-3">
+                    <div class="form-label">Edit Document</div>
+                    <input type="file" name="documents_upload" class="form-control">
+                </div>
+
+                @endif
+
+                <!-- <div class="col-12 mb-3 col-lg-3">
                             <div class="form-label">Created At</div>
                             <input type="text" name="created_at" class="form-control" value="{{ $record->created_at }}">
                         </div> -->
 
 
-                </div>
-
             </div>
-
-
-            @if($record->applicationFile)
-            <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
-                <!-- <h2 class="mb-4">#</h2> -->
-                <h3 class="card-title mb-5">Draft</h3>
-
-                <div class="row g-3">
-
-                    <div class="col-12 mb-3 col-lg-12">
-                        <div class="form-label">Document</div>
-                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
-                    </div>
-
-                    <a href="{{ asset('storage/' . $record->applicationFile) }}" target="_blanck"
-                        class="text-decoration-none">
-                        <div class="card col-12 card-link">
-                            <div class="card-body pt-5" style="height: 5rem">
-                                Download Feri Document
-                            </div>
-                            <div class="ribbon bg-danger ribbon-top ribbon-start">
-                                <i class="fa fa-award fs-2 px-2"></i>
-                            </div>
-
-                        </div>
-                    </a>
-
-                </div>
-            </div>
-            @endif
-
-            @if($record->certificateFile)
-            <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
-                <!-- <h2 class="mb-4">#</h2> -->
-                <h3 class="card-title mb-5">Certificate</h3>
-
-                <div class="row g-3">
-
-                    <div class="col-12 mb-3 col-lg-12">
-                        <div class="form-label">Document</div>
-                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
-                    </div>
-
-                    <a href="{{ asset('storage/' . $record->certificateFile) }}" target="_blanck"
-                        class="text-decoration-none">
-                        <div class="card col-12 card-link">
-                            <div class="card-body pt-5" style="height: 5rem">
-                                Download Feri Certificate
-                            </div>
-                            <div class="ribbon bg-success ribbon-top ribbon-start">
-                                <i class="fa fa-award fs-2 px-2"></i>
-                            </div>
-
-                        </div>
-                    </a>
-
-                </div>
-            </div>
-            @endif
 
         </div>
-        @if ($record->status == 1)
-        <div class="row">
-            <div class="col py-3 pt-5 text-end">
-                <a href="{{ route(Auth::user()->role . '' . '.showApps') }}"
-                    class="btn btn-outline-secondary">Cancel</a>
-                <button class="btn btn-primary" type="submit">Edit</button>
+
+
+        @if($record->applicationFile)
+        <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
+            <!-- <h2 class="mb-4">#</h2> -->
+            <h3 class="card-title mb-5">Draft</h3>
+
+            <div class="row g-3">
+
+                <div class="col-12 mb-3 col-lg-12">
+                    <div class="form-label">Document</div>
+                    <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                </div>
+
+                <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}" class="text-decoration-none"
+                    download>
+                    <div class="card col-12 card-link">
+                        <div class="card-body pt-5" style="height: 5rem">
+                            Download Feri Document
+                        </div>
+                        <div class="ribbon bg-danger ribbon-top ribbon-start">
+                            <i class="fa fa-certificate fs-2 px-2"></i>
+                        </div>
+
+                    </div>
+                </a>
+
             </div>
         </div>
         @endif
-        </form>
+
+        @if($record->certificateFile)
+        <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
+            <!-- <h2 class="mb-4">#</h2> -->
+            <h3 class="card-title mb-5">Certificate</h3>
+
+            <div class="row g-3">
+
+                <div class="col-12 mb-3 col-lg-12">
+                    <div class="form-label">Document</div>
+                    <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                </div>
+
+                <a href="{{ route('certificate.download', ['id' => $record->id]) }}" class="text-decoration-none"
+                    download>
+                    <div class="card col-12 card-link">
+                        <div class="card-body pt-5" style="height: 5rem">
+                            Download Feri Certificate
+                        </div>
+                        <div class="ribbon bg-success ribbon-top ribbon-start">
+                            <i class="fa fa-certificate fs-2 px-2"></i>
+                        </div>
+
+                    </div>
+                </a>
+
+            </div>
+        </div>
+        @endif
+
     </div>
+    @if ($record->status == 1)
+    <div class="row">
+        <div class="col py-3 pt-5 text-end">
+            <a href="{{ route(Auth::user()->role . '' . '.showApps') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button class="btn btn-primary" type="submit">Edit</button>
+        </div>
+    </div>
+    @endif
+    </form>
+</div>
 </div>
 
 
@@ -508,6 +538,136 @@
     </div>
 </form>
 @endif
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="chat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3" id="exampleModalLabel">Queries</h1>
+                <span class="fs-5 ms-auto">
+                    <a href="{{ route('transporter.readchat', ['id' => $record->id]) }}">mark as read</a>
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body scrollable" style="height: 300px; overflow-y: auto;">
+                        <div class="chat">
+                            <div class="chat-bubbles">
+                                <form action="{{ route('transporter.sendchat', ['id' => $record->id]) }}" method="POST">
+                                    @csrf
+
+                                    @foreach($chats as $chat)
+
+                                    @if($chat->user_id == Auth::user()->id)
+                                    <div class="chat-item mb-3">
+                                        <div class="row align-items-end justify-content-end">
+                                            <div class="col col-lg-10">
+                                                <div class="chat-bubble chat-bubble-me">
+                                                    @if($chat->del == 0)
+                                                    <div class="chat-bubble-title">
+                                                        <div class="row">
+                                                            <div class="col chat-bubble-author">{{ Auth::user()->name }}
+                                                            </div>
+                                                            <div class="col-auto chat-bubble-date fs-4">
+                                                                {{ $chat->formatted_date }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="chat-bubble-body">
+                                                        <p>{{ $chat->message }}</p>
+                                                    </div>
+                                                    <span class="fs-5">
+                                                        <a
+                                                            href="{{ route('transporter.deletechat', ['id' => $chat->id]) }}">delete</a>
+                                                    </span>
+                                                    @else
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <p>
+                                                                <i class="fa fa-ban"></i>
+                                                                Deleted message
+                                                            </p>
+                                                            <span class="fs-5">{{ $chat->formatted_date }}</span>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <span class="avatar avatar-1">
+                                                    <i class="fa fa-user p-auto"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @else
+                                    <div class="chat-item mb-3">
+                                        <div class="row align-items-end">
+                                            <div class="col-auto">
+                                                <span class="avatar avatar-1">
+                                                    <i class="fa fa-user-shield  p-auto"></i>
+                                                </span>
+                                            </div>
+                                            <div class="col col-lg-10">
+                                                <div class="chat-bubble">
+                                                    @if($chat->del == 0)
+                                                    <div class="chat-bubble-title">
+                                                        <div class="row">
+                                                            <div class="col chat-bubble-author">Vendor</div>
+                                                            <div class="col-auto chat-bubble-date">
+                                                                {{ $chat->formatted_date }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="chat-bubble-body">
+                                                        <p>{{ $chat->message }}</p>
+                                                    </div>
+                                                    @else
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <p>
+                                                                <i class="fa fa-ban"></i>
+                                                                Deleted message
+                                                            </p>
+                                                            <span class="fs-5">{{ $chat->formatted_date }}</span>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer px-4 pb-4">
+                <div class="input-group input-group-flat">
+                    <input type="text" name="message" class="form-control" autocomplete="off"
+                        placeholder="Type message">
+                    <span class="input-group-text">
+                        <button type="submit" class="btn border-0">
+                            <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </span>
+                </div>
+                </form>
+            </div>
+            <!-- <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">
+                    send <i class="fa fa-paper-plane ms-2"></i>
+                </button>
+            </div> -->
+        </div>
+    </div>
+</div>
 
 
 

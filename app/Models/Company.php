@@ -12,6 +12,11 @@ use App\Models\User;
 
 class Company extends Model
 {
+    use HasFactory;
     protected $fillable = ['name', 'type', 'email', 'address'];
 
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

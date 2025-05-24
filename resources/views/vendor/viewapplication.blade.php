@@ -1,6 +1,11 @@
 @extends('layouts.admin.main')
 @section('content')
 
+@php
+$unreadChats = $chats->filter(function ($chat) {
+return $chat->user_id !== Auth::id() && $chat->read === 0;
+});
+@endphp
 
 <x-errorshow />
 
@@ -24,12 +29,17 @@
             </div>
 
             <div class="col text-end">
-                <button type="button" class="btn btn-outline-primary position-relative me-3">
+                <button type="button" class="btn btn-outline-primary position-relative me-3" data-bs-toggle="modal"
+                    data-bs-target="#chat">
                     <i class="fa fa-message"></i>
+
+                    @if ($unreadChats->isNotEmpty())
                     <span
                         class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
                         <span class="visually-hidden">New alerts</span>
                     </span>
+                    @endif
+
                 </button>
 
 
@@ -74,6 +84,29 @@
                 <h4 class="subheader"></h4>
                 <div class="list-group list-group-transparent nav nav-tabs card-header-tabs" data-bs-toggle="tabs"
                     role="tablist">
+
+                    @if($record->applicationFile && !$record->certificateFile)
+                    <div class="nav-item border border-dark border-opacity-50" role="presentation">
+                        <a href="#tabs-home-7"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Draft
+                            <i class="fa fa-circle-down ms-2"></i>
+                        </a>
+                    </div>
+                    @endif
+
+                    @if($record->certificateFile)
+                    <div class="nav-item border border-dark border-opacity-50" role="presentation">
+                        <a href="#tabs-home-8" class="list-group-item list-group-item-action nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Certificate
+                            <i class="fa fa-circle-down text-end ms-2"></i>
+
+                        </a>
+                    </div>
+                    @endif
+
 
 
                     <div class="nav-item" role="presentation">
@@ -124,27 +157,6 @@
                         </a>
                     </div>
 
-                    @if($record->applicationFile)
-                    <div class="nav-item" role="presentation">
-                        <a href="#tabs-home-7"
-                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
-                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                            Draft
-                        </a>
-                    </div>
-                    @endif
-
-                    @if($record->certificateFile)
-                    <div class="nav-item" role="presentation">
-                        <a href="#tabs-home-8"
-                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
-                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                            Certificate
-                            <i class="fa fa-award text-dark ms-2 fs-2"></i>
-                        </a>
-                    </div>
-                    @endif
-
                 </div>
                 <!-- <h4 class="subheader mt-4">#Leave</h4>
                             <div class="list-group list-group-transparent">
@@ -168,32 +180,32 @@
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Transport Mode</div>
                         <input type="text" name="transport_mode" class="form-control"
-                            value="{{ $record->transport_mode }}">
+                            value="{{ $record->transport_mode }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Transporter Company</div>
                         <input type="text" name="transporter_company" class="form-control"
-                            value="{{ $record->transporter_company }}">
+                            value="{{ $record->transporter_company }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Entry Border DRC</div>
                         <input type="text" name="entry_border_drc" class="form-control"
-                            value="{{ $record->entry_border_drc }}">
+                            value="{{ $record->entry_border_drc }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Truck Details</div>
                         <input type="text" name="truck_details" class="form-control"
-                            value="{{ $record->truck_details }}">
+                            value="{{ $record->truck_details }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Arrival Station</div>
                         <input type="text" name="arrival_station" class="form-control"
-                            value="{{ $record->arrival_station }}">
+                            value="{{ $record->arrival_station }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Final Destination</div>
                         <input type="text" name="final_destination" class="form-control"
-                            value="{{ $record->final_destination }}">
+                            value="{{ $record->final_destination }}" disabled>
                     </div>
 
                 </div>
@@ -210,21 +222,22 @@
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Importer Name</div>
                         <input type="text" name="importer_name" class="form-control"
-                            value="{{ $record->importer_name }}">
+                            value="{{ $record->importer_name }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Importer Phone</div>
                         <input type="text" name="importer_phone" class="form-control"
-                            value="{{ $record->importer_phone }}">
+                            value="{{ $record->importer_phone }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Importer Email</div>
                         <input type="text" name="importer_email" class="form-control"
-                            value="{{ $record->importer_email }}">
+                            value="{{ $record->importer_email }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Fix Number</div>
-                        <input type="text" name="fix_number" class="form-control" value="{{ $record->fix_number }}">
+                        <input type="text" name="fix_number" class="form-control" value="{{ $record->fix_number }}"
+                            disabled>
                     </div>
 
                 </div>
@@ -240,26 +253,27 @@
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Exporter Name</div>
                         <input type="text" name="exporter_name" class="form-control"
-                            value="{{ $record->exporter_name }}">
+                            value="{{ $record->exporter_name }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Exporter Phone</div>
                         <input type="text" name="exporter_phone" class="form-control"
-                            value="{{ $record->exporter_phone }}">
+                            value="{{ $record->exporter_phone }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Exporter Email</div>
                         <input type="text" name="exporter_email" class="form-control"
-                            value="{{ $record->exporter_email }}">
+                            value="{{ $record->exporter_email }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">CF Agent</div>
-                        <input type="text" name="cf_agent" class="form-control" value="{{ $record->cf_agent }}">
+                        <input type="text" name="cf_agent" class="form-control" value="{{ $record->cf_agent }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">CF Agent Contact</div>
                         <input type="text" name="cf_agent_contact" class="form-control"
-                            value="{{ $record->cf_agent_contact }}">
+                            value="{{ $record->cf_agent_contact }}" disabled>
                     </div>
 
                 </div>
@@ -275,19 +289,21 @@
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Cargo Description</div>
                         <input type="text" name="cargo_description" class="form-control"
-                            value="{{ $record->cargo_description }}">
+                            value="{{ $record->cargo_description }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">HS Code</div>
-                        <input type="text" name="hs_code" class="form-control" value="{{ $record->hs_code }}">
+                        <input type="text" name="hs_code" class="form-control" value="{{ $record->hs_code }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Package Type</div>
-                        <input type="text" name="package_type" class="form-control" value="{{ $record->package_type }}">
+                        <input type="text" name="package_type" class="form-control" value="{{ $record->package_type }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Quantity</div>
-                        <input type="text" name="quantity" class="form-control" value="{{ $record->quantity }}">
+                        <input type="text" name="quantity" class="form-control" value="{{ $record->quantity }}"
+                            disabled>
                     </div>
 
                 </div>
@@ -303,28 +319,33 @@
 
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Company Ref</div>
-                        <input type="text" name="company_ref" class="form-control" value="{{ $record->company_ref }}">
+                        <input type="text" name="company_ref" class="form-control" value="{{ $record->company_ref }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Cargo Origin</div>
-                        <input type="text" name="cargo_origin" class="form-control" value="{{ $record->cargo_origin }}">
+                        <input type="text" name="cargo_origin" class="form-control" value="{{ $record->cargo_origin }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Customs Decl No</div>
                         <input type="text" name="customs_decl_no" class="form-control"
-                            value="{{ $record->customs_decl_no }}">
+                            value="{{ $record->customs_decl_no }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Manifest No</div>
-                        <input type="text" name="manifest_no" class="form-control" value="{{ $record->manifest_no }}">
+                        <input type="text" name="manifest_no" class="form-control" value="{{ $record->manifest_no }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">OCC Bivac</div>
-                        <input type="text" name="occ_bivac" class="form-control" value="{{ $record->occ_bivac }}">
+                        <input type="text" name="occ_bivac" class="form-control" value="{{ $record->occ_bivac }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Instructions</div>
-                        <input type="text" name="instructions" class="form-control" value="{{ $record->instructions }}">
+                        <input type="text" name="instructions" class="form-control" value="{{ $record->instructions }}"
+                            disabled>
                     </div>
 
                 </div>
@@ -339,50 +360,61 @@
 
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">FOB Currency</div>
-                        <input type="text" name="fob_currency" class="form-control" value="{{ $record->fob_currency }}">
+                        <input type="text" name="fob_currency" class="form-control" value="{{ $record->fob_currency }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">FOB Value</div>
-                        <input type="text" name="fob_value" class="form-control" value="{{ $record->fob_value }}">
+                        <input type="text" name="fob_value" class="form-control" value="{{ $record->fob_value }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Incoterm</div>
-                        <input type="text" name="incoterm" class="form-control" value="{{ $record->incoterm }}">
+                        <input type="text" name="incoterm" class="form-control" value="{{ $record->incoterm }}"
+                            disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Freight Currency</div>
                         <input type="text" name="freight_currency" class="form-control"
-                            value="{{ $record->freight_currency }}">
+                            value="{{ $record->freight_currency }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Freight Value</div>
                         <input type="text" name="freight_value" class="form-control"
-                            value="{{ $record->freight_value }}">
+                            value="{{ $record->freight_value }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Insurance Currency</div>
                         <input type="text" name="insurance_currency" class="form-control"
-                            value="{{ $record->insurance_currency }}">
+                            value="{{ $record->insurance_currency }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Insurance Value</div>
                         <input type="text" name="insurance_value" class="form-control"
-                            value="{{ $record->insurance_value }}">
+                            value="{{ $record->insurance_value }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Additional Fees Currency</div>
                         <input type="text" name="additional_fees_currency" class="form-control"
-                            value="{{ $record->additional_fees_currency }}">
+                            value="{{ $record->additional_fees_currency }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Additional Fees Value</div>
                         <input type="text" name="additional_fees_value" class="form-control"
-                            value="{{ $record->additional_fees_value }}">
+                            value="{{ $record->additional_fees_value }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
-                        <div class="form-label">Documents Upload</div>
-                        <input type="text" name="documents_upload" class="form-control"
-                            value="{{ $record->documents_upload }}">
+                        <div class="form-label">Document</div>
+                        <a href="{{ route('file.downloadfile', ['id' => $record->id]) }}" download>
+                            <div class="card py-1">
+                                <div class="card-body p-1">
+                                    Download
+                                    File
+                                </div>
+                                <div class="ribbon ribbon-top">
+                                    <i class="fa fa-file"></i>
+                                </div>
+                        </a>
                     </div>
 
                     <!-- <div class="col-12 mb-3 col-lg-3">
@@ -407,11 +439,11 @@
                         <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
                     </div>
 
-                    <a href="{{ asset('storage/' . $record->applicationFile) }}" target="_blanck"
+                    <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}" target="_blanck"
                         class="text-decoration-none">
                         <div class="card col-12 card-link">
                             <div class="card-body pt-5" style="height: 5rem">
-                                Download Feri Document
+                                Download Feri Draft
                             </div>
                             <div class="ribbon bg-danger ribbon-top ribbon-start">
                                 <i class="fa fa-award fs-2 px-2"></i>
@@ -419,6 +451,41 @@
 
                         </div>
                     </a>
+
+                    @if($record->status == 3)
+                    <div class="col">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">Edit</button>
+                    </div>
+
+                    <!-- Modal Edit -->
+                    <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Change the document</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('vendor.updatedraft', ['id' => $record->id]) }}"
+                                        method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="mb-3">
+                                            <label for="recipient-name" class="col-form-label"></label>
+                                            <input type="file" name="file" class="form-control" id="recipient-name">
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Change</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                 </div>
             </div>
@@ -436,7 +503,7 @@
                         <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
                     </div>
 
-                    <a href="{{ asset('storage/' . $record->certificateFile) }}" target="_blanck"
+                    <a href="{{ route('certificate.download', ['id' => $record->id]) }}" target="_blanck"
                         class="text-decoration-none">
                         <div class="card col-12 card-link">
                             <div class="card-body pt-5" style="height: 5rem">
@@ -596,6 +663,141 @@
         </div>
     </form>
     @endif
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="chat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-3" id="exampleModalLabel">Queries</h1>
+                    <span class="fs-5 ms-auto">
+                        <a href="{{ route('vendor.readchat', ['id' => $record->id]) }}">mark as read</a>
+                    </span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-body scrollable" style="height: 300px; overflow-y: auto;">
+                            <div class="chat">
+                                <div class="chat-bubbles">
+                                    <form action="{{ route('vendor.sendchat', ['id' => $record->id]) }}" method="POST">
+                                        @csrf
+
+                                        @foreach($chats as $chat)
+
+                                        @if($chat->user_id == Auth::user()->id || $chat->user->role ==
+                                        Auth::user()->role)
+                                        <div class="chat-item mb-3">
+                                            <div class="row align-items-end justify-content-end">
+                                                <div class="col col-lg-10">
+                                                    <div class="chat-bubble chat-bubble-me">
+                                                        @if($chat->del == 0)
+                                                        <div class="chat-bubble-title">
+                                                            <div class="row">
+                                                                <div class="col chat-bubble-author">
+                                                                    {{ $chat->user->name }}
+                                                                </div>
+                                                                <div class="col-auto chat-bubble-date fs-4">
+                                                                    {{ $chat->formatted_date }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="chat-bubble-body">
+                                                            <p>{{ $chat->message }}</p>
+                                                        </div>
+                                                        @if($chat->user->id == Auth::user()->id)
+                                                        <span class="fs-5">
+                                                            <a
+                                                                href="{{ route('vendor.deletechat', ['id' => $chat->id]) }}">delete</a>
+                                                        </span>
+                                                        @endif
+                                                        @else
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <p>
+                                                                    <i class="fa fa-ban"></i>
+                                                                    Deleted message
+                                                                </p>
+                                                                <span class="fs-5">{{ $chat->formatted_date }}</span>
+                                                            </div>
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-auto">
+                                                    <span class="avatar avatar-1">
+                                                        <i class="fa fa-user-shield p-auto"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @else
+                                        <div class="chat-item mb-3">
+                                            <div class="row align-items-end">
+                                                <div class="col-auto">
+                                                    <span class="avatar avatar-1">
+                                                        <i class="fa fa-user  p-auto"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="col col-lg-10">
+                                                    <div class="chat-bubble">
+                                                        @if($chat->del == 0)
+                                                        <div class="chat-bubble-title">
+                                                            <div class="row">
+                                                                <div class="col chat-bubble-author">
+                                                                    {{ $chat->user["name"] }}
+                                                                </div>
+                                                                <div class="col-auto chat-bubble-date">
+                                                                    {{ $chat->formatted_date }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="chat-bubble-body">
+                                                            <p>{{ $chat->message }}</p>
+                                                        </div>
+                                                        @else
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <p>
+                                                                    <i class="fa fa-ban"></i>
+                                                                    Deleted message
+                                                                </p>
+                                                                <span class="fs-5">{{ $chat->formatted_date }}</span>
+                                                            </div>
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer px-4 pb-4">
+                    <div class="input-group input-group-flat">
+                        <input type="text" name="message" class="form-control" autocomplete="off"
+                            placeholder="Type message">
+                        <span class="input-group-text">
+                            <button type="submit" class="btn border-0">
+                                <i class="fa fa-paper-plane"></i>
+                            </button>
+                        </span>
+                    </div>
+                    </form>
+                </div>
+                <!-- <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">
+                    send <i class="fa fa-paper-plane ms-2"></i>
+                </button>
+            </div> -->
+            </div>
+        </div>
+    </div>
 
 
 

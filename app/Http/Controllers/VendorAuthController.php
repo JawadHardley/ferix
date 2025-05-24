@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\feriApp;
+use App\Models\Company;
+use App\Models\chats;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -93,7 +95,7 @@ class VendorAuthController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'company' => $validated['company'],
+            'company' => 0,
             'password' => Hash::make($validated['password']),
             'role' => 'vendor', // Set role explicitly
             'user_auth' => 0, // or 0 if you want to authorize later
@@ -212,24 +214,77 @@ class VendorAuthController extends Controller
 
     public function showApps()
     {
+        // Fetch all feriApp records with pagination
         $records = feriApp::simplePaginate(10);
 
-        // Add applicant name to each record
+        // Add applicant name and company name to each record
         $records->getCollection()->transform(function ($record) {
-            $record->applicantName = User::find($record->user_id)->name ?? 'Unknown Applicant';
+            // Fetch the user associated with the feriApp
+            $user = User::find($record->user_id);
+
+            // Fetch the company name using the user's company ID
+            $companyName = null;
+            if ($user && $user->company) {
+                $company = Company::find($user->company);
+                $companyName = $company->name ?? 'No Company Assigned';
+            }
+
+            // Add applicant name and company name to the record
+            $record->applicantName = $user->name ?? 'Unknown Applicant';
+            $record->companyName = $companyName;
+
             return $record;
         });
-        // dd($records);
         return view('vendor.applications', compact('records'));
     }
 
     // Show single application
+    // public function showApp($id)
+    // {
+    //     $record = feriApp::where('id', $id)->firstOrFail();
+
+    //     // Add applicant name to the record
+    //     $record->applicant = User::find($record->user_id)->name ?? 'Unknown Applicant';
+
+    //     // Fetch the latest draft certificate for the application
+    //     $latestDraft = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
+
+    //     // Fetch the latest certificate for the application
+    //     $latestCertificate = Certificate::where('application_id', $id)->where('type', 'certificate')->latest()->first();
+
+    //     // Attach draft data to the record if it exists
+    //     if ($latestDraft) {
+    //         $record->applicationFile = $latestDraft->file ?? null;
+    //         $record->type = $latestDraft->type ?? null;
+    //     }
+
+    //     // Attach certificate data to the record if it exists
+    //     if ($latestCertificate) {
+    //         $record->certificateFile = $latestCertificate->file ?? null;
+    //     }
+
+    //     return view('vendor.viewapplication', compact('record'));
+    // }
+
+    // Show single application
     public function showApp($id)
     {
+        // Fetch the specific feriApp record
         $record = feriApp::where('id', $id)->firstOrFail();
 
-        // Add applicant name to the record
-        $record->applicant = User::find($record->user_id)->name ?? 'Unknown Applicant';
+        // Fetch the user associated with the feriApp
+        $user = User::find($record->user_id);
+
+        // Fetch the company name using the user's company ID
+        $companyName = null;
+        if ($user && $user->company) {
+            $company = Company::find($user->company);
+            $companyName = $company->name ?? 'No Company Assigned';
+        }
+
+        // Add applicant name and company name to the record
+        $record->applicant = $user->name ?? 'Unknown Applicant';
+        $record->companyName = $companyName;
 
         // Fetch the latest draft certificate for the application
         $latestDraft = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
@@ -248,7 +303,27 @@ class VendorAuthController extends Controller
             $record->certificateFile = $latestCertificate->file ?? null;
         }
 
-        return view('vendor.viewapplication', compact('record'));
+        // Fetch all chats related to the application
+        $chats = chats::where('application_id', $id)
+            ->orderBy('created_at', 'asc') // Order chats by creation time
+            ->get()
+            ->map(function ($chat) {
+                // Format the created_at timestamp
+                $now = now();
+                if ($chat->created_at->isToday()) {
+                    $chat->formatted_date = $chat->created_at->format('H:i'); // e.g., "21:33"
+                } elseif ($chat->created_at->diffInDays($now) < 365) {
+                    $chat->formatted_date = $chat->created_at->format('j M'); // e.g., "2 May"
+                } else {
+                    $chat->formatted_date = $chat->created_at->format('j M Y'); // e.g., "2 May 25"
+                }
+                return $chat;
+            });
+
+        // Pass the record and chats to the view
+        return view('vendor.viewapplication', compact('record', 'chats'));
+
+        // return view('transporter.viewapplication', compact('record'));
     }
 
     public function destroyApp($id)
@@ -384,6 +459,147 @@ class VendorAuthController extends Controller
         return back()->with([
             'status' => 'success',
             'message' => 'Application updated successfully.',
+        ]);
+    }
+
+    public function updatedraft(Request $request, $id)
+    {
+        // Check if the current user has the role of 'vendor' or 'admin'
+        $user = Auth::user();
+        if (!in_array($user->role, ['vendor', 'admin'])) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'You are not authorized to perform this action.',
+            ]);
+        }
+        // dd($request->file);
+        // Validate the uploaded file
+        $request->validate([
+            'file' => 'required|mimes:pdf|max:25600', // max:25600 KB = 25 MB
+        ]);
+
+        // Find the specific feriApp record
+        $feriApp = feriApp::findOrFail($id);
+
+        // Handle file upload
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('certificates', $fileName, 'public'); // Save in 'public/drafts' directory
+        }
+
+        // Update the draft file in the Certificates table
+        $certificate = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
+
+        if ($certificate) {
+            // Update the existing draft
+            $certificate->update(['file' => $filePath]);
+        } else {
+            // Create a new draft entry if it doesn't exist
+            Certificate::create([
+                'user_id' => Auth::id(),
+                'application_id' => $id,
+                'type' => 'draft',
+                'file' => $filePath,
+            ]);
+        }
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Draft updated successfully.',
+        ]);
+    }
+
+    public function sendchat(Request $request, $id)
+    {
+        // Check if the current user has the role of 'transporter' or 'admin'
+        $user = Auth::user();
+        if (!in_array($user->role, ['vendor', 'admin'])) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'You are not authorized to perform this action.',
+            ]);
+        }
+
+        // Validate the request
+        $validatedData = $request->validate([
+            'message' => 'required|string|max:500', // Ensure the message is not too long
+        ]);
+
+        // Sanitize the message
+        $validatedData['message'] = htmlspecialchars($validatedData['message'], ENT_QUOTES, 'UTF-8');
+
+        chats::create([
+            'user_id' => $user->id, // Current logged-in user ID
+            'application_id' => $id, // Application ID from the route parameter
+            'read' => 0, // Default to unread
+            'message' => $validatedData['message'], // Sanitized message
+            'del' => 0, // Default to not deleted
+        ]);
+
+        $this->readchat($id);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Query sent successfully!.',
+        ]);
+    }
+
+    public function readchat($id)
+    {
+        $feriApp = feriApp::findOrFail($id);
+
+        // Ensure the authenticated user owns the application or has the proper role
+        if (!in_array(Auth::user()->role, ['vendor'])) {
+            abort(403, 'Unauthorized action.');
+        }
+        // Fetch chats where:
+        // - application_id matches $id
+        // - user_id is not the authenticated user's ID
+        // - read is 0
+        $unreadChats = chats::where('application_id', $id)->where('user_id', '!=', Auth::id())->where('read', 0)->get();
+
+        // Check if there are any unread chats
+        if ($unreadChats->isNotEmpty()) {
+            // Update the read field to 1 for all matching chats
+            chats::where('application_id', $id)
+                ->where('user_id', '!=', Auth::id())
+                ->where('read', 0)
+                ->update(['read' => 1]);
+        }
+
+        return back();
+        // return back()->with([
+        //     'status' => 'success',
+        //     'message' => 'Query marked as read successfully!',
+        // ]);
+    }
+
+    public function deletechat($id)
+    {
+        // $feriApp = feriApp::findOrFail($id);s
+
+        // Fetch the specific chat by its ID
+        $chat = chats::findOrFail($id);
+
+        // Ensure the authenticated user owns the application or has the proper role
+        $feriApp = feriApp::findOrFail($chat->application_id);
+        if ($chat->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // // Ensure the chat belongs to the authenticated user or is authorized
+        // if ($chat->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+        //     abort(403, 'Unauthorized action.');
+        // }
+
+        // Mark the chat as deleted
+        $chat->update(['del' => 1]);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Message deleted successfully!',
         ]);
     }
 }

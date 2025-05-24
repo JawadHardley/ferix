@@ -140,7 +140,7 @@ class AdminAuthController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'company' => $validated['company'],
+            'company' => 0,
             'password' => Hash::make($validated['password']),
             'role' => 'admin', // Set role explicitly
             'user_auth' => 0, // or 0 if you want to authorize later

@@ -36,8 +36,8 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Company</label>
-                    <input type="text" name="company" value="{{ old('company') }}" class="form-control"
-                        placeholder="Enter Company" required>
+                    <input type="text" name="company" value="Ferix io" class="form-control" placeholder="Enter Company"
+                        required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Password</label>

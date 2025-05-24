@@ -18,11 +18,12 @@
                             </th>
                             <th>Reference</th>
                             <th>Applicant</th>
+                            <th>Company</th>
                             <th>Date</th>
                             <th>PO</th>
                             <th>Manifest</th>
                             <th>Type</th>
-                            <th>Draft Certificate</th>
+                            <th>Document</th>
                             <th>Status</th>
                             <th></th>
                         </tr>
@@ -39,6 +40,9 @@
                                 {{ $record->applicantName }}
                             </td>
                             <td>
+                                {{ $record->companyName }}
+                            </td>
+                            <td>
                                 {{ $record->created_at->format('j F Y') }}
 
                             </td>
@@ -51,8 +55,27 @@
                             <td>
                                 {{ ucfirst($record->transport_mode) }}
                             </td>
-                            <td>
-                                XXX
+                            <td class="text-center">
+                                @if ($record->status == 1 || $record->status == 2)
+                                <i class="fa fa-spinner" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="In progress"></i>
+                                @endif
+
+                                @if ($record->status == 3 || $record->status == 4)
+                                <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}"
+                                    class="text-decoration-none" download>
+                                    <i class="fa fa-file" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Draft"></i>
+                                </a>
+                                @endif
+
+                                @if ($record->status == 5)
+                                <a href="{{ route('certificate.download', ['id' => $record->id]) }}"
+                                    class="text-decoration-none" download>
+                                    <i class="fa fa-certificate" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Certificate"></i>
+                                </a>
+                                @endif
                             </td>
                             <td>
                                 @if ($record->status == 1)

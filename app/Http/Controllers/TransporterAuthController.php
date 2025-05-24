@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\feriApp;
+use App\Models\chats;
 use App\Models\Company;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
@@ -289,7 +290,7 @@ class TransporterAuthController extends Controller
     {
         $records = feriApp::where('user_id', Auth::user()->id)->simplePaginate(10);
 
-        // Add applicant name and certificate file to each record
+        // Add applicant name, draft, and certificate file to each record
         $records->getCollection()->transform(function ($record) {
             // Add applicant name
             $record->applicant = User::find($record->user_id)->name ?? 'Unknown Applicant';
@@ -297,12 +298,14 @@ class TransporterAuthController extends Controller
             // Fetch the latest certificate for the application
             $latestCertificate = Certificate::where('application_id', $record->id)->where('type', 'certificate')->latest()->first();
 
+            // Fetch the latest draft for the application
+            $latestDraft = Certificate::where('application_id', $record->id)->where('type', 'draft')->latest()->first();
+
             // Attach certificate data to the record if it exists
-            if ($latestCertificate) {
-                $record->certificateFile = $latestCertificate->file ?? null;
-            } else {
-                $record->certificateFile = null; // Default to null if no certificate exists
-            }
+            $record->certificateFile = $latestCertificate->file ?? null;
+
+            // Attach draft data to the record if it exists
+            $record->draftFile = $latestDraft->file ?? null;
 
             return $record;
         });
@@ -335,7 +338,27 @@ class TransporterAuthController extends Controller
             $record->certificateFile = $latestCertificate->file ?? null;
         }
 
-        return view('transporter.viewapplication', compact('record'));
+        // Fetch all chats related to the application
+        $chats = chats::where('application_id', $id)
+            ->orderBy('created_at', 'asc') // Order chats by creation time
+            ->get()
+            ->map(function ($chat) {
+                // Format the created_at timestamp
+                $now = now();
+                if ($chat->created_at->isToday()) {
+                    $chat->formatted_date = $chat->created_at->format('H:i'); // e.g., "21:33"
+                } elseif ($chat->created_at->diffInDays($now) < 365) {
+                    $chat->formatted_date = $chat->created_at->format('j M'); // e.g., "2 May"
+                } else {
+                    $chat->formatted_date = $chat->created_at->format('j M Y'); // e.g., "2 May 25"
+                }
+                return $chat;
+            });
+
+        // Pass the record and chats to the view
+        return view('transporter.viewapplication', compact('record', 'chats'));
+
+        // return view('transporter.viewapplication', compact('record'));
     }
 
     public function destroyApp($id)
@@ -440,6 +463,98 @@ class TransporterAuthController extends Controller
         return back()->with([
             'status' => 'success',
             'message' => 'Application status updated successfully.',
+        ]);
+    }
+
+    public function sendchat(Request $request, $id)
+    {
+        // Check if the current user has the role of 'transporter' or 'admin'
+        $user = Auth::user();
+        if (!in_array($user->role, ['transporter', 'admin'])) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'You are not authorized to perform this action.',
+            ]);
+        }
+
+        // Validate the request
+        $validatedData = $request->validate([
+            'message' => 'required|string|max:500', // Ensure the message is not too long
+        ]);
+
+        // Sanitize the message
+        $validatedData['message'] = htmlspecialchars($validatedData['message'], ENT_QUOTES, 'UTF-8');
+
+        chats::create([
+            'user_id' => $user->id, // Current logged-in user ID
+            'application_id' => $id, // Application ID from the route parameter
+            'read' => 0, // Default to unread
+            'message' => $validatedData['message'], // Sanitized message
+            'del' => 0, // Default to not deleted
+        ]);
+
+        $this->readchat($id);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Query sent successfully!.',
+        ]);
+    }
+
+    public function readchat($id)
+    {
+        $feriApp = feriApp::findOrFail($id);
+
+        // Ensure the authenticated user owns the application or has the proper role
+        if ($feriApp->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+            abort(403, 'Unauthorized action.');
+        }
+        // Fetch chats where:
+        // - application_id matches $id
+        // - user_id is not the authenticated user's ID
+        // - read is 0
+        $unreadChats = chats::where('application_id', $id)->where('user_id', '!=', Auth::id())->where('read', 0)->get();
+
+        // Check if there are any unread chats
+        if ($unreadChats->isNotEmpty()) {
+            // Update the read field to 1 for all matching chats
+            chats::where('application_id', $id)
+                ->where('user_id', '!=', Auth::id())
+                ->where('read', 0)
+                ->update(['read' => 1]);
+        }
+
+        return back();
+        // return back()->with([
+        //     'status' => 'success',
+        //     'message' => 'Query marked as read successfully!',
+        // ]);
+    }
+
+    public function deletechat($id)
+    {
+        // $feriApp = feriApp::findOrFail($id);s
+
+        // Fetch the specific chat by its ID
+        $chat = chats::findOrFail($id);
+
+        // Ensure the authenticated user owns the application or has the proper role
+        $feriApp = feriApp::findOrFail($chat->application_id);
+        if ($feriApp->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Ensure the chat belongs to the authenticated user or is authorized
+        if ($chat->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Mark the chat as deleted
+        $chat->update(['del' => 1]);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Message deleted successfully!',
         ]);
     }
 }

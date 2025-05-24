@@ -18,24 +18,14 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'company',
-        'role',
-        'user_auth',
-    ];
+    protected $fillable = ['name', 'email', 'password', 'company', 'role', 'user_auth'];
 
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     /**
      * Get the attributes that should be cast.
@@ -51,9 +41,12 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function sendEmailVerificationNotification()
-{
-    $this->notify(new CustomVerifyEmail);
-}
+    {
+        $this->notify(new CustomVerifyEmail());
+    }
 
-
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

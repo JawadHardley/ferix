@@ -3,21 +3,21 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\feriApp;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Run the database seeds.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Create the specific user named Jawad
+        User::factory()->jawad()->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Create 10 random users
+        User::factory()->count(2)->create();
     }
 }

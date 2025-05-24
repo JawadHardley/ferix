@@ -8,6 +8,8 @@ use App\Models\User;
 
 class feriApp extends Model
 {
+    use HasFactory;
+    
     // Explicitly specify the correct table name
     protected $table = 'feriapp';
     
