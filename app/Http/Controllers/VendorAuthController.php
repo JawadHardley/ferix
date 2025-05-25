@@ -235,7 +235,26 @@ class VendorAuthController extends Controller
 
             return $record;
         });
-        return view('vendor.applications', compact('records'));
+
+        // Fetch all chats related to the feriApps being displayed
+        $feriAppIds = $records->getCollection()->pluck('id'); // Get all feriApp IDs
+        $chats = chats::whereIn('application_id', $feriAppIds)
+            ->orderBy('created_at', 'asc') // Order chats by creation time
+            ->get()
+            ->map(function ($chat) {
+                // Format the created_at timestamp
+                $now = now();
+                if ($chat->created_at->isToday()) {
+                    $chat->formatted_date = $chat->created_at->format('H:i'); // e.g., "21:33"
+                } elseif ($chat->created_at->diffInDays($now) < 365) {
+                    $chat->formatted_date = $chat->created_at->format('j M'); // e.g., "2 May"
+                } else {
+                    $chat->formatted_date = $chat->created_at->format('j M Y'); // e.g., "2 May 25"
+                }
+                return $chat;
+            });
+
+        return view('vendor.applications', compact('records', 'chats'));
     }
 
     // Show single application

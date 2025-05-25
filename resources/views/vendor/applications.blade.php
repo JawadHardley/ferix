@@ -25,6 +25,7 @@
                             <th>Type</th>
                             <th>Document</th>
                             <th>Status</th>
+                            <th>Query</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -90,6 +91,176 @@
                                 @elseif ($record->status == 5)
                                 <span class="status-dot status-green me-1"></span> Complete
                                 @endif
+                            </td>
+                            <td class="">
+
+                                @php
+                                $unreadChats = $chats->filter(function ($chat) use ($record) {
+                                return ($chat->user_id !== Auth::id() && $chat->read === 0) && $chat->application_id ==
+                                $record->id;
+                                });
+                                @endphp
+
+                                <a href="#" class="text-decoration-none" data-bs-toggle="modal"
+                                    data-bs-target="#chat{{ $record->id }}">
+                                    <i class="fa fa-bell"></i>
+
+                                    @if ($unreadChats->isNotEmpty())
+                                    <span class="badge bg-red mb-2"></span>
+                                    @endif
+                                </a>
+
+                                <!-- Modal for query -->
+                                <div class="modal fade" id="chat{{ $record->id }}" tabindex="-1"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-3" id="exampleModalLabel">Queries</h1>
+                                                <span class="fs-5 ms-auto">
+                                                    <a href="{{ route('vendor.readchat', ['id' => $record->id]) }}">mark
+                                                        as read</a>
+                                                </span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="card">
+                                                    <div class="card-body scrollable"
+                                                        style="height: 300px; overflow-y: auto;">
+                                                        <div class="chat">
+                                                            <div class="chat-bubbles">
+                                                                <form
+                                                                    action="{{ route('vendor.sendchat', ['id' => $record->id]) }}"
+                                                                    method="POST">
+                                                                    @csrf
+
+                                                                    @foreach($chats as $chat)
+
+                                                                    @if(($chat->user_id == Auth::user()->id ||
+                                                                    $chat->user->role ==
+                                                                    Auth::user()->role) && $chat->application_id ==
+                                                                    $record->id)
+                                                                    <div class="chat-item mb-3">
+                                                                        <div
+                                                                            class="row align-items-end justify-content-end">
+                                                                            <div class="col col-lg-10">
+                                                                                <div class="chat-bubble chat-bubble-me">
+                                                                                    @if($chat->del == 0)
+                                                                                    <div class="chat-bubble-title">
+                                                                                        <div class="row">
+                                                                                            <div
+                                                                                                class="col chat-bubble-author">
+                                                                                                {{ $chat->user->name }}
+                                                                                            </div>
+                                                                                            <div
+                                                                                                class="col-auto chat-bubble-date fs-4">
+                                                                                                {{ $chat->formatted_date }}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="chat-bubble-body">
+                                                                                        <p>{{ $chat->message }}</p>
+                                                                                    </div>
+                                                                                    @if($chat->user->id ==
+                                                                                    Auth::user()->id)
+                                                                                    <span class="fs-5">
+                                                                                        <a
+                                                                                            href="{{ route('vendor.deletechat', ['id' => $chat->id]) }}">delete</a>
+                                                                                    </span>
+                                                                                    @endif
+                                                                                    @else
+                                                                                    <div class="row">
+                                                                                        <div class="col">
+                                                                                            <p>
+                                                                                                <i
+                                                                                                    class="fa fa-ban"></i>
+                                                                                                Deleted message
+                                                                                            </p>
+                                                                                            <span
+                                                                                                class="fs-5">{{ $chat->formatted_date }}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    @endif
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-auto">
+                                                                                <span class="avatar avatar-1">
+                                                                                    <i
+                                                                                        class="fa fa-user-shield p-auto"></i>
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @elseif($chat->application_id ==
+                                                                    $record->id)
+                                                                    <div class="chat-item mb-3">
+                                                                        <div class="row align-items-end">
+                                                                            <div class="col-auto">
+                                                                                <span class="avatar avatar-1">
+                                                                                    <i class="fa fa-user  p-auto"></i>
+                                                                                </span>
+                                                                            </div>
+                                                                            <div class="col col-lg-10">
+                                                                                <div class="chat-bubble">
+                                                                                    @if($chat->del == 0)
+                                                                                    <div class="chat-bubble-title">
+                                                                                        <div class="row">
+                                                                                            <div
+                                                                                                class="col chat-bubble-author">
+                                                                                                {{ $chat->user["name"] }}
+                                                                                            </div>
+                                                                                            <div
+                                                                                                class="col-auto chat-bubble-date">
+                                                                                                {{ $chat->formatted_date }}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="chat-bubble-body">
+                                                                                        <p>{{ $chat->message }}</p>
+                                                                                    </div>
+                                                                                    @else
+                                                                                    <div class="row">
+                                                                                        <div class="col">
+                                                                                            <p>
+                                                                                                <i
+                                                                                                    class="fa fa-ban"></i>
+                                                                                                Deleted message
+                                                                                            </p>
+                                                                                            <span
+                                                                                                class="fs-5">{{ $chat->formatted_date }}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    @endif
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @endif
+                                                                    @endforeach
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer px-4 pb-4">
+                                                <div class="input-group input-group-flat">
+                                                    <input type="text" name="message" class="form-control"
+                                                        autocomplete="off" placeholder="Type message">
+                                                    <span class="input-group-text">
+                                                        <button type="submit" class="btn border-0">
+                                                            <i class="fa fa-paper-plane"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
                             <td class="text-end">
                                 <div class="dropdown">
                                     <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown">
