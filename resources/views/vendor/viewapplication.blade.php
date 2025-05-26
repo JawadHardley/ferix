@@ -416,388 +416,539 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                 </div>
                         </a>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- <div class="col-12 mb-3 col-lg-3">
-                            <div class="form-label">Created At</div>
-                            <input type="text" name="created_at" class="form-control" value="{{ $record->created_at }}">
-                        </div> -->
+        @if($record->applicationFile)
+        <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
+            <!-- <h2 class="mb-4">#</h2> -->
+            <h3 class="card-title mb-5">Draft</h3>
 
+            <div class="row g-3">
 
+                <div class="col-12 mb-3 col-lg-12">
+                    <div class="form-label">Document</div>
+                    <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
                 </div>
 
-            </div>
-
-            @if($record->applicationFile)
-            <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
-                <!-- <h2 class="mb-4">#</h2> -->
-                <h3 class="card-title mb-5">Draft</h3>
-
-                <div class="row g-3">
-
-                    <div class="col-12 mb-3 col-lg-12">
-                        <div class="form-label">Document</div>
-                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
-                    </div>
-
-                    <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}" target="_blanck"
-                        class="text-decoration-none">
-                        <div class="card col-12 card-link">
-                            <div class="card-body pt-5" style="height: 5rem">
-                                Download Feri Draft
-                            </div>
-                            <div class="ribbon bg-danger ribbon-top ribbon-start">
-                                <i class="fa fa-award fs-2 px-2"></i>
-                            </div>
-
+                <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}" target="_blanck"
+                    class="text-decoration-none">
+                    <div class="card col-12 card-link">
+                        <div class="card-body pt-5" style="height: 5rem">
+                            Download Feri Draft
                         </div>
-                    </a>
+                        <div class="ribbon bg-danger ribbon-top ribbon-start">
+                            <i class="fa fa-certificate fs-2 px-2"></i>
+                        </div>
 
-                    @if($record->status == 3)
-                    <div class="col">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">Edit</button>
                     </div>
+                </a>
+                @if ($invoice)
+                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
+                    class="text-decoration-none">
+                    <div class="card col-12 card-link">
+                        <div class="card-body pt-5" style="height: 5rem">
+                            Download Draft Invoice
+                        </div>
+                        <div class="ribbon bg-danger ribbon-top ribbon-start">
+                            <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                        </div>
 
-                    <!-- Modal Edit -->
-                    <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Change the document</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ route('vendor.updatedraft', ['id' => $record->id]) }}"
-                                        method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="mb-3">
-                                            <label for="recipient-name" class="col-form-label"></label>
-                                            <input type="file" name="file" class="form-control" id="recipient-name">
+                    </div>
+                </a>
+                @endif
+
+                @if($record->status == 3)
+                <div class="col">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">Edit</button>
+                </div>
+
+                <!-- Modal Edit -->
+                <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Change the document</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('vendor.updatedraft', ['id' => $record->id]) }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Euro Rate</label>
+                                            <input type="number" step="0.0001" min="0" class="form-control"
+                                                name="euro_rate" value="{{ $invoice->euro_rate ?? '' }}"
+                                                autocomplete="on" required />
                                         </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Change</button>
-                                    </form>
-                                </div>
+
+                                        <input type="hidden" step="1" min="0" class="form-control" name="feri_quantity"
+                                            value="{{ $invoice->feri_quantity ?? '' }}" autocomplete="on" required />
+
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Feri Cost Per ton/cbm Unit Cost</label>
+                                            <input type="number" class="form-control" name="feri_units"
+                                                value="{{ $invoice->feri_units ?? '' }}" autocomplete="on" required />
+                                        </div>
+
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Feri/COD Certificate Admin Quantity</label>
+                                            <input type="number" step="1" min="0" class="form-control"
+                                                name="cod_quantities" value="{{ $invoice->cod_quantities ?? '' }}"
+                                                autocomplete="on" required />
+                                        </div>
+
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Feri/COD Certificate Admin Unit Cost</label>
+                                            <input type="text" class="form-control" name="cod_units"
+                                                value="{{ $invoice->cod_units ?? '' }}" autocomplete="on" required />
+                                        </div>
+
+                                        <input type="hidden" step="1" min="0" class="form-control"
+                                            name="transporter_quantity"
+                                            value="{{ $invoice->transporter_quantity ?? '' }}" autocomplete="on"
+                                            required />
+
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Customer Reference No</label>
+                                            <input type="text" class="form-control" name="customer_ref"
+                                                value="{{ $invoice->customer_ref ?? '' }}" autocomplete="on" required />
+                                        </div>
+
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Customer PO</label>
+                                            <input type="text" class="form-control" name="customer_po"
+                                                value="{{ $invoice->customer_po ?? '' }}" autocomplete="on" required />
+                                        </div>
+
+                                        <input type="hidden" class="form-control" name="customer_trip_no"
+                                            value="{{ $invoice->customer_trip_no ?? '' }}" autocomplete="on" required />
+
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Application Invoice Number</label>
+                                            <input type="text" class="form-control" name="application_invoice_no"
+                                                value="{{ $invoice->application_invoice_no ?? '' }}" autocomplete="on"
+                                                required />
+                                        </div>
+
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">FERI / COD Certificate Number</label>
+                                            <input type="text" class="form-control" name="certificate_no"
+                                                value="{{ $invoice->certificate_no ?? '' }}" autocomplete="on"
+                                                required />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">Change Draft</label>
+                                        <input type="file" name="file" class="form-control" id="recipient-name">
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Change</button>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    @endif
-
                 </div>
+                @endif
+
             </div>
-            @endif
+        </div>
+        @endif
 
-            @if($record->certificateFile)
-            <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
-                <!-- <h2 class="mb-4">#</h2> -->
-                <h3 class="card-title mb-5">Certificate</h3>
+        @if($record->certificateFile)
+        <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
+            <!-- <h2 class="mb-4">#</h2> -->
+            <h3 class="card-title mb-5">Certificate</h3>
 
-                <div class="row g-3">
+            <div class="row g-3">
 
-                    <div class="col-12 mb-3 col-lg-12">
-                        <div class="form-label">Document</div>
-                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
-                    </div>
+                <div class="col-12 mb-3 col-lg-12">
+                    <div class="form-label">Document</div>
+                    <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                </div>
 
-                    <a href="{{ route('certificate.download', ['id' => $record->id]) }}" target="_blanck"
-                        class="text-decoration-none">
-                        <div class="card col-12 card-link">
-                            <div class="card-body pt-5" style="height: 5rem">
-                                Download Feri Certificate
-                            </div>
-                            <div class="ribbon bg-success ribbon-top ribbon-start">
-                                <i class="fa fa-award fs-2 px-2"></i>
-                            </div>
-
+                <a href="{{ route('certificate.download', ['id' => $record->id]) }}" target="_blanck"
+                    class="text-decoration-none">
+                    <div class="card col-12 card-link">
+                        <div class="card-body pt-5" style="height: 5rem">
+                            Download Feri Certificate
                         </div>
-                    </a>
+                        <div class="ribbon bg-success ribbon-top ribbon-start">
+                            <i class="fa fa-award fs-2 px-2"></i>
+                        </div>
 
+                    </div>
+                </a>
+
+                @if ($invoice)
+                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
+                    class="text-decoration-none">
+                    <div class="card col-12 card-link">
+                        <div class="card-body pt-5" style="height: 5rem">
+                            Download Draft Invoice
+                        </div>
+                        <div class="ribbon bg-success ribbon-top ribbon-start">
+                            <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                        </div>
+
+                    </div>
+                </a>
+                @endif
+
+            </div>
+        </div>
+        @endif
+
+
+    </div>
+</div>
+
+
+<!-- modals modals -->
+<!-- modals modals -->
+<!-- modals modals -->
+
+
+@if ($record->status == 1)
+<!-- Modal -->
+<form action="{{ route('vendor.process1', ['id' => $record->id]) }}" method="POST" class="d-inline">
+    @csrf
+    <div class="modal fade" id="a{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-status bg-primary"></div>
+                <div class="modal-body text-center py-4">
+                    <i class="fa fa-spinner text-primary display-2 pb-5"></i>
+                    <!-- <h3>Are you sure?</h3> -->
+                    <div class="text-secondary">
+                        Do you want to proceed with the application ?
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col">
+                                <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary w-100" data-bs-dismiss="modal">
+                                    Save </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            @endif
-
-
         </div>
     </div>
+</form>
 
-
-    <!-- modals modals -->
-    <!-- modals modals -->
-    <!-- modals modals -->
-
-
-    @if ($record->status == 1)
-    <!-- Modal -->
-    <form action="{{ route('vendor.process1', ['id' => $record->id]) }}" method="POST" class="d-inline">
-        @csrf
-        <div class="modal fade" id="a{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="modal-status bg-primary"></div>
-                    <div class="modal-body text-center py-4">
-                        <i class="fa fa-spinner text-primary display-2 pb-5"></i>
-                        <!-- <h3>Are you sure?</h3> -->
-                        <div class="text-secondary">
-                            Do you want to proceed with the application ?
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="w-100">
-                            <div class="row">
-                                <div class="col">
-                                    <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
-                                </div>
-                                <div class="col">
-                                    <button type="submit" class="btn btn-primary w-100" data-bs-dismiss="modal">
-                                        Save </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    @elseif ($record->status == 2)
-    <!-- Modal -->
-    <form action="{{ route('vendor.process2', ['id' => $record->id]) }}" method="POST" enctype="multipart/form-data"
-        class="d-inline">
-        @csrf
-        <div class="modal fade" id="b{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="modal-status bg-primary"></div>
-                    <div class="modal-body py-4">
-                        <h2 class="text-center mb-3">
-                            Upload {{ $record->status == 2 ? 'Draft' : ($record->status == 4 ? 'Certificate' : '') }}
-                        </h2>
-                        <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" class="form-control" name="type"
-                                value="{{ $record->status == 2 ? 'draft' : ($record->status == 4 ? 'certificate' : '') }}"
-                                disabled />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                {{ $record->status == 2 ? 'Draft' : ($record->status == 4 ? '' : '') }} Ceritificate
-                            </label>
-                            <input type="file" class="form-control" name="file" />
-                        </div>
-                        <!-- <div class="text-secondary">
-                        Do you want to proceed with the application ?
-                    </div> -->
-                    </div>
-                    <div class="modal-footer">
-                        <div class="w-100">
-                            <div class="row">
-                                <div class="col">
-                                    <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
-                                </div>
-                                <div class="col">
-                                    <button type="submit" class="btn btn-primary w-100" data-bs-dismiss="modal">
-                                        Save </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    @elseif ($record->status == 4)
-    <!-- Modal -->
-    <form action="{{ route('vendor.process3', ['id' => $record->id]) }}" method="POST" enctype="multipart/form-data"
-        class="d-inline">
-        @csrf
-        <div class="modal fade" id="c{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="modal-status bg-success"></div>
-                    <div class="modal-body py-4">
-                        <h2 class="text-center mb-3">
-                            Upload Certificate
-                        </h2>
-                        <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" class="form-control" name="type"
-                                value="{{ $record->status == 2 ? 'draft' : ($record->status == 4 ? 'certificate' : '') }}"
-                                disabled />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                {{ $record->status == 2 ? 'Draft' : ($record->status == 4 ? '' : '') }} Ceritificate
-                            </label>
-                            <input type="file" class="form-control" name="file" />
-                        </div>
-                        <!-- <div class="text-secondary">
-                        Do you want to proceed with the application ?
-                    </div> -->
-                    </div>
-                    <div class="modal-footer">
-                        <div class="w-100">
-                            <div class="row">
-                                <div class="col">
-                                    <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
-                                </div>
-                                <div class="col">
-                                    <button type="submit" class="btn btn-success w-100" data-bs-dismiss="modal">
-                                        Save </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-    @endif
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="chat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+@elseif ($record->status == 2)
+<!-- Modal -->
+<form action="{{ route('vendor.process2', ['id' => $record->id]) }}" method="POST" enctype="multipart/form-data"
+    class="d-inline">
+    @csrf
+    <div class="modal fade" id="b{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-3" id="exampleModalLabel">Queries</h1>
-                    <span class="fs-5 ms-auto">
-                        <a href="{{ route('vendor.readchat', ['id' => $record->id]) }}">mark as read</a>
-                    </span>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-status bg-primary"></div>
+                <div class="modal-body py-4">
+                    <h2 class="text-center mb-3">
+                        Upload
+                        {{ $record->status == 2 ? 'Draft + Invoice' : ($record->status == 4 ? 'Certificate' : '') }}
+                    </h2>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="type"
+                            value="{{ $record->status == 2 ? 'draft' : ($record->status == 4 ? 'certificate' : '') }}"
+                            disabled />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Euro Rate</label>
+                            <input type="number" step="0.0001" min="0" class="form-control" name="euro_rate"
+                                placeholder="e.g. 2630.2500" autocomplete="on" required />
+                        </div>
+
+                        <input type="hidden" step="1" min="0" class="form-control" name="feri_quantity"
+                            value="{{ $record->quantity }}" placeholder="e.g. 100" autocomplete="on" required />
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Feri Cost Per ton/cbm Unit Cost</label>
+                            <input type="number" class="form-control" name="feri_units"
+                                placeholder="e.g. containers, tons" autocomplete="on" required />
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Feri/COD Certificate Admin Quantity</label>
+                            <input type="number" step="1" min="0" class="form-control" name="cod_quantities"
+                                placeholder="e.g. 50" autocomplete="on" required />
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Feri/COD Certificate Admin Unit Cost</label>
+                            <input type="text" class="form-control" name="cod_units"
+                                placeholder="e.g. containers, pallets" autocomplete="on" required />
+                        </div>
+
+                        <input type="hidden" step=" 1" min="0" class="form-control"
+                            value="{{ $record->additional_fees_value }}" name="transporter_quantity"
+                            placeholder="e.g. 3" autocomplete="on" required />
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Customer Reference No</label>
+                            <input type="text" class="form-control" name="customer_ref"
+                                placeholder="e.g. 11080320 -ALE 708" autocomplete="on" required />
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Customer PO</label>
+                            <input type="text" class="form-control" name="customer_po"
+                                placeholder="Enter Purchase Order Number" autocomplete="on" required />
+                        </div>
+
+                        <input type="hidden" class="form-control" name="customer_trip_no"
+                            value="{{ $record->company_ref }}" placeholder="Enter Purchase Order Number"
+                            autocomplete="on" required />
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Application Invoice Number</label>
+                            <input type="text" class="form-control" name="application_invoice_no"
+                                placeholder="e.g. APP-2025-001" autocomplete="on" required />
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">FERI / COD Certificate Number</label>
+                            <input type="text" class="form-control" name="certificate_no"
+                                placeholder="e.g. CERT-2025-XYZ" autocomplete="on" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            {{ $record->status == 2 ? 'Draft' : ($record->status == 4 ? '' : '') }} Ceritificate
+                        </label>
+                        <input type="file" class="form-control" name="file" />
+                    </div>
+
+                    <!-- <div class="text-secondary">
+                        Do you want to proceed with the application ?
+                    </div> -->
                 </div>
-                <div class="modal-body">
-                    <div class="card">
-                        <div class="card-body scrollable" style="height: 300px; overflow-y: auto;">
-                            <div class="chat">
-                                <div class="chat-bubbles">
-                                    <form action="{{ route('vendor.sendchat', ['id' => $record->id]) }}" method="POST">
-                                        @csrf
-
-                                        @foreach($chats as $chat)
-
-                                        @if($chat->user_id == Auth::user()->id || $chat->user->role ==
-                                        Auth::user()->role)
-                                        <div class="chat-item mb-3">
-                                            <div class="row align-items-end justify-content-end">
-                                                <div class="col col-lg-10">
-                                                    <div class="chat-bubble chat-bubble-me">
-                                                        @if($chat->del == 0)
-                                                        <div class="chat-bubble-title">
-                                                            <div class="row">
-                                                                <div class="col chat-bubble-author">
-                                                                    {{ $chat->user->name }}
-                                                                </div>
-                                                                <div class="col-auto chat-bubble-date fs-4">
-                                                                    {{ $chat->formatted_date }}</div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="chat-bubble-body">
-                                                            <p>{{ $chat->message }}</p>
-                                                        </div>
-                                                        @if($chat->user->id == Auth::user()->id)
-                                                        <span class="fs-5">
-                                                            <a
-                                                                href="{{ route('vendor.deletechat', ['id' => $chat->id]) }}">delete</a>
-                                                        </span>
-                                                        @endif
-                                                        @else
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <p>
-                                                                    <i class="fa fa-ban"></i>
-                                                                    Deleted message
-                                                                </p>
-                                                                <span class="fs-5">{{ $chat->formatted_date }}</span>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-auto">
-                                                    <span class="avatar avatar-1">
-                                                        <i class="fa fa-user-shield p-auto"></i>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @else
-                                        <div class="chat-item mb-3">
-                                            <div class="row align-items-end">
-                                                <div class="col-auto">
-                                                    <span class="avatar avatar-1">
-                                                        <i class="fa fa-user  p-auto"></i>
-                                                    </span>
-                                                </div>
-                                                <div class="col col-lg-10">
-                                                    <div class="chat-bubble">
-                                                        @if($chat->del == 0)
-                                                        <div class="chat-bubble-title">
-                                                            <div class="row">
-                                                                <div class="col chat-bubble-author">
-                                                                    {{ $chat->user["name"] }}
-                                                                </div>
-                                                                <div class="col-auto chat-bubble-date">
-                                                                    {{ $chat->formatted_date }}</div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="chat-bubble-body">
-                                                            <p>{{ $chat->message }}</p>
-                                                        </div>
-                                                        @else
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <p>
-                                                                    <i class="fa fa-ban"></i>
-                                                                    Deleted message
-                                                                </p>
-                                                                <span class="fs-5">{{ $chat->formatted_date }}</span>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endif
-                                        @endforeach
-                                </div>
+                <div class="modal-footer">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col">
+                                <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary w-100" data-bs-dismiss="modal">
+                                    Save </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer px-4 pb-4">
-                    <div class="input-group input-group-flat">
-                        <input type="text" name="message" class="form-control" autocomplete="off"
-                            placeholder="Type message">
-                        <span class="input-group-text">
-                            <button type="submit" class="btn border-0">
-                                <i class="fa fa-paper-plane"></i>
-                            </button>
-                        </span>
+            </div>
+        </div>
+    </div>
+</form>
+
+@elseif ($record->status == 4)
+<!-- Modal -->
+<form action="{{ route('vendor.process3', ['id' => $record->id]) }}" method="POST" enctype="multipart/form-data"
+    class="d-inline">
+    @csrf
+    <div class="modal fade" id="c{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-status bg-success"></div>
+                <div class="modal-body py-4">
+                    <h2 class="text-center mb-3">
+                        Upload Certificate
+                    </h2>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="type"
+                            value="{{ $record->status == 2 ? 'draft' : ($record->status == 4 ? 'certificate' : '') }}"
+                            disabled />
                     </div>
-                    </form>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            {{ $record->status == 2 ? 'Draft' : ($record->status == 4 ? '' : '') }}
+                            Ceritificate
+                        </label>
+                        <input type="file" class="form-control" name="file" />
+                    </div>
+                    <!-- <div class="text-secondary">
+                        Do you want to proceed with the application ?
+                    </div> -->
                 </div>
-                <!-- <div class="modal-footer">
+                <div class="modal-footer">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col">
+                                <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-success w-100" data-bs-dismiss="modal">
+                                    Save </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@endif
+
+
+<!-- Modal -->
+<div class="modal fade" id="chat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3" id="exampleModalLabel">Queries</h1>
+                <span class="fs-5 ms-auto">
+                    <a href="{{ route('vendor.readchat', ['id' => $record->id]) }}">mark as read</a>
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body scrollable" style="height: 300px; overflow-y: auto;">
+                        <div class="chat">
+                            <div class="chat-bubbles">
+                                <form action="{{ route('vendor.sendchat', ['id' => $record->id]) }}" method="POST">
+                                    @csrf
+
+                                    @foreach($chats as $chat)
+
+                                    @if($chat->user_id == Auth::user()->id || $chat->user->role ==
+                                    Auth::user()->role)
+                                    <div class="chat-item mb-3">
+                                        <div class="row align-items-end justify-content-end">
+                                            <div class="col col-lg-10">
+                                                <div class="chat-bubble chat-bubble-me">
+                                                    @if($chat->del == 0)
+                                                    <div class="chat-bubble-title">
+                                                        <div class="row">
+                                                            <div class="col chat-bubble-author">
+                                                                {{ $chat->user->name }}
+                                                            </div>
+                                                            <div class="col-auto chat-bubble-date fs-4">
+                                                                {{ $chat->formatted_date }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="chat-bubble-body">
+                                                        <p>{{ $chat->message }}</p>
+                                                    </div>
+                                                    @if($chat->user->id == Auth::user()->id)
+                                                    <span class="fs-5">
+                                                        <a
+                                                            href="{{ route('vendor.deletechat', ['id' => $chat->id]) }}">delete</a>
+                                                    </span>
+                                                    @endif
+                                                    @else
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <p>
+                                                                <i class="fa fa-ban"></i>
+                                                                Deleted message
+                                                            </p>
+                                                            <span class="fs-5">{{ $chat->formatted_date }}</span>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <span class="avatar avatar-1">
+                                                    <i class="fa fa-user-shield p-auto"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @else
+                                    <div class="chat-item mb-3">
+                                        <div class="row align-items-end">
+                                            <div class="col-auto">
+                                                <span class="avatar avatar-1">
+                                                    <i class="fa fa-user  p-auto"></i>
+                                                </span>
+                                            </div>
+                                            <div class="col col-lg-10">
+                                                <div class="chat-bubble">
+                                                    @if($chat->del == 0)
+                                                    <div class="chat-bubble-title">
+                                                        <div class="row">
+                                                            <div class="col chat-bubble-author">
+                                                                {{ $chat->user["name"] }}
+                                                            </div>
+                                                            <div class="col-auto chat-bubble-date">
+                                                                {{ $chat->formatted_date }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="chat-bubble-body">
+                                                        <p>{{ $chat->message }}</p>
+                                                    </div>
+                                                    @else
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <p>
+                                                                <i class="fa fa-ban"></i>
+                                                                Deleted message
+                                                            </p>
+                                                            <span class="fs-5">{{ $chat->formatted_date }}</span>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer px-4 pb-4">
+                <div class="input-group input-group-flat">
+                    <input type="text" name="message" class="form-control" autocomplete="off"
+                        placeholder="Type message">
+                    <span class="input-group-text">
+                        <button type="submit" class="btn border-0">
+                            <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </span>
+                </div>
+                </form>
+            </div>
+            <!-- <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary">
                     send <i class="fa fa-paper-plane ms-2"></i>
                 </button>
             </div> -->
-            </div>
         </div>
     </div>
+</div>
 
 
 
@@ -805,4 +956,4 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
 
 
-    @endsection
+@endsection

@@ -5,6 +5,8 @@
 $unreadChats = $chats->filter(function ($chat) {
 return $chat->user_id !== Auth::id() && $chat->read === 0;
 });
+
+
 @endphp
 
 
@@ -456,6 +458,21 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     </div>
                 </a>
 
+                @if ($invoice)
+                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
+                    class="text-decoration-none">
+                    <div class="card col-12 card-link">
+                        <div class="card-body pt-5" style="height: 5rem">
+                            Download Draft Invoice
+                        </div>
+                        <div class="ribbon bg-danger ribbon-top ribbon-start">
+                            <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                        </div>
+
+                    </div>
+                </a>
+                @endif
+
             </div>
         </div>
         @endif
@@ -484,6 +501,19 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                     </div>
                 </a>
+                @if ($invoice)
+                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blank"
+                    class="text-decoration-none">
+                    <div class="card col-12 card-link">
+                        <div class="card-body pt-5" style="height: 5rem">
+                            Download Feri Invoice
+                        </div>
+                        <div class="ribbon bg-success ribbon-top ribbon-start">
+                            <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                        </div>
+                    </div>
+                </a>
+                @endif
 
             </div>
         </div>

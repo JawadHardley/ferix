@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\feriApp;
+use App\Models\Invoice;
 use App\Models\Company;
 use App\Models\chats;
 use App\Models\Certificate;
@@ -320,7 +321,18 @@ class VendorAuthController extends Controller
         // Attach certificate data to the record if it exists
         if ($latestCertificate) {
             $record->certificateFile = $latestCertificate->file ?? null;
+            $record->type = $latestCertificate->type ?? null;
         }
+
+        // Fetch the invoice related to the latest certificate
+        $invoice = null;
+        if ($latestCertificate && $record->status >= 4) {
+            $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
+        } elseif ($latestDraft) {
+            $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
+        }
+
+        // dd($invoice);
 
         // Fetch all chats related to the application
         $chats = chats::where('application_id', $id)
@@ -340,7 +352,7 @@ class VendorAuthController extends Controller
             });
 
         // Pass the record and chats to the view
-        return view('vendor.viewapplication', compact('record', 'chats'));
+        return view('vendor.viewapplication', compact('record', 'chats', 'invoice'));
 
         // return view('transporter.viewapplication', compact('record'));
     }
@@ -389,8 +401,24 @@ class VendorAuthController extends Controller
         }
 
         // Validate the file (limit to PDF and max size 5MB)
-        $request->validate([
+        $validatedData = $request->validate([
             'file' => 'required|mimes:pdf|max:20480', // max:20480 KB = 20 MB
+
+            'feri_quantity' => 'required|integer',
+            'feri_units' => 'required|string',
+
+            'cod_quantities' => 'required|integer',
+            'cod_units' => 'required|string',
+
+            'euro_rate' => 'required|numeric',
+
+            'transporter_quantity' => 'required|integer',
+
+            'customer_ref' => 'required|string',
+            'customer_po' => 'required|string',
+            'customer_trip_no' => 'required|string',
+            'application_invoice_no' => 'required|string',
+            'certificate_no' => 'required|string',
         ]);
 
         // Find the specific feriApp record
@@ -416,11 +444,28 @@ class VendorAuthController extends Controller
         $feriApp->update(['status' => 3]);
 
         // Add a new entry in the Certificates table
-        Certificate::create([
+        $certificate = Certificate::create([
             'user_id' => $user->id,
             'application_id' => $id,
             'type' => 'draft',
             'file' => $filePath, // Save the file path
+        ]);
+
+        // Add a new entry in the Invoices table
+        Invoice::create([
+            'cert_id' => $certificate->id, // Use the ID of the newly created certificate
+            'invoice_date' => today(),
+            'feri_quantity' => $validatedData['feri_quantity'], // Map quantity to feri_quantity
+            'feri_units' => $validatedData['feri_units'], // You can set a default value or validate it if needed
+            'cod_quantities' => $validatedData['cod_quantities'], // Default value for cod_quantities
+            'cod_units' => $validatedData['cod_units'], // Default value for cod_units
+            'euro_rate' => $validatedData['euro_rate'], // Default value for euro_rate
+            'transporter_quantity' => $validatedData['transporter_quantity'], // Map additional_values to transporter_quantity
+            'customer_ref' => $validatedData['customer_ref'],
+            'customer_po' => $validatedData['customer_po'],
+            'customer_trip_no' => $validatedData['customer_trip_no'],
+            'application_invoice_no' => $validatedData['application_invoice_no'],
+            'certificate_no' => $validatedData['certificate_no'],
         ]);
 
         return back()->with([
@@ -493,8 +538,23 @@ class VendorAuthController extends Controller
         }
         // dd($request->file);
         // Validate the uploaded file
-        $request->validate([
-            'file' => 'required|mimes:pdf|max:25600', // max:25600 KB = 25 MB
+        $validatedData = $request->validate([
+            'file' => 'mimes:pdf|max:25600', // max:25600 KB = 25 MB
+            'feri_quantity' => 'required|integer',
+            'feri_units' => 'required|string',
+
+            'cod_quantities' => 'required|integer',
+            'cod_units' => 'required|string',
+
+            'euro_rate' => 'required|numeric',
+
+            'transporter_quantity' => 'required|integer',
+
+            'customer_ref' => 'required|string',
+            'customer_po' => 'required|string',
+            'customer_trip_no' => 'required|string',
+            'application_invoice_no' => 'required|string',
+            'certificate_no' => 'required|string',
         ]);
 
         // Find the specific feriApp record
@@ -506,27 +566,70 @@ class VendorAuthController extends Controller
             $file = $request->file('file');
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
             $filePath = $file->storeAs('certificates', $fileName, 'public'); // Save in 'public/drafts' directory
+
+            // Update the draft file in the Certificates table
+            $certificate = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
+
+            if ($certificate) {
+                // Update the existing draft
+                $filePath2 = $certificate->update(['file' => $filePath]);
+                // dd($filePath2);
+            } else {
+                // Create a new draft entry if it doesn't exist
+                $certificate = Certificate::create([
+                    'user_id' => Auth::id(),
+                    'application_id' => $id,
+                    'type' => 'draft',
+                    'file' => $filePath,
+                ]);
+            }
+        } else {
+            // Fetch the existing certificate if no file is uploaded
+            $certificate = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
         }
 
-        // Update the draft file in the Certificates table
-        $certificate = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
-
         if ($certificate) {
-            // Update the existing draft
-            $certificate->update(['file' => $filePath]);
-        } else {
-            // Create a new draft entry if it doesn't exist
-            Certificate::create([
-                'user_id' => Auth::id(),
-                'application_id' => $id,
-                'type' => 'draft',
-                'file' => $filePath,
-            ]);
+            // Update the invoice data
+            $invoice = Invoice::where('cert_id', $certificate->id)->first();
+
+            if ($invoice) {
+                // Update the existing invoice
+                $invoice->update([
+                    // 'feri_quantity' => $validatedData['feri_quantity'],
+                    'feri_units' => $validatedData['feri_units'],
+                    'cod_quantities' => $validatedData['cod_quantities'],
+                    'cod_units' => $validatedData['cod_units'],
+                    'euro_rate' => $validatedData['euro_rate'],
+                    // 'transporter_quantity' => $validatedData['transporter_quantity'],
+                    'customer_ref' => $validatedData['customer_ref'],
+                    'customer_po' => $validatedData['customer_po'],
+                    // 'customer_trip_no' => $validatedData['customer_trip_no'],
+                    'application_invoice_no' => $validatedData['application_invoice_no'],
+                    'certificate_no' => $validatedData['certificate_no'],
+                ]);
+            } else {
+                // Create a new invoice entry if it doesn't exist
+                Invoice::create([
+                    'cert_id' => $certificate->id,
+                    'invoice_date' => today(),
+                    'feri_quantity' => $validatedData['feri_quantity'],
+                    'feri_units' => $validatedData['feri_units'],
+                    'cod_quantities' => $validatedData['cod_quantities'],
+                    'cod_units' => $validatedData['cod_units'],
+                    'euro_rate' => $validatedData['euro_rate'],
+                    'transporter_quantity' => $validatedData['transporter_quantity'],
+                    'customer_ref' => $validatedData['customer_ref'],
+                    'customer_po' => $validatedData['customer_po'],
+                    'customer_trip_no' => $validatedData['customer_trip_no'],
+                    'application_invoice_no' => $validatedData['application_invoice_no'],
+                    'certificate_no' => $validatedData['certificate_no'],
+                ]);
+            }
         }
 
         return back()->with([
             'status' => 'success',
-            'message' => 'Draft updated successfully.',
+            'message' => 'Draft and invoice updated successfully.',
         ]);
     }
 

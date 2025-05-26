@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\feriApp;
+use App\Models\Invoice;
 use App\Models\Company;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ use App\Mail\mainmail;
 use App\Mail\CustomVerifyEmail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CertificateController extends Controller
 {
@@ -93,5 +95,17 @@ class CertificateController extends Controller
     
         // Download the file
         return response()->download(storage_path('app/public/' . $filePath));
+    }
+
+    public function downloadinvoice($id)
+    {
+         // Fetch the feriApp record by ID
+        //  $feriApp = Invoice::findOrFail($id);
+         $cert = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->firstOrFail();
+         $invoice = Invoice::where('cert_id', $cert->id)->latest()->firstOrFail();
+        // dd($invoice);
+        $pdf = Pdf::loadView('layouts.theinvoice', ['invoice' => $invoice]);
+        // dd($invoice->id);
+        return $pdf->download("{$invoice->customer_trip_no}.pdf");
     }
 }

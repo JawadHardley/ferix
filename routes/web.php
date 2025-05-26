@@ -36,6 +36,8 @@ Route::get('/download-certificate/{id}', [CertificateController::class, 'downloa
 Route::get('/download-draft/{id}', [CertificateController::class, 'downloaddraft'])->name('certificate.downloaddraft');
 Route::get('/download-file/{id}', [CertificateController::class, 'downloadfile'])->name('file.downloadfile');
 
+Route::get('/download-invoice/{id}', [CertificateController::class, 'downloadinvoice'])->name('invoices.downloadinvoice');
+
 Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();

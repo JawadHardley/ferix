@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\feriApp;
+use App\Models\Invoice;
 use App\Models\chats;
 use App\Models\Company;
 use App\Models\Certificate;
@@ -206,7 +207,11 @@ class TransporterAuthController extends Controller
     // Show feri application form
     public function applyferi()
     {
-        return view('transporter.applyferi');
+        // Fetch all records from the Company table
+        $records = Company::all();
+
+        // Pass the records to the view
+        return view('transporter.applyferi', compact('records'));
     }
 
     // Store method to save cargo entry
@@ -354,7 +359,18 @@ class TransporterAuthController extends Controller
         // Attach certificate data to the record if it exists
         if ($latestCertificate) {
             $record->certificateFile = $latestCertificate->file ?? null;
+            $record->type = $latestCertificate->type ?? null;
         }
+
+        // Fetch the invoice related to the latest certificate
+        $invoice = null;
+        if ($latestCertificate && $record->status >= 4) {
+            $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
+        } elseif ($latestDraft) {
+            $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
+        }
+
+        // dd($latestDraft);
 
         // Fetch all chats related to the application
         $chats = chats::where('application_id', $id)
@@ -374,7 +390,7 @@ class TransporterAuthController extends Controller
             });
 
         // Pass the record and chats to the view
-        return view('transporter.viewapplication', compact('record', 'chats'));
+        return view('transporter.viewapplication', compact('record', 'chats', 'invoice'));
 
         // return view('transporter.viewapplication', compact('record'));
     }

@@ -25,11 +25,14 @@ return new class extends Migration {
             $table->string('importer_name');
             $table->string('importer_phone');
             $table->string('importer_email')->nullable();
+            $table->string('importer_address')->nullable();
+            $table->string('importer_details')->nullable();
             $table->string('fix_number')->nullable();
 
             $table->string('exporter_name');
             $table->string('exporter_phone');
             $table->string('exporter_email')->nullable();
+            $table->string('exporter_address')->nullable();
 
             $table->string('cf_agent');
             $table->string('cf_agent_contact');
