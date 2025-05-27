@@ -293,7 +293,16 @@ $send = asset('images/send.svg');
                     <div class="form-step" data-step="5">
                         <h1 class="mb-5 pb-3">Expedition</h1>
                         <div class="row">
-                            <div class="col-12 col-lg-4 mb-3">
+
+                            <div class="col-12 col-lg-2 mb-3">
+                                <label class="form-label">PO <span class="fs-6 text-danger">(TBS: To be added
+                                        later)</span>
+                                </label>
+                                <input type="text" class="form-control" name="po" value="{{ old('po') }}"
+                                    autocomplete="on" required />
+                            </div>
+
+                            <div class="col-12 col-lg-2 mb-3">
                                 <label class="form-label">Company Reference</label>
                                 <input type="text" class="form-control" name="company_ref"
                                     value="{{ old('company_ref') }}" autocomplete="on" required />

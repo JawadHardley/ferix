@@ -155,6 +155,10 @@ Route::prefix('transporter')
             ->name('sendchat')
             ->middleware('role');
 
+        Route::post('edit/PO/{id}', [TransporterAuthController::class, 'editpo'])
+            ->name('editpo')
+            ->middleware('role');
+
         Route::get('chat/read/{id}/', [TransporterAuthController::class, 'readchat'])
             ->name('readchat')
             ->middleware('role');

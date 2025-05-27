@@ -29,18 +29,21 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
             </div>
 
             <div class="col text-end">
-                <button type="button" class="btn btn-outline-primary position-relative me-3" data-bs-toggle="modal"
+                @if(is_numeric($record->po))
+                <span class="btn badge bg-teal-lt text-teal-lt-fg me-3">{{ $record->po }}</span>
+                @else
+                <span class=" btn badge bg-red-lt text-red-lt-fg me-3" data-bs-toggle="modal"
+                    data-bs-target="#poedit">Pending PO</span>
+                @endif
+
+                <a href="#" class="text-decoration-none position-relative me-3" data-bs-toggle="modal"
                     data-bs-target="#chat">
-                    <i class="fa fa-message"></i>
+                    <i class="fa fa-bell"></i>
 
                     @if ($unreadChats->isNotEmpty())
-                    <span
-                        class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
-                        <span class="visually-hidden">New alerts</span>
-                    </span>
+                    <span class="badge bg-red mb-2"></span>
                     @endif
-
-                </button>
+                </a>
 
 
                 @if ($record->status == 1)

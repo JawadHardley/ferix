@@ -44,7 +44,12 @@
 
                             </td>
                             <td>
-                                {{ ucfirst($record->fix_number) }}
+                                @if(is_numeric($record->po))
+                                {{ $record->po }}
+                                @else
+                                <span class="text-danger" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="to be added">TBS</span>
+                                @endif
                             </td>
                             <td>
                                 {{ ucfirst($record->manifest_no) }}

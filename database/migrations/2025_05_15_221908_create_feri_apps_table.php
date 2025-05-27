@@ -42,6 +42,7 @@ return new class extends Migration {
             $table->string('package_type');
             $table->integer('quantity');
 
+            $table->string('po')->nullable();
             $table->string('company_ref')->nullable();
             $table->string('cargo_origin')->nullable();
             $table->string('customs_decl_no')->nullable();

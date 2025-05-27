@@ -39,17 +39,23 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
             </div>
             <div class="col text-end">
-                <button type="button" class="btn btn-outline-primary position-relative me-3" data-bs-toggle="modal"
-                    data-bs-target="#chat">
-                    <i class="fa fa-message"></i>
-                    @if ($unreadChats->isNotEmpty())
-                    <span
-                        class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
-                        <span class="visually-hidden">New alerts</span>
-                    </span>
-                    @endif
 
-                </button>
+                @if(is_numeric($record->po))
+                <span class="btn badge bg-teal-lt text-teal-lt-fg me-3" data-bs-toggle="modal"
+                    data-bs-target="#poedit">{{ $record->po }}</span>
+                @else
+                <span class=" btn badge bg-red-lt text-red-lt-fg me-3" data-bs-toggle="modal"
+                    data-bs-target="#poedit">Add PO</span>
+                @endif
+
+                <a href="#" class="text-decoration-none position-relative me-3" data-bs-toggle="modal"
+                    data-bs-target="#chat">
+                    <i class="fa fa-bell"></i>
+
+                    @if ($unreadChats->isNotEmpty())
+                    <span class="badge bg-red mb-2"></span>
+                    @endif
+                </a>
 
                 @if ($record->status == 1)
 
@@ -318,7 +324,12 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                 <div class="row g-3">
 
-                    <div class="col-12 mb-3 col-lg-4">
+                    <div class="col-12 mb-3 col-lg-2">
+                        <div class="form-label">PO Number</div>
+                        <input type="text" name="po" class="form-control" value="{{ $record->po }}">
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-2">
                         <div class="form-label">Company Ref</div>
                         <input type="text" name="company_ref" class="form-control" value="{{ $record->company_ref }}">
                     </div>
@@ -695,6 +706,44 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     send <i class="fa fa-paper-plane ms-2"></i>
                 </button>
             </div> -->
+        </div>
+    </div>
+</div>
+
+<!-- this below is modal for editing and adding PO number -->
+<!-- this below is modal for editing and adding PO number -->
+<!-- this below is modal for editing and adding PO number -->
+
+<!-- Modal -->
+<div class="modal fade" id="poedit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">PO Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <form action="{{ route('transporter.editpo', ['id' => $record->id]) }}" method="POST">
+                        @csrf
+                        <div class="col-12 mb-3 col-lg-12">
+                            <label for="validationServer01" class="form-label">PO Numbers</label>
+                            <input type="text" name="po"
+                                class="form-control is-{{ is_numeric($record->po) ? '' : 'in' }}valid"
+                                id="validationServer01" value="{{ $record->po }}" required>
+                            <div class="{{ is_numeric($record->po) ? '' : 'in' }}valid-feedback">
+                                {{ is_numeric($record->po) ? 'Correct Format' : 'Change PO' }}
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Edit</button>
+            </div>
+            </form>
         </div>
     </div>
 </div>

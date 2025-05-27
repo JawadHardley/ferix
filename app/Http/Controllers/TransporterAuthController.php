@@ -228,6 +228,9 @@ class TransporterAuthController extends Controller
             'importer_name' => 'required|string|max:255',
             'importer_phone' => 'required|string|max:20',
             'importer_email' => 'nullable|email|max:255',
+            'importer_address' => 'nullable|string|max:255',
+            'exporter_address' => 'nullable|string|max:255',
+            'importer_details' => 'nullable|string|max:255',
             'fix_number' => 'nullable|string|max:255',
             'exporter_name' => 'required|string|max:255',
             'exporter_phone' => 'required|string|max:20',
@@ -274,8 +277,8 @@ class TransporterAuthController extends Controller
             // dd($validatedData);
             // Create cargo entry
             // dd($col = feriApp::create($validatedData));
-            feriApp::create($validatedData);
-
+            $r = feriApp::create($validatedData);
+            // dd($r);
             // Redirect or respond as needed
             return redirect()
                 ->back()
@@ -286,7 +289,8 @@ class TransporterAuthController extends Controller
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->withErrors(['error' => 'Failed to submit application. ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Failed to submit application. ' . $e->getMessage()])
+                ->withInput();
         }
     }
 
@@ -431,6 +435,9 @@ class TransporterAuthController extends Controller
             'importer_name' => 'required|string|max:255',
             'importer_phone' => 'required|string|max:20',
             'importer_email' => 'nullable|email|max:255',
+            'importer_address' => 'nullable|string|max:255',
+            'exporter_address' => 'nullable|string|max:255',
+            'importer_details' => 'nullable|string|max:255',
             'fix_number' => 'nullable|string|max:255',
             'exporter_name' => 'required|string|max:255',
             'exporter_phone' => 'required|string|max:20',
@@ -457,7 +464,7 @@ class TransporterAuthController extends Controller
             'insurance_value' => 'nullable|string|max:100',
             'additional_fees_currency' => 'nullable|string|max:50',
             'additional_fees_value' => 'nullable|string|max:100',
-            'documents_upload' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480', // max 20MB
+            'documents_upload' => 'nullable|file|mimes:pdf|max:20480', // max 20MB
         ]);
 
         // Handle file upload if necessary
@@ -589,6 +596,37 @@ class TransporterAuthController extends Controller
         return back()->with([
             'status' => 'success',
             'message' => 'Message deleted successfully!',
+        ]);
+    }
+
+    public function editpo(Request $request, $id)
+    {
+        // Ensure the current user is a transporter
+        $user = Auth::user();
+
+        if ($user->role !== 'transporter') {
+            abort(403, 'Unauthorized action');
+        }
+
+        // Find the feriApp record and check ownership
+        $feriApp = feriApp::findOrFail($id);
+
+        if ($feriApp->user_id !== $user->id) {
+            abort(403, 'Unauthoriszed action.');
+        }
+
+        // Validate the input
+        $validated = $request->validate([
+            'po' => 'required|string|max:255',
+        ]);
+
+        // Update the po field
+        $feriApp->po = $validated['po'];
+        $feriApp->save();
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'PO updated successfully.',
         ]);
     }
 }
