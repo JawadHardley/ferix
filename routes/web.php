@@ -167,11 +167,13 @@ Route::prefix('transporter')
             ->name('deletechat')
             ->middleware('role');
 
-        Route::middleware('role')
-            ->get('dashboard', function () {
-                return view('transporter.dashboard');
-            })
-            ->name('dashboard');
+        Route::get('dashboard', [TransporterAuthController::class, 'showdashboard'])
+            ->name('dashboard')
+            ->middleware('role');
+
+        Route::get('calculator', [TransporterAuthController::class, 'sampcalculator'])
+            ->name('sampcalculator')
+            ->middleware('role');
     });
 
 // Vendor routes
@@ -225,11 +227,13 @@ Route::prefix('vendor')
             ->name('deletechat')
             ->middleware('role');
 
-        Route::middleware('role')
-            ->get('dashboard', function () {
-                return view('vendor.dashboard');
-            })
-            ->name('dashboard');
+        Route::get('dashboard', [VendorAuthController::class, 'showdashboard'])
+            ->name('dashboard')
+            ->middleware('role');
+
+        Route::get('calculator', [VendorAuthController::class, 'sampcalculator'])
+            ->name('sampcalculator')
+            ->middleware('role');
     });
 
 Route::get('login', [TransporterAuthController::class, 'showLoginForm'])->name('login');

@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("multiStepForm");
     const steps = document.querySelectorAll(".step");
     const formSteps = document.querySelectorAll(".form-step");
-    const progress = document.getElementById("progress");
+    const progress = document.getElementById("progressx");
     const prevBtns = document.querySelectorAll(".btn-prev");
     const nextBtns = document.querySelectorAll(".btn-next");
     const successMessage = document.querySelector(".success-message");

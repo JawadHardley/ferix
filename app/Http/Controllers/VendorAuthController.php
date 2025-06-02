@@ -25,13 +25,20 @@ class VendorAuthController extends Controller
     // Show vendor login form
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('vendor.dashboard');
+        }
         return view('vendor.login');
     }
 
     // Show profile
     public function showProfile()
     {
-        return view('profile');
+        $company = Company::find(Auth::user()->company); // Get the company by ID
+
+        return view('profile', [
+            'company' => $company,
+        ]);
     }
 
     // Handle vendor login
@@ -215,30 +222,34 @@ class VendorAuthController extends Controller
 
     public function showApps()
     {
-        // Fetch all feriApp records with pagination
-        $records = feriApp::simplePaginate(10);
+        // Fetch all feriApp records
+        $records = feriApp::orderBy('created_at', 'desc')->get();
 
         // Add applicant name and company name to each record
-        $records->getCollection()->transform(function ($record) {
-            // Fetch the user associated with the feriApp
+        $records->transform(function ($record) {
             $user = User::find($record->user_id);
 
-            // Fetch the company name using the user's company ID
             $companyName = null;
-            if ($user && $user->company) {
-                $company = Company::find($user->company);
-                $companyName = $company->name ?? 'No Company Assigned';
+            $companyId = $record->transporter_company;
+            if ($companyId !== null && $companyId !== '') {
+                $company = Company::find((int) $companyId);
+                $companyName = $company->name;
+            } else {
+                $companyName = 'No Company Assigned';
             }
 
-            // Add applicant name and company name to the record
+            // Debug output
+            // Log::info("Record ID: {$record->id}, transporter_company: {$companyId}, companyName: {$companyName}");
+
             $record->applicantName = $user->name ?? 'Unknown Applicant';
             $record->companyName = $companyName;
 
             return $record;
         });
+        // dd($records);
 
         // Fetch all chats related to the feriApps being displayed
-        $feriAppIds = $records->getCollection()->pluck('id'); // Get all feriApp IDs
+        $feriAppIds = $records->pluck('id'); // Get all feriApp IDs
         $chats = chats::whereIn('application_id', $feriAppIds)
             ->orderBy('created_at', 'asc') // Order chats by creation time
             ->get()
@@ -723,5 +734,26 @@ class VendorAuthController extends Controller
             'status' => 'success',
             'message' => 'Message deleted successfully!',
         ]);
+    }
+
+    public function showdashboard()
+    {
+        $feris = feriApp::all();
+        $companies = Company::where('type', 'transporter')->get();
+
+        // If no data found, set $feris to 0
+        if ($feris->isEmpty()) {
+            $feris = 0;
+        }
+        return view('vendor.dashboard', compact('feris', 'companies'));
+    }
+
+    public function sampcalculator()
+    {
+        // Fetch all records from the Company table
+        $records = Company::all();
+
+        // Pass the records to the view
+        return view('vendor.calculator', compact('records'));
     }
 }

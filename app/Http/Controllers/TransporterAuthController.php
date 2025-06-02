@@ -25,6 +25,9 @@ class TransporterAuthController extends Controller
     // Show transporter login form
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('transporter.dashboard');
+        }
         return view('transporter.login');
     }
 
@@ -297,10 +300,12 @@ class TransporterAuthController extends Controller
     // Show lists of applications
     public function showApps()
     {
-        $records = feriApp::where('user_id', Auth::user()->id)->simplePaginate(10);
+        $records = feriApp::where('user_id', Auth::user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // Add applicant name, draft, and certificate file to each record
-        $records->getCollection()->transform(function ($record) {
+        $records->transform(function ($record) {
             // Add applicant name
             $record->applicant = User::find($record->user_id)->name ?? 'Unknown Applicant';
 
@@ -320,7 +325,7 @@ class TransporterAuthController extends Controller
         });
 
         // Fetch all chats related to the feriApps being displayed
-        $feriAppIds = $records->getCollection()->pluck('id'); // Get all feriApp IDs
+        $feriAppIds = $records->pluck('id'); // Get all feriApp IDs
         $chats = chats::whereIn('application_id', $feriAppIds)
             ->orderBy('created_at', 'asc') // Order chats by creation time
             ->get()
@@ -628,5 +633,25 @@ class TransporterAuthController extends Controller
             'status' => 'success',
             'message' => 'PO updated successfully.',
         ]);
+    }
+
+    public function showdashboard()
+    {
+        $feris = feriApp::where('user_id', Auth::id())->get();
+
+        // If no data found, set $feris to 0
+        if ($feris->isEmpty()) {
+            $feris = 0;
+        }
+        return view('transporter.dashboard', compact('feris'));
+    }
+
+    public function sampcalculator()
+    {
+        // Fetch all records from the Company table
+        $records = Company::all();
+
+        // Pass the records to the view
+        return view('transporter.calculator', compact('records'));
     }
 }
