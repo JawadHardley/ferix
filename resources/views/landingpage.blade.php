@@ -42,7 +42,9 @@ $front = asset('images/img-1.jpg');
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown"
                                 aria-label="Open user menu">
-                                <span class="avatar avatar-sm" style="background-image: url('{{ $profile_pic }}');">
+
+                                <span class="avatar avatar-sm text-primary">
+                                    <i class="fa fa-user"></i>
                                 </span>
                                 <div class="d-none d-xl-block ps-2">
                                     <div>{{ Auth::user()->name}}</div>
@@ -54,10 +56,11 @@ $front = asset('images/img-1.jpg');
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                 <a href="{{ route(Auth::user()->role . '.dashboard') }}"
                                     class="dropdown-item">Dashboard</a>
-                                <a href="./profile.html" class="dropdown-item">Profile</a>
-                                <a href="#" class="dropdown-item">Feedback</a>
+                                <a href="{{ route(Auth::user()->role . '.showProfile') }}"
+                                    class="dropdown-item">Profile</a>
+                                <!-- <a href="#" class="dropdown-item">Feedback</a> -->
                                 <div class="dropdown-divider"></div>
-                                <a href="./settings.html" class="dropdown-item">Settings</a>
+                                <!-- <a href="./settings.html" class="dropdown-item">Settings</a> -->
 
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf

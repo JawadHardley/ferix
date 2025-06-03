@@ -3,29 +3,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 @php
-// Fetching the required values from $invoice
-$feriQty = $invoice->feri_quantity ?? 0;
-$feriUnits = $invoice->feri_units ?? 0;
-$codQty = $invoice->cod_quantities ?? 0;
-$codUnits = $invoice->cod_units ?? 0;
-$euroRate = $invoice->euro_rate ?? 1; // Default euro rate if not set
-$transporterQty = $invoice->transporter_quantity ?? 0;
+$feriQty = (float)($invoice->feri_quantity ?? 0);
+$feriUnits = (float)($invoice->feri_units ?? 0);
+$codQty = (float)($invoice->cod_quantities ?? 0);
+$codUnits = (float)($invoice->cod_units ?? 0);
+$euroRate = (float)($invoice->euro_rate ?? 1);
+$transporterQty = (float)($invoice->transporter_quantity ?? 0);
 
 // Calculating the amounts
-$feriAmount = $feriQty * $feriUnits; // Feri amount: qty * units
-$codAmount = $codQty * $codUnits; // COD amount: qty * units
-
-// Calculating the UP Total: feri amount + cod amount
+$feriAmount = $feriQty * $feriUnits;
+$codAmount = $codQty * $codUnits;
 $upTotal = $feriAmount + $codAmount;
-
-// Calculating the transporter amount: transporter qty * 0.018
 $transporterAmount = $transporterQty * 0.018;
-
-// Calculating the grand total: transporter amount + (up total * euro rate)
 $grandTotal = ($transporterAmount + ($upTotal * $euroRate)) - 5;
 
 $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - Y');
-
 @endphp
 
 <head>

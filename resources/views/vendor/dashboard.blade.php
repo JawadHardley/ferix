@@ -12,7 +12,7 @@ $waiting = 0;
 $today = 0;
 $total = 0;
 
-
+if(!empty($feris)) {
 foreach ($feris as $feri) {
 if ($feri->status == 5) {
 $completed++;
@@ -23,7 +23,7 @@ $draft++;
 }elseif ($feri->status == 1) {
 $pending++;
 }
-
+}
 
 if ($feri->created_at->isToday()) {
 $today++;
@@ -35,6 +35,7 @@ $total++;
 $transporter = null;
 // Build a company_name => count array
 $companyNameCounts = [];
+if(!empty($feris)) {
 foreach ($feris as $feri) {
 // Get the company name (assuming you have a relation or can fetch it)
 $company = $companies->firstWhere('id', (int)$feri->transporter_company);
@@ -44,9 +45,14 @@ $companyNameCounts[$companyName] = 0;
 }
 $companyNameCounts[$companyName]++;
 }
+}
 
+if ($total != 0) {
 $rate = ($completed / $total) * 100;
 $rate = number_format($rate, 0);
+} else {
+$rate = 0;
+}
 
 if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp <div class="row">
     <div class="col-12 col-md-4 col-lg-3 mb-3">
@@ -169,9 +175,11 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp <div class
                         @foreach ($companies as $company)
                         @php
                         $count = 0;
+                        if (!empty($feris)) {
                         foreach ($feris as $feri) {
                         if($company->id == $feri->transporter_company) {
                         $count++;
+                        }
                         }
                         }
 

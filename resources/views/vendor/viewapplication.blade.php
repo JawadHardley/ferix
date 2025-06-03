@@ -38,7 +38,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                 <a href="#" class="text-decoration-none position-relative me-3" data-bs-toggle="modal"
                     data-bs-target="#chat">
-                    <i class="fa fa-bell"></i>
+                    <i class="fa fa-comment-dots"></i>
 
                     @if ($unreadChats->isNotEmpty())
                     <span class="badge bg-red mb-2"></span>
@@ -701,7 +701,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Feri/COD Certificate Admin Unit Cost</label>
-                            <input type="text" class="form-control" name="cod_units"
+                            <input type="number" class="form-control" name="cod_units"
                                 placeholder="e.g. containers, pallets" autocomplete="on" required />
                         </div>
 

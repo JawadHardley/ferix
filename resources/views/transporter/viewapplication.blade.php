@@ -50,7 +50,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                 <a href="#" class="text-decoration-none position-relative me-3" data-bs-toggle="modal"
                     data-bs-target="#chat">
-                    <i class="fa fa-bell"></i>
+                    <i class="fa fa-comment-dots"></i>
 
                     @if ($unreadChats->isNotEmpty())
                     <span class="badge bg-red mb-2"></span>

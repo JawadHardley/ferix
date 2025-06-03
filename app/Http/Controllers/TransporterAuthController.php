@@ -131,7 +131,6 @@ class TransporterAuthController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'company' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'required|string',
             // add other fields as necessary
@@ -161,7 +160,6 @@ class TransporterAuthController extends Controller
 
         $user->update([
             'name' => $request->name,
-            'company' => $request->company,
             'email' => $request->email,
         ]);
 

@@ -118,9 +118,9 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end flex-row order-md-last">
                                 <a href="{{ route('transporter.showProfile') }}" class="dropdown-item">Profile</a>
-                                <a href="#" class="dropdown-item">Feedback</a>
+                                <!-- <a href="#" class="dropdown-item">Feedback</a> -->
                                 <div class="dropdown-divider"></div>
-                                <a href="./settings.html" class="dropdown-item">Settings</a>
+                                <!-- <a href="./settings.html" class="dropdown-item">Settings</a> -->
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
 

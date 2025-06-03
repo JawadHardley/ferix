@@ -108,7 +108,7 @@
                                     </div>
                                 </div>
 
-                                <h3 class="card-title mt-4">Change Theme</h3>
+                                <!-- <h3 class="card-title mt-4">Change Theme</h3>
                                 <p class="card-subtitle">Making your dashboard dark or light according to your liking.
                                 </p>
                                 <div>
@@ -117,7 +117,7 @@
                                         <span class="form-check-label form-check-label-on">Dark Theme</span>
                                         <span class="form-check-label form-check-label-off">Light Theme</span>
                                     </label>
-                                </div>
+                                </div> -->
 
 
                                 <!-- modal for changing profile -->
@@ -129,7 +129,7 @@
                                                 aria-label="Close"></button>
                                             <div class="modal-status bg-primary"></div>
                                             <div class="modal-body text-center py-4">
-                                                <i class="mb-2 p-2 display-2 text-primary fa fa-fingerprint" width="24"
+                                                <i class="mb-2 p-2 display-2 text-primary fa fa-lock" width="24"
                                                     height="24"></i>
                                                 <h3 class="mb-4">
                                                     Enter password to confirm changes
@@ -155,8 +155,7 @@
                                                             </a>
                                                         </div>
                                                         <div class="col">
-                                                            <button type="submit" class="btn btn-primary w-100"
-                                                                data-bs-dismiss="modal">
+                                                            <button type="submit" class="btn btn-primary w-100">
                                                                 Save
                                                             </button>
                                                         </div>
@@ -264,55 +263,16 @@
     <!-- END PAGE BODY -->
 </div>
 
-
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form').forEach(function(form) {
+        form.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
 
 @endsection
-
-
-<!-- <div class="col-md-4">
-    <div class="card">
-        <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <a href="#tabs-home-8" class="nav-link" data-bs-toggle="tab" aria-selected="false" role="tab"
-                        tabindex="-1">Home</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a href="#tabs-profile-8" class="nav-link" data-bs-toggle="tab" aria-selected="false" role="tab"
-                        tabindex="-1">Profile</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a href="#tabs-activity-8" class="nav-link active" data-bs-toggle="tab" aria-selected="true"
-                        role="tab">Activity</a>
-                </li>
-            </ul>
-        </div>
-        <div class="card-body">
-            <div class="tab-content">
-                <div class="tab-pane fade" id="tabs-home-8" role="tabpanel">
-                    <h4>Home tab</h4>
-                    <div>
-                        Cursus turpis vestibulum, dui in pharetra vulputate id sed non turpis ultricies fringilla at sed
-                        facilisis lacus pellentesque purus
-                        nibh
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="tabs-profile-8" role="tabpanel">
-                    <h4>Profile tab</h4>
-                    <div>
-                        Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet,
-                        pellentesque id egestas velit sed
-                    </div>
-                </div>
-                <div class="tab-pane fade active show" id="tabs-activity-8" role="tabpanel">
-                    <h4>Activity tab</h4>
-                    <div>
-                        Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris
-                        accumsan nibh habitant senectus
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->

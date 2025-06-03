@@ -11,15 +11,15 @@ $waiting = 0;
 $today = 0;
 $total = 0;
 
-
+if (!empty($feris)) {
 foreach ($feris as $feri) {
 if ($feri->status == 5) {
 $completed++;
 } elseif ($feri->status == 4) {
 $waiting++;
-}elseif ($feri->status == 3) {
+} elseif ($feri->status == 3) {
 $draft++;
-}elseif ($feri->status == 1) {
+} elseif ($feri->status == 1 || $feri->status == 2) {
 $pending++;
 }
 
@@ -27,13 +27,14 @@ if ($feri->created_at->isToday()) {
 $today++;
 }
 $total++;
-
+}
 }
 
-$rate = ($completed / $total) * 100;
+// Prevent division by zero
+$rate = ($total > 0) ? ($completed / $total) * 100 : 0;
 $rate = number_format($rate, 0);
 
-if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp <script
+if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
     src="https://code.jquery.com/jquery-3.7.1.js">
     </script>
     <script src="https://cdn.datatables.net/2.3.1/js/dataTables.js"></script>

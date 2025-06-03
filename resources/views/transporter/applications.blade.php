@@ -132,7 +132,7 @@
 
                                 <a href="#" class="text-decoration-none" data-bs-toggle="modal"
                                     data-bs-target="#chat{{ $record->id }}">
-                                    <i class="fa fa-bell"></i>
+                                    <i class="fa fa-comment-dots"></i>
 
                                     @if ($unreadChats->isNotEmpty())
                                     <span class="badge bg-red mb-2"></span>
@@ -145,7 +145,8 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-3" id="exampleModalLabel">Queries</h1>
+                                                <h1 class="modal-title fs-3" id="exampleModalLabel">Queries -
+                                                    {{ ucfirst($record->company_ref) }}</h1>
                                                 <span class="fs-5 ms-auto">
                                                     <a
                                                         href="{{ route('transporter.readchat', ['id' => $record->id]) }}">mark
@@ -167,7 +168,8 @@
 
                                                                     @foreach($chats as $chat)
 
-                                                                    @if($chat->user_id == Auth::user()->id)
+                                                                    @if($chat->user_id == Auth::user()->id &&
+                                                                    $chat->application_id == $record->id)
                                                                     <div class="chat-item mb-3">
                                                                         <div
                                                                             class="row align-items-end justify-content-end">
@@ -216,7 +218,8 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    @else
+                                                                    @elseif($chat->application_id ==
+                                                                    $record->id)
                                                                     <div class="chat-item mb-3">
                                                                         <div class="row align-items-end">
                                                                             <div class="col-auto">
@@ -295,7 +298,7 @@
                                         data-bs-toggle="dropdown">Actions</button>
                                     <div class="dropdown-menu dropdown-menu-end">
                                         <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#mXX">
-                                            <i class="fa fa-message pe-2"></i>Query
+                                            <i class="fa fa-comment-dots pe-2"></i>Query
                                         </a>
                                         <a class="dropdown-item"
                                             href="{{ route('transporter.showApp', ['id' => $record->id]) }}">
