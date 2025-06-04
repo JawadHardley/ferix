@@ -30,8 +30,11 @@ class AdminAuthController extends Controller
     // Show profile
     public function showProfile()
     {
-        // Mail::to(Auth::user()->email)->send(new mainmail(Auth::user()));
-        return view('profile');
+        $company = Company::find(Auth::user()->company); // Get the company by ID
+
+        return view('profile', [
+            'company' => $company,
+        ]);
     }
 
     // Handle admin login
@@ -109,7 +112,8 @@ class AdminAuthController extends Controller
     // Show admin registration form
     public function showRegisterForm()
     {
-        return view('admin.register');
+        $records = Company::all();
+        return view('admin.register', compact('records'));
     }
 
     // Show lists of admins
@@ -122,7 +126,7 @@ class AdminAuthController extends Controller
     // Show lists of all users
     public function showUsers()
     {
-        $records = User::simplepaginate(10);
+        $records = User::leftJoin('companies', 'users.company', '=', 'companies.id')->select('users.*', 'companies.name as company_name')->simplePaginate(10);
 
         return view('admin.users', compact('records'));
     }
@@ -132,7 +136,8 @@ class AdminAuthController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'company' => ['required', 'string'],
+            'company' => ['required', 'exists:companies,id'],
+            // 'company' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:6'],
         ]);
@@ -140,7 +145,7 @@ class AdminAuthController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'company' => 0,
+            'company' => $validated['company'],
             'password' => Hash::make($validated['password']),
             'role' => 'admin', // Set role explicitly
             'user_auth' => 0, // or 0 if you want to authorize later
@@ -413,15 +418,13 @@ class AdminAuthController extends Controller
             'type' => 'required|string|max:255',
             'address' => 'nullable|string|max:500',
         ]);
-        
+
         Company::create($request->only(['name', 'type', 'email', 'address']));
 
-        return back()
-                ->with([
-                    'status' => 'success',
-                    'message' => 'Company added successfully!.',
-                ]);
-        
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Company added successfully!.',
+        ]);
     }
 
     public function showCompany($id)
@@ -442,7 +445,7 @@ class AdminAuthController extends Controller
             'type' => 'required|string|max:255',
             'address' => 'nullable|string|max:500',
         ]);
-        
+
         $company->update([
             'name' => $request->name,
             'type' => $request->type,
@@ -450,20 +453,18 @@ class AdminAuthController extends Controller
             'address' => $request->address,
         ]);
 
-        return back()
-            ->with([
-                'status' => 'success',
-                'message' => 'Company Updated successfully.',
-            ]);
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Company Updated successfully.',
+        ]);
     }
 
     public function destroyCompany($id)
     {
         Company::destroy($id);
-        return back()
-                ->with([
-                    'status' => 'success',
-                    'message' => 'Company Deleted successfully!.',
-                ]);
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Company Deleted successfully!.',
+        ]);
     }
 }

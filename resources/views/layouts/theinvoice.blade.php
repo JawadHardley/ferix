@@ -809,7 +809,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
         text-indent: 0pt;
         text-align: left;
       ">
-                    Customer PO: <span class="p">{{ $invoice->customer_po}}</span>
+                    Customer PO: <span class="p">{{ $feriapp->po}}</span>
                 </h3>
                 <h3 style="
         padding-top: 1pt;

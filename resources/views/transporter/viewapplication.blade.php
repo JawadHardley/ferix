@@ -192,10 +192,24 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                             <input type="text" name="transport_mode" class="form-control"
                                 value="{{ $record->transport_mode }}">
                         </div>
-                        <div class="col-12 mb-3 col-lg-4">
-                            <div class="form-label">Transporter Company</div>
-                            <input type="text" name="transporter_company" class="form-control"
-                                value="{{ $record->transporter_company }}">
+                        <div class="col-12 col-lg-4 mb-3">
+                            <label class="form-label">Transporter Company</label>
+                            @if($record->status < 2) <select class="form-select" name="transporter_company">
+                                <option value="">-- select --</option>
+                                @foreach($companies as $company)
+                                <option value="{{ $company->id }}"
+                                    {{ old('transporter_company', $record->transporter_company ?? '') == $company->id ? 'selected' : '' }}>
+                                    {{ $company->name }}
+                                </option>
+                                @endforeach
+                                </select>
+                                @else
+                                <input type="text" class="form-control"
+                                    value="{{ $companies->where('id', $record->transporter_company)->first()->name ?? 'N/A' }}"
+                                    disabled>
+                                <input type="hidden" name="transporter_company"
+                                    value="{{ $record->transporter_company }}">
+                                @endif
                         </div>
                         <div class="col-12 mb-3 col-lg-12">
                             <div class="form-label">Entry Border DRC</div>

@@ -15,6 +15,12 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id')->index();
             $table->integer('status');
 
+            $table->string('feri_type');
+            $table->string('validate_feri_cert')->nullable();
+            $table->string('weight')->nullable();
+            $table->string('volume')->nullable();
+            $table->date('arrival_date')->nullable();
+
             $table->string('transport_mode');
             $table->string('transporter_company');
             $table->string('entry_border_drc');

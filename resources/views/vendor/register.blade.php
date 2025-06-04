@@ -36,8 +36,14 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Company</label>
-                    <input type="text" name="company" value="Ferix io" class="form-control" placeholder="Enter Company"
-                        required>
+                    <select class="form-select" name="company">
+                        <option value="">-- select --</option>
+                        @foreach($records as $record)
+                        @if($record->type == 'vendor')
+                        <option value="{{ $record->id }}">{{ $record->name }}</option>
+                        @endif
+                        @endforeach
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Password</label>

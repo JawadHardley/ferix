@@ -10,25 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        // Ensure the companies table exists
-        if (!Schema::hasTable('companies')) {
-            Schema::create('companies', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->string('type')->nullable();
-                $table->string('email')->nullable();
-                $table->string('address')->nullable();
-                $table->timestamps();
-            });
-        }
-
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('role')->default('transporter');
-            $table->boolean('user_auth')->default(0); // 0 = not authorized, 1 = authorized
+            $table->boolean('user_auth')->default(0);
             $table->string('email')->unique();
-            // $table->string('company')->nullable();
             $table->unsignedBigInteger('company')->nullable();
             $table->foreign('company')->references('id')->on('companies')->onDelete('cascade');
             $table->timestamp('email_verified_at')->nullable();
@@ -58,6 +45,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['company']);
+        });
+
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

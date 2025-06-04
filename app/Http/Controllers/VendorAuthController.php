@@ -87,7 +87,8 @@ class VendorAuthController extends Controller
     // Show vendor registration form
     public function showRegisterForm()
     {
-        return view('vendor.register');
+        $records = Company::all();
+        return view('vendor.register', compact('records'));
     }
 
     // Handle vendor registration

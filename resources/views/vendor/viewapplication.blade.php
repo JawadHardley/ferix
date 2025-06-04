@@ -188,7 +188,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Transporter Company</div>
                         <input type="text" name="transporter_company" class="form-control"
-                            value="{{ $record->transporter_company }}" disabled>
+                            value="{{ $record->companyName }}" disabled>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Entry Border DRC</div>
@@ -689,25 +689,25 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Feri Cost Per ton/cbm Unit Cost</label>
-                            <input type="number" class="form-control" name="feri_units"
+                            <input type="number" class="form-control" name="feri_units" value="4"
                                 placeholder="e.g. containers, tons" autocomplete="on" required />
                         </div>
 
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Feri/COD Certificate Admin Quantity</label>
                             <input type="number" step="1" min="0" class="form-control" name="cod_quantities"
-                                placeholder="e.g. 50" autocomplete="on" required />
+                                placeholder="e.g. 50" autocomplete="on" value="1" required />
                         </div>
 
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Feri/COD Certificate Admin Unit Cost</label>
-                            <input type="number" class="form-control" name="cod_units"
+                            <input type="number" class="form-control" name="cod_units" value="40"
                                 placeholder="e.g. containers, pallets" autocomplete="on" required />
                         </div>
 
                         <input type="hidden" step=" 1" min="0" class="form-control"
-                            value="{{ $record->additional_fees_value }}" name="transporter_quantity"
-                            placeholder="e.g. 3" autocomplete="on" required />
+                            value="{{ ($record->additional_fees_value + $record->freight_value) }}"
+                            name="transporter_quantity" placeholder="e.g. 3" autocomplete="on" required />
 
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Customer Reference No</label>
@@ -718,7 +718,8 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Customer PO</label>
                             <input type="text" class="form-control" name="customer_po"
-                                placeholder="Enter Purchase Order Number" autocomplete="on" required />
+                                placeholder="Enter Purchase Order Number" value="{{ is_numeric($record->po) ? $record->po : 'TBS' }}
+" autocomplete="on" required />
                         </div>
 
                         <input type="hidden" class="form-control" name="customer_trip_no"

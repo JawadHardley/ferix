@@ -101,7 +101,7 @@ class TransporterAuthController extends Controller
         ]);
 
         // Send email verification notification
-        // event(new Registered($user));
+        event(new Registered($user));
 
         // Auth::login($user);
 
@@ -222,6 +222,7 @@ class TransporterAuthController extends Controller
         $validatedData = $request->validate([
             'transport_mode' => 'required|string|max:255',
             'transporter_company' => 'required|string|max:255',
+            'feri_type' => 'required|string|max:255',
             'entry_border_drc' => 'required|string|max:255',
             'truck_details' => 'required|string|max:255',
             'arrival_station' => 'required|string|max:255',
@@ -238,7 +239,7 @@ class TransporterAuthController extends Controller
             'exporter_email' => 'nullable|email|max:255',
             'cf_agent' => 'required|string|max:255',
             'cf_agent_contact' => 'required|string|max:255',
-            'cargo_description' => 'required|string',
+            'cargo_description' => 'required|string|max:255',
             'hs_code' => 'required|string|max:100',
             'package_type' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
@@ -250,14 +251,15 @@ class TransporterAuthController extends Controller
             'instructions' => 'nullable|string',
             // Extra values
             'fob_currency' => 'nullable|string|max:50',
-            'fob_value' => 'nullable|string|max:100',
+            'fob_value' => 'nullable|numeric|max:100',
+            'po' => 'nullable|string|max:100',
             'incoterm' => 'nullable|string|max:50',
             'freight_currency' => 'nullable|string|max:50',
-            'freight_value' => 'nullable|string|max:100',
+            'freight_value' => 'nullable|numeric|max:100',
             'insurance_currency' => 'nullable|string|max:50',
-            'insurance_value' => 'nullable|string|max:100',
+            'insurance_value' => 'nullable|numeric|max:100',
             'additional_fees_currency' => 'nullable|string|max:50',
-            'additional_fees_value' => 'nullable|string|max:100',
+            'additional_fees_value' => 'nullable|numeric|max:100',
             'documents_upload' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480', // max 20MB
         ]);
 
@@ -266,6 +268,11 @@ class TransporterAuthController extends Controller
             // Add user_id to the validated data
             $validatedData['user_id'] = Auth::id();
             $validatedData['status'] = 1;
+            if ($validatedData['feri_type'] == 'continuance') {
+                $validatedData['feri_type'] = 'continuance';
+            } else {
+                $validatedData['feri_type'] = 'regional';
+            }
 
             // Handle file upload
             if ($request->hasFile('documents_upload')) {
@@ -346,7 +353,9 @@ class TransporterAuthController extends Controller
     // Show single application
     public function showApp($id)
     {
-        $record = feriApp::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        // $record = feriApp::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        // Join feriApp with companies to get the company name
+        $record = feriApp::leftJoin('companies', 'feriapp.transporter_company', '=', 'companies.id')->where('feriapp.id', $id)->where('feriapp.user_id', Auth::id())->select('feriapp.*', 'companies.name as company_name')->firstOrFail();
 
         // Add company name to the record
         $record->applicant = User::find(Auth::user()->id)->name ?? 'Unknown Applicant';
@@ -377,7 +386,7 @@ class TransporterAuthController extends Controller
             $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
         }
 
-        // dd($latestDraft);
+        $companies = Company::all(); // Fetch all companies for the dropdown
 
         // Fetch all chats related to the application
         $chats = chats::where('application_id', $id)
@@ -397,7 +406,7 @@ class TransporterAuthController extends Controller
             });
 
         // Pass the record and chats to the view
-        return view('transporter.viewapplication', compact('record', 'chats', 'invoice'));
+        return view('transporter.viewapplication', compact('record', 'chats', 'invoice', 'companies'));
 
         // return view('transporter.viewapplication', compact('record'));
     }
@@ -430,7 +439,7 @@ class TransporterAuthController extends Controller
         // Validate incoming data
         $validatedData = $request->validate([
             'transport_mode' => 'required|string|max:255',
-            'transporter_company' => 'required|string|max:255',
+            'transporter_company' => 'required|integer|max:255',
             'entry_border_drc' => 'required|string|max:255',
             'truck_details' => 'required|string|max:255',
             'arrival_station' => 'required|string|max:255',
@@ -459,6 +468,7 @@ class TransporterAuthController extends Controller
             'instructions' => 'nullable|string',
             // Extra values
             'fob_currency' => 'nullable|string|max:50',
+            'po' => 'nullable|string|max:100',
             'fob_value' => 'nullable|string|max:100',
             'incoterm' => 'nullable|string|max:50',
             'freight_currency' => 'nullable|string|max:50',

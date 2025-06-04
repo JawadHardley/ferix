@@ -46,7 +46,9 @@
                     <select class="form-select" name="company">
                         <option value="">-- select --</option>
                         @foreach($records as $record)
+                        @if($record->type == 'transporter')
                         <option value="{{ $record->id }}">{{ $record->name }}</option>
+                        @endif
                         @endforeach
                     </select>
                 </div>

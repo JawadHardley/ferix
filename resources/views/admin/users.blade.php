@@ -54,7 +54,7 @@
 
                             </td>
                             <td>
-                                {{ ucfirst($record->company) }}
+                                {{ ucfirst($record->company_name) }}
                             </td>
                             <td>
                                 @if ($record->user_auth == 1)

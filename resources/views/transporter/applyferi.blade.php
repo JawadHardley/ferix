@@ -16,7 +16,7 @@
                     aria-selected="true">Transport & Cargo Details</button>
                 <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill"
                     data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile"
-                    aria-selected="false">Import Details</button>
+                    aria-selected="false">Importer Details</button>
                 <button class="nav-link" id="v-pills-disabled-tab" data-bs-toggle="pill"
                     data-bs-target="#v-pills-disabled" type="button" role="tab" aria-controls="v-pills-disabled"
                     aria-selected="false">Export Details</button>
@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="col-12 col-lg-12 mb-3">
-                            <label class="form-label">Entry Board to DRC</label>
+                            <label class="form-label">Entry Boarder to DRC</label>
                             <select class="form-select" name="entry_border_drc">
                                 <option value="0" {{ old('entry_border_drc') == '0' ? 'selected' : '' }}>-- select
                                     --</option>
@@ -79,11 +79,12 @@
                             <label class="form-label">Truck Details</label>
                             <input type="text" class="form-control" name="truck_details"
                                 value="{{ old('truck_details') }}" autocomplete="on" required />
+                            <input type="hidden" class="form-control" name="feri_type" value="continuance"
+                                autocomplete="on" required />
                         </div>
 
                         <div class="col-12 col-lg-4 mb-3">
-                            <label class="form-label">Station of Arrival <span
-                                    class="fs-6">(Rail/Air/Port)</span></label>
+                            <label class="form-label">Port of Arrival <span class="fs-6">(Rail/Air/Port)</span></label>
                             <input type="text" class="form-control" name="arrival_station"
                                 value="{{ old('arrival_station') }}" autocomplete="on" required />
                         </div>
@@ -95,7 +96,7 @@
                             </div> -->
 
                         <div class="col-12 col-lg-4 mb-3">
-                            <label class="form-label">Entry Board to DRC</label>
+                            <label class="form-label">Final Destination</label>
                             <select class="form-select" name="final_destination">
                                 <option value="0" {{ old('final_destination') == '0' ? 'selected' : '' }}>-- select
                                     --</option>
@@ -297,7 +298,8 @@
                         </div>
 
                         <div class="col-12 col-lg-2 mb-3">
-                            <label class="form-label">Company Reference</label>
+                            <label class="form-label">Company Ref <span class="fs-6 text-danger">(Trip
+                                    Number)</span></label>
                             <input type="text" class="form-control" name="company_ref" value="{{ old('company_ref') }}"
                                 autocomplete="on" required />
                         </div>

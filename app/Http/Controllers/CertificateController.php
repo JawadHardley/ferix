@@ -97,15 +97,35 @@ class CertificateController extends Controller
         return response()->download(storage_path('app/public/' . $filePath));
     }
 
+    // public function downloadinvoice($id)
+    // {
+    //      // Fetch the feriApp record by ID
+    //     //  $feriApp = Invoice::findOrFail($id);
+    //      $cert = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->firstOrFail();
+    //      $invoice = Invoice::where('cert_id', $cert->id)->latest()->firstOrFail();
+    //     // dd($invoice);
+    //     $pdf = Pdf::loadView('layouts.theinvoice', ['invoice' => $invoice]);
+    //     // dd($invoice->id);
+    //     return $pdf->download("{$invoice->customer_trip_no}.pdf");
+    // }
+
     public function downloadinvoice($id)
-    {
-         // Fetch the feriApp record by ID
-        //  $feriApp = Invoice::findOrFail($id);
-         $cert = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->firstOrFail();
-         $invoice = Invoice::where('cert_id', $cert->id)->latest()->firstOrFail();
-        // dd($invoice);
-        $pdf = Pdf::loadView('layouts.theinvoice', ['invoice' => $invoice]);
-        // dd($invoice->id);
-        return $pdf->download("{$invoice->customer_trip_no}.pdf");
-    }
+{
+    // Get the draft certificate for this application
+    $cert = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->firstOrFail();
+
+    // Get the invoice related to this certificate
+    $invoice = Invoice::where('cert_id', $cert->id)->latest()->firstOrFail();
+
+    // Fetch the related feriApp record
+    $feriApp = feriApp::findOrFail($id);
+
+    // Pass both $invoice and $feriApp to the view
+    $pdf = Pdf::loadView('layouts.theinvoice', [
+        'invoice' => $invoice,
+        'feriapp' => $feriApp,
+    ]);
+
+    return $pdf->download("{$invoice->customer_trip_no}.pdf");
+}
 }

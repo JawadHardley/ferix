@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\CustomVerifyEmail;
+use App\Models\Company;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -47,6 +48,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'company');
     }
 }
