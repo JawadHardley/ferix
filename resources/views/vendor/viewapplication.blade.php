@@ -124,7 +124,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <a href="#tabs-home-2"
                             class="list-group-item list-group-item-action d-flex align-items-center nav-link"
                             data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                            Import Details
+                            Importer Details
                         </a>
                     </div>
 
@@ -132,7 +132,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <a href="#tabs-home-3"
                             class="list-group-item list-group-item-action d-flex align-items-center nav-link"
                             data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                            Export Details
+                            Exporter Details
                         </a>
                     </div>
 
@@ -148,7 +148,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <a href="#tabs-home-5"
                             class="list-group-item list-group-item-action d-flex align-items-center nav-link"
                             data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                            Expedition
+                            Freight Details
                         </a>
                     </div>
 
@@ -156,7 +156,15 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <a href="#tabs-home-6"
                             class="list-group-item list-group-item-action d-flex align-items-center nav-link"
                             data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                            Value
+                            Freight Values
+                        </a>
+                    </div>
+
+                    <div class="nav-item" role="presentation">
+                        <a href="#tabs-home-1x"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Freight Documents
                         </a>
                     </div>
 

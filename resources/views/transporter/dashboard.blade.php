@@ -163,7 +163,8 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
 
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-4 mb-3">
-            <a href="{{  route(Auth::user()->role . '.applyferi') }}" class="card card-link">
+            <a href="{{  route(Auth::user()->role . '.applyferi') }}" class="card card-link" data-bs-toggle="modal"
+                data-bs-target="#ask">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title text-center p-5">
