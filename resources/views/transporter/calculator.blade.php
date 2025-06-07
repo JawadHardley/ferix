@@ -1,7 +1,6 @@
 @extends('layouts.userlayout')
 @section('content')
 
-
-<x-calculator />
+<x-calculator :eur="$rates->eur->amount" />
 
 @endsection

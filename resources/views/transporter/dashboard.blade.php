@@ -203,6 +203,51 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
 
 
 
+    <!-- Modal -->
+    <div class="modal fade" id="ask" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-4" id="exampleModalLabel">Feri Application Type</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-sm-12 col-md-6 col-lg-6 mb-3">
+                            <a href="{{  route('transporter.applyferi') }}" class="card card-link">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="card-title text-center p-5">
+                                            <i class="fa fa-mountain-city display-4"></i>
+                                        </h3>
+                                        <p class="card-title text-center">Regional</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-sm-12 col-md-6 col-lg-6 mb-3">
+                            <a href="#" class="card card-link">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="card-title text-center p-5">
+                                            <i class="fa fa-truck-fast display-4"></i>
+                                        </h3>
+                                        <p class="card-title text-center">Continuance</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <script>
     new DataTable('#linework', {
         initComplete: function() {

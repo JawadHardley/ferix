@@ -35,18 +35,12 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                 <span class="badge bg-primary me-1"></span> In progress
                 @elseif ($record->status == 5)
                 <span class="status-dot status-dot-animated status-green me-1"></span> Complete
+                @elseif ($record->status == 6)
+                <span class="status-dot status-dot-animated status-danger me-1"></span> Rejected
                 @endif
 
             </div>
             <div class="col text-end">
-
-                @if(is_numeric($record->po))
-                <span class="btn badge bg-teal-lt text-teal-lt-fg me-3" data-bs-toggle="modal"
-                    data-bs-target="#poedit">{{ $record->po }}</span>
-                @else
-                <span class=" btn badge bg-red-lt text-red-lt-fg me-3" data-bs-toggle="modal"
-                    data-bs-target="#poedit">Add PO</span>
-                @endif
 
                 <a href="#" class="text-decoration-none position-relative me-3" data-bs-toggle="modal"
                     data-bs-target="#chat">
@@ -57,6 +51,16 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     @endif
                 </a>
 
+                @if(is_numeric($record->po))
+                <span class="btn badge bg-teal-lt text-teal-lt-fg me-3 my-2" data-bs-toggle="modal"
+                    data-bs-target="#poedit">{{ $record->po }}</span>
+                @else
+                <span class=" btn badge bg-red-lt text-red-lt-fg me-3 my-2" data-bs-toggle="modal"
+                    data-bs-target="#poedit">Add PO</span>
+                @endif
+
+
+
                 @if ($record->status == 1)
 
                 <!-- do nothing as we are waiting -->
@@ -66,9 +70,14 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                 <!-- do nothing as we are waiting -->
 
                 @elseif ($record->status == 3)
-                <button class="btn btn-md btn-outline-success" data-bs-toggle="modal"
+                <button class="btn btn-md btn-outline-success me-2" data-bs-toggle="modal"
                     data-bs-target="#a{{ $record->id }}">
                     <span class="d-none d-md-inline">Approve</span> <i class="fa fa-circle-check ms-md-3"></i>
+                </button>
+
+                <button class="btn btn-md btn-outline-danger" data-bs-toggle="modal"
+                    data-bs-target="#ax{{ $record->id }}">
+                    <span class="d-none d-md-inline">Reject</span> <i class="fa fa-circle-xmark ms-md-3"></i>
                 </button>
                 @elseif ($record->status == 4)
                 <!-- 4 -->
@@ -559,6 +568,46 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
 
 @if ($record->status == 3)
+<!-- Modal Rejection -->
+<form action="{{ route('transporter.sendchat', ['id' => $record->id]) }}" method="POST">
+    @csrf
+    <div class="modal fade" id="ax{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-status bg-danger"></div>
+                <div class="modal-body text-center py-4">
+                    <i class="fa fa-circle-xmark text-danger display-2 pb-5"></i>
+                    <!-- <h3>Are you sure?</h3> -->
+                    <div class="text-secondary my-3">
+                        Tell us the rejection reason
+
+                    </div>
+                    <div class="input-group input-group-flat">
+                        <input type="text" name="message" class="form-control" autocomplete="off"
+                            placeholder="Type reason">
+                        <input type="hidden" name="rejection" value="1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col">
+                                <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-danger w-100" data-bs-dismiss="modal">
+                                    Reject </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <!-- Modal -->
 <form action="{{ route('transporter.process3', ['id' => $record->id]) }}" method="POST" class="d-inline">
     @csrf
@@ -762,7 +811,35 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let shouldScrollChat = false;
 
+    // When the chat button is clicked, set the flag
+    document.querySelectorAll('[data-bs-target="#chat"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            shouldScrollChat = true;
+        });
+    });
+
+    // When the modal is shown, scroll if the flag is set
+    var chatModal = document.getElementById('chat');
+    if (chatModal) {
+        chatModal.addEventListener('shown.bs.modal', function() {
+            if (shouldScrollChat) {
+                var chatBody = chatModal.querySelector('.card-body.scrollable');
+                if (chatBody) {
+                    chatBody.scrollTo({
+                        top: chatBody.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+                shouldScrollChat = false;
+            }
+        });
+    }
+});
+</script>
 
 
 @endsection

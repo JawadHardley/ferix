@@ -23,7 +23,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>
-        Printable White Digital Freelance Business Consultation Invoice Template
+        PRES-2025-{{ $invoice->id }}
     </title>
     <meta name="author" content="Jordan Chaki" />
     <meta name="keywords" content="DAGlQ12i2k4,BAE3pwnYqAY,0" />
@@ -257,7 +257,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
     <p style="text-indent: 0pt; text-align: left"><br /></p>
 
     <p class="s1" style="margin-top: 40px; text-align: center;">
-        FERI/AD INVOICE
+        {{ $feriapp->status != 5 ? 'DRAFT' : '' }} FERI/AD INVOICE
     </p>
 
 
@@ -757,23 +757,31 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
 
 
     <div class="total" style="padding-right: 120px">
-        <h2 style="
-        padding-top: 6pt;
-        text-indent: 0pt;
-        line-height: 135%;
-        text-align: right;
-      ">
-            DISCOUNT APPLIED: <span class="h2">$5</span>
-        </h2>
-        <p class="s11" style="
-        padding-top: 4pt;
+
+        <p class="s" style="
+        padding-top: 2pt;
         text-indent: 0pt;
         text-align: right;
       ">
-            GRAND TOTAL <span class="h2">: ${{ number_format($grandTotal, 2, '.', ',') }}</span>
+            DISCOUNT APPLIED <span class="">: $5</span>
+        </p>
+        <p class="s" style="
+        padding-top: 2pt;
+        text-indent: 0pt;
+        text-align: right;
+      ">
+            GRAND TOTAL (USD) <span class="">: ${{ number_format($grandTotal, 2, '.', ',') }}</span>
+        </p>
+        <p class="s9" style="
+        padding-top: 1pt;
+        text-indent: 0pt;
+        text-align: right;
+      ">
+            GRAND TOTAL (TZ) <span class="h2">:
+                {{ number_format(($grandTotal * $invoice->tz_rate), 2, '.', ',') }}</span>
         </p>
         <p class="s11" style="
-        padding-top: 4pt;
+        padding-top: 2pt;
         padding-left: 16pt;
         text-indent: 0pt;
         text-align: left;
@@ -793,7 +801,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
         text-indent: 0pt;
         text-align: left;
       ">
-                    Applicant: <span class="p">Isaac Brahim</span>
+                    Applicant: <span class="p">{{ $applicantName }}</span>
                 </h3>
                 <h3 style="
         padding-top: 1pt;
@@ -825,7 +833,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
         text-indent: 0pt;
         text-align: left;
       ">
-                    Application Invoice No: <span class="p">{{ $invoice->application_invoice_no}}</span>
+                    Application Invoice No: <span class="p">PRES-2025-{{ $invoice->id }}</span>
                 </h3>
                 <h3 style="
         padding-top: 1pt;

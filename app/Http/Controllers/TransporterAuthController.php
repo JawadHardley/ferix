@@ -9,6 +9,7 @@ use App\Models\feriApp;
 use App\Models\Invoice;
 use App\Models\chats;
 use App\Models\Company;
+use App\Models\Rate;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -539,6 +540,15 @@ class TransporterAuthController extends Controller
         // Sanitize the message
         $validatedData['message'] = htmlspecialchars($validatedData['message'], ENT_QUOTES, 'UTF-8');
 
+        // Check for rejection logic
+        if ($request->has('rejection') && $request->input('rejection') == 1) {
+            $feriApp = feriApp::findOrFail($id);
+            if ($feriApp->status >= 3) {
+                $feriApp->status = 6;
+                $feriApp->save();
+            }
+        }
+
         chats::create([
             'user_id' => $user->id, // Current logged-in user ID
             'application_id' => $id, // Application ID from the route parameter
@@ -659,7 +669,13 @@ class TransporterAuthController extends Controller
         // Fetch all records from the Company table
         $records = Company::all();
 
-        // Pass the records to the view
-        return view('transporter.calculator', compact('records'));
+        // Fetch the rates you want (e.g., tz and eur)
+        $rates = (object) [
+            'tz' => Rate::where('currency', 'USD to TZS')->first(),
+            'eur' => Rate::where('currency', 'EUR to USD')->first(),
+        ];
+
+        // Pass both $records and $rates to the view
+        return view('transporter.calculator', compact('records', 'rates'));
     }
 }

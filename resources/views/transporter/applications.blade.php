@@ -88,11 +88,16 @@
                                     title="In progress"></i>
                                 @endif
 
-                                @if ($record->status == 3 || $record->status == 4)
+                                @if ($record->status == 3 || $record->status == 4 || $record->status == 6)
                                 <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}"
-                                    class="text-decoration-none" download>
+                                    class="text-decoration-none mx-1" download>
                                     <i class="fa fa-file" data-bs-toggle="tooltip" data-bs-placement="top"
                                         title="Draft"></i>
+                                </a> +
+                                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}"
+                                    class="text-decoration-none mx-1">
+                                    <i class="fa fa-file-invoice-dollar" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Invoice"></i>
                                 </a>
                                 @endif
 
@@ -120,6 +125,8 @@
                                 <span class="badge bg-primary me-1"></span> In progress
                                 @elseif ($record->status == 5)
                                 <span class="status-dot status-dot-animated status-green me-1"></span> Complete
+                                @elseif ($record->status == 6)
+                                <span class="status-dot status-dot-animated status-danger me-1"></span> Rejected
                                 @endif
                             </td>
                             <td class="">

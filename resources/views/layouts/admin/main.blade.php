@@ -96,6 +96,9 @@
                                 <a class="dropdown-item" href="{{ route('vendor.sampcalculator') }}">
                                     Calculator
                                 </a>
+                                <a class="dropdown-item" href="{{ route('vendor.rates') }}">
+                                    Rates
+                                </a>
                             </div>
                         </li>
                         @endif

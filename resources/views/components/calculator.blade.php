@@ -141,7 +141,9 @@
 
     </div>
 </div>
-
+<script>
+window.tzRate = {{$eur}};
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -247,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Step 2: use max(volume, m)
             const x = (volume >= m) ? volume : m;
             // Step 3: (x * 4 + 40) * 1.15
-            const regionalResult = ((x * 4) + 40) * 1.15;
+            const regionalResult = ((x * 4) + 40) * window.tzRate;
             // Step 4: ucost * 1.18%
             const ans1 = +(ucost * 0.018).toFixed(2);
             document.querySelector('.fcost').textContent = ucost.toFixed(2);

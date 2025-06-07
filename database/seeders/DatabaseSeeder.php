@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\feriApp;
 use App\Models\Company;
+use App\Models\Rate;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -18,6 +19,7 @@ class DatabaseSeeder extends Seeder
     $this->call([
         CompanySeeder::class,
         SuperAdminSeeder::class,
+        RatesSeeder::class,
     ]);
 }
 }

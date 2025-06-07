@@ -115,6 +115,7 @@ Route::prefix('transporter')
     ->group(function () {
         // this transporter himself
         Route::get('login', [TransporterAuthController::class, 'showLoginForm'])->name('login');
+        // Route::get('login', [TransporterAuthController::class, 'showLoginForm'])->name('login');
         Route::post('login', [TransporterAuthController::class, 'login']);
         Route::get('register', [TransporterAuthController::class, 'showRegisterForm'])->name('register');
         Route::post('register', [TransporterAuthController::class, 'register']);
@@ -234,9 +235,15 @@ Route::prefix('vendor')
         Route::get('calculator', [VendorAuthController::class, 'sampcalculator'])
             ->name('sampcalculator')
             ->middleware('role');
-    });
 
-Route::get('login', [TransporterAuthController::class, 'showLoginForm'])->name('login');
+        Route::get('rates', [VendorAuthController::class, 'rates'])
+            ->name('rates')
+            ->middleware('role');
+
+        Route::post('rates/edit/{id}', [VendorAuthController::class, 'rateupdate'])
+            ->name('rateupdate')
+            ->middleware('role');
+    });
 
 Route::get('/email', function () {
     return view('emailtest');

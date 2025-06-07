@@ -24,17 +24,13 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                 <span class="badge bg-primary me-1"></span> Approved
                 @elseif ($record->status == 5)
                 <span class="status-dot status-dot-animated status-green me-1"></span> Complete
+                @elseif ($record->status == 6)
+                <span class="status-dot status-dot-animated status-danger me-1"></span> Rejected
                 @endif
 
             </div>
 
             <div class="col text-end">
-                @if(is_numeric($record->po))
-                <span class="btn badge bg-teal-lt text-teal-lt-fg me-3">{{ $record->po }}</span>
-                @else
-                <span class=" btn badge bg-red-lt text-red-lt-fg me-3" data-bs-toggle="modal"
-                    data-bs-target="#poedit">Pending PO</span>
-                @endif
 
                 <a href="#" class="text-decoration-none position-relative me-3" data-bs-toggle="modal"
                     data-bs-target="#chat">
@@ -44,6 +40,14 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <span class="badge bg-red mb-2"></span>
                     @endif
                 </a>
+
+                @if(is_numeric($record->po))
+                <span class="btn badge bg-teal-lt text-teal-lt-fg me-3 my-2">{{ $record->po }}</span>
+                @else
+                <span class=" btn badge bg-red-lt text-red-lt-fg me-3 my-2" data-bs-toggle="modal"
+                    data-bs-target="#poedit">Pending PO</span>
+                @endif
+
 
 
                 @if ($record->status == 1)
@@ -470,7 +474,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                 </a>
                 @endif
 
-                @if($record->status == 3)
+                @if($record->status == 3 || $record->status == 6)
                 <div class="col">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">Edit</button>
                 </div>
@@ -493,7 +497,15 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                         <div class="col-12 col-md-6 mb-3">
                                             <label class="form-label">Euro Rate</label>
                                             <input type="number" step="0.0001" min="0" class="form-control"
-                                                name="euro_rate" value="{{ $invoice->euro_rate ?? '' }}"
+                                                name="euro_rate"
+                                                value="{{ isset($rates->eur->amount) ? number_format($rates->eur->amount, 2) : '' }}"
+                                                autocomplete="on" required />
+                                        </div>
+
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Tz to $ Rate</label>
+                                            <input type="number" step="0.0001" min="0" class="form-control"
+                                                name="tz_rate" value="{{ round((float) $rates->tz->amount, 2) }}"
                                                 autocomplete="on" required />
                                         </div>
 
@@ -533,18 +545,14 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                         <div class="col-12 col-md-6 mb-3">
                                             <label class="form-label">Customer PO</label>
                                             <input type="text" class="form-control" name="customer_po"
-                                                value="{{ $invoice->customer_po ?? '' }}" autocomplete="on" required />
+                                                value="{{ is_numeric($record->po) ? $record->po : 'TBS' }}"
+                                                autocomplete="on" required />
                                         </div>
 
                                         <input type="hidden" class="form-control" name="customer_trip_no"
                                             value="{{ $invoice->customer_trip_no ?? '' }}" autocomplete="on" required />
 
-                                        <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">Application Invoice Number</label>
-                                            <input type="text" class="form-control" name="application_invoice_no"
-                                                value="{{ $invoice->application_invoice_no ?? '' }}" autocomplete="on"
-                                                required />
-                                        </div>
+
 
                                         <div class="col-12 col-md-6 mb-3">
                                             <label class="form-label">FERI / COD Certificate Number</label>
@@ -962,7 +970,35 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let shouldScrollChat = false;
 
+    // When the chat button is clicked, set the flag
+    document.querySelectorAll('[data-bs-target="#chat"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            shouldScrollChat = true;
+        });
+    });
+
+    // When the modal is shown, scroll if the flag is set
+    var chatModal = document.getElementById('chat');
+    if (chatModal) {
+        chatModal.addEventListener('shown.bs.modal', function() {
+            if (shouldScrollChat) {
+                var chatBody = chatModal.querySelector('.card-body.scrollable');
+                if (chatBody) {
+                    chatBody.scrollTo({
+                        top: chatBody.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+                shouldScrollChat = false;
+            }
+        });
+    }
+});
+</script>
 
 
 

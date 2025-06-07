@@ -74,25 +74,24 @@ class CertificateController extends Controller
         return response()->download(storage_path('app/public/' . $filePath));
     }
 
-    
     public function downloadfile($id)
     {
         // Fetch the feriApp record by ID
         $feriApp = feriApp::findOrFail($id);
-    
+
         // Check if the logged-in user is the owner of the feriApp or has the role of 'vendor' or 'admin'
         if ($feriApp->user_id !== auth()->id() && !in_array(auth()->user()->role, ['vendor', 'admin'])) {
             abort(403, 'Unauthorized access.');
         }
-    
+
         // Get the file path from the feriApp record
         $filePath = $feriApp->documents_upload; // Assuming 'documents_upload' is the column storing the file path
-    
+
         // Check if the file exists in storage
         if (!Storage::disk('public')->exists($filePath)) {
             abort(404, 'File not found.');
         }
-    
+
         // Download the file
         return response()->download(storage_path('app/public/' . $filePath));
     }
@@ -110,22 +109,26 @@ class CertificateController extends Controller
     // }
 
     public function downloadinvoice($id)
-{
-    // Get the draft certificate for this application
-    $cert = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->firstOrFail();
+    {
+        // Get the draft certificate for this application
+        $cert = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->firstOrFail();
 
-    // Get the invoice related to this certificate
-    $invoice = Invoice::where('cert_id', $cert->id)->latest()->firstOrFail();
+        // Get the invoice related to this certificate
+        $invoice = Invoice::where('cert_id', $cert->id)->latest()->firstOrFail();
 
-    // Fetch the related feriApp record
-    $feriApp = feriApp::findOrFail($id);
+        // Fetch the related feriApp record
+        $feriApp = feriApp::findOrFail($id);
 
-    // Pass both $invoice and $feriApp to the view
-    $pdf = Pdf::loadView('layouts.theinvoice', [
-        'invoice' => $invoice,
-        'feriapp' => $feriApp,
-    ]);
+        // Fetch the applicant's name
+        $applicantName = User::find($feriApp->user_id)?->name ?? 'N/A';
 
-    return $pdf->download("{$invoice->customer_trip_no}.pdf");
-}
+        // Pass $invoice, $feriApp, and $applicantName to the view
+        $pdf = Pdf::loadView('layouts.theinvoice', [
+            'invoice' => $invoice,
+            'feriapp' => $feriApp,
+            'applicantName' => Str::title($applicantName),
+        ]);
+
+        return $pdf->download("{$invoice->customer_trip_no}.pdf");
+    }
 }

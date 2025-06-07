@@ -26,12 +26,13 @@ return new class extends Migration
             // $table->decimal('cod_amount', 12, 2);
 
             $table->decimal('euro_rate', 10, 4);
+            $table->decimal('tz_rate', 10, 4);
             $table->integer('transporter_quantity');
 
             $table->string('customer_ref');
             $table->string('customer_po');
             $table->string('customer_trip_no');
-            $table->string('application_invoice_no');
+            $table->string('application_invoice_no')->nullable();
             $table->string('certificate_no');
             $table->timestamps();
 

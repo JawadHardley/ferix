@@ -2,7 +2,7 @@
 @section('content')
 <x-errorshow />
 <div class="card">
-    <h1 class="m-3">Feri Application Form</h1>
+    <h1 class="m-3">Regional Feri Application Form</h1>
     <hr />
     <form action="{{ route('transporter.feriApp') }}" method="POST" enctype="multipart/form-data" class="w-100 p-5"
         id="multiStepForm" novalidate>

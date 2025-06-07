@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\feriApp;
 use App\Models\Invoice;
 use App\Models\Company;
+use App\Models\Rate;
 use App\Models\chats;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
@@ -361,8 +362,15 @@ class VendorAuthController extends Controller
                 return $chat;
             });
 
+        $rates = (object) [
+            'tz' => Rate::where('currency', 'USD to TZS')->first(),
+            'eur' => Rate::where('currency', 'EUR to USD')->first(),
+        ];
+
+        // dd($rates->tz->amount);
+
         // Pass the record and chats to the view
-        return view('vendor.viewapplication', compact('record', 'chats', 'invoice'));
+        return view('vendor.viewapplication', compact('record', 'chats', 'invoice', 'rates'));
 
         // return view('transporter.viewapplication', compact('record'));
     }
@@ -427,7 +435,7 @@ class VendorAuthController extends Controller
             'customer_ref' => 'required|string',
             'customer_po' => 'required|string',
             'customer_trip_no' => 'required|string',
-            'application_invoice_no' => 'required|string',
+            // 'application_invoice_no' => 'required|string',
             'certificate_no' => 'required|string',
         ]);
 
@@ -474,7 +482,7 @@ class VendorAuthController extends Controller
             'customer_ref' => $validatedData['customer_ref'],
             'customer_po' => $validatedData['customer_po'],
             'customer_trip_no' => $validatedData['customer_trip_no'],
-            'application_invoice_no' => $validatedData['application_invoice_no'],
+            // 'application_invoice_no' => $validatedData['application_invoice_no'],
             'certificate_no' => $validatedData['certificate_no'],
         ]);
 
@@ -563,7 +571,8 @@ class VendorAuthController extends Controller
             'customer_ref' => 'required|string',
             'customer_po' => 'required|string',
             'customer_trip_no' => 'required|string',
-            'application_invoice_no' => 'required|string',
+            // 'application_invoice_no' => 'required|string',
+            'tz_rate' => 'required|numeric',
             'certificate_no' => 'required|string',
         ]);
 
@@ -614,7 +623,8 @@ class VendorAuthController extends Controller
                     'customer_ref' => $validatedData['customer_ref'],
                     'customer_po' => $validatedData['customer_po'],
                     // 'customer_trip_no' => $validatedData['customer_trip_no'],
-                    'application_invoice_no' => $validatedData['application_invoice_no'],
+                    // 'application_invoice_no' => $validatedData['application_invoice_no'],
+                    'tz_rate' => $validatedData['tz_rate'],
                     'certificate_no' => $validatedData['certificate_no'],
                 ]);
             } else {
@@ -631,7 +641,8 @@ class VendorAuthController extends Controller
                     'customer_ref' => $validatedData['customer_ref'],
                     'customer_po' => $validatedData['customer_po'],
                     'customer_trip_no' => $validatedData['customer_trip_no'],
-                    'application_invoice_no' => $validatedData['application_invoice_no'],
+                    // 'application_invoice_no' => $validatedData['application_invoice_no'],
+                    'tz_rate' => $validatedData['tz_rate'],
                     'certificate_no' => $validatedData['certificate_no'],
                 ]);
             }
@@ -652,6 +663,13 @@ class VendorAuthController extends Controller
                 'status' => 'error',
                 'message' => 'You are not authorized to perform this action.',
             ]);
+        }
+
+        // If feriApp status is 6, set it back to 3
+        $feriApp = feriApp::findOrFail($id);
+        if ($feriApp->status == 6) {
+            $feriApp->status = 3;
+            $feriApp->save();
         }
 
         // Validate the request
@@ -752,7 +770,41 @@ class VendorAuthController extends Controller
         // Fetch all records from the Company table
         $records = Company::all();
 
+        // Fetch the rates you want (e.g., tz and eur)
+        $rates = (object) [
+            'tz' => Rate::where('currency', 'USD to TZS')->first(),
+            'eur' => Rate::where('currency', 'EUR to USD')->first(),
+        ];
+
+        // Pass both $records and $rates to the view
+        return view('vendor.calculator', compact('records', 'rates'));
+    }
+
+    public function rates()
+    {
+        // Fetch all records from the Company table
+        $records = Rate::all();
+
         // Pass the records to the view
-        return view('vendor.calculator', compact('records'));
+        return view('vendor.rates', compact('records'));
+    }
+
+    public function rateupdate(Request $request, $id)
+    {
+        // Validate the request data
+        $validatedData = $request->validate([
+            'amount' => 'required|numeric',
+        ]);
+
+        // Find the specific rate record
+        $rate = Rate::findOrFail($id);
+
+        // Update the rate record with validated data
+        $rate->update($validatedData);
+
+        return back()->with([
+            'status' => 'success',
+            'message' => 'Rate updated successfully.',
+        ]);
     }
 }
