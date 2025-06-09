@@ -2,6 +2,10 @@
 @section('content')
 
 @php
+$documents = json_decode($record->documents_upload ?? '[]', true);
+
+use Illuminate\Support\Str;
+
 $unreadChats = $chats->filter(function ($chat) {
 return $chat->user_id !== Auth::id() && $chat->read === 0;
 });
@@ -12,7 +16,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 <div class="card mb-3">
     <div class="card-body">
         <div class="row">
-            <div class="col py-2">
+            <div class="col-2 py-2">
 
                 @if ($record->status == 1)
                 <span class="badge bg-danger me-1"></span> New Entry
@@ -28,6 +32,9 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                 <span class="status-dot status-dot-animated status-danger me-1"></span> Rejected
                 @endif
 
+            </div>
+            <div class="col py-2 text-muted">
+                <i class="fa fa-earth-americas me-1"></i> {{ Str::title($record->feri_type) }} Feri
             </div>
 
             <div class="col text-end">
@@ -84,6 +91,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
     </div>
 </div>
 
+@if($record->feri_type == 'regional')
 <div class="card">
     <div class="row g-0">
         <div class="col-12 col-md-2 border-end">
@@ -413,14 +421,26 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <input type="text" name="additional_fees_currency" class="form-control"
                             value="{{ $record->additional_fees_currency }}" disabled>
                     </div>
-                    <div class="col-12 mb-3 col-lg-6">
+                    <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Additional Fees Value</div>
                         <input type="text" name="additional_fees_value" class="form-control"
                             value="{{ $record->additional_fees_value }}" disabled>
                     </div>
-                    <div class="col-12 mb-3 col-lg-6">
-                        <div class="form-label">Document</div>
-                        <a href="{{ route('file.downloadfile', ['id' => $record->id]) }}" download>
+
+
+                </div>
+            </div>
+
+            <div class="card-body tab-pane fade" id="tabs-home-1x" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Documents</h3>
+
+                <div class="row g-3">
+                    @if($documents)
+                    @foreach($documents as $type => $path)
+                    <div class="col-12 mb-3 col-lg-4">
+                        <div class="form-label">{{ ucfirst(str_replace('_', ' ', $type)) }}</div>
+                        <a href="{{ route('file.downloadfile', ['id' => $record->id, 'type' => $type]) }}" download>
                             <div class="card py-1">
                                 <div class="card-body p-1">
                                     Download
@@ -429,205 +449,676 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                 <div class="ribbon ribbon-top">
                                     <i class="fa fa-file"></i>
                                 </div>
+                            </div>
                         </a>
                     </div>
+                    @endforeach
+                    @endif
                 </div>
             </div>
-        </div>
 
-        @if($record->applicationFile)
-        <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
-            <!-- <h2 class="mb-4">#</h2> -->
-            <h3 class="card-title mb-5">Draft</h3>
+            @if($record->applicationFile)
+            <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Draft</h3>
 
-            <div class="row g-3">
+                <div class="row g-3">
 
-                <div class="col-12 mb-3 col-lg-12">
-                    <div class="form-label">Document</div>
-                    <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
-                </div>
-
-                <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}" target="_blanck"
-                    class="text-decoration-none">
-                    <div class="card col-12 card-link">
-                        <div class="card-body pt-5" style="height: 5rem">
-                            Download Feri Draft
-                        </div>
-                        <div class="ribbon bg-danger ribbon-top ribbon-start">
-                            <i class="fa fa-certificate fs-2 px-2"></i>
-                        </div>
-
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Document</div>
+                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
                     </div>
-                </a>
-                @if ($invoice)
-                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
-                    class="text-decoration-none">
-                    <div class="card col-12 card-link">
-                        <div class="card-body pt-5" style="height: 5rem">
-                            Download Draft Invoice
-                        </div>
-                        <div class="ribbon bg-danger ribbon-top ribbon-start">
-                            <i class="fa fa-dollar-sign fs-2 px-2"></i>
-                        </div>
 
-                    </div>
-                </a>
-                @endif
-
-                @if($record->status == 3 || $record->status == 6)
-                <div class="col">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">Edit</button>
-                </div>
-
-                <!-- Modal Edit -->
-                <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Change the document</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                    <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}" target="_blanck"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Draft
                             </div>
-                            <div class="modal-body">
-                                <form action="{{ route('vendor.updatedraft', ['id' => $record->id]) }}" method="POST"
-                                    enctype="multipart/form-data">
-                                    @csrf
+                            <div class="ribbon bg-danger ribbon-top ribbon-start">
+                                <i class="fa fa-certificate fs-2 px-2"></i>
+                            </div>
 
-                                    <div class="row">
-                                        <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">Euro Rate</label>
-                                            <input type="number" step="0.0001" min="0" class="form-control"
-                                                name="euro_rate"
-                                                value="{{ isset($rates->eur->amount) ? number_format($rates->eur->amount, 2) : '' }}"
+                        </div>
+                    </a>
+                    @if ($invoice)
+                    <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Draft Invoice
+                            </div>
+                            <div class="ribbon bg-danger ribbon-top ribbon-start">
+                                <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+                    @endif
+
+                    @if($record->status == 3 || $record->status == 6)
+                    <div class="col">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">Edit</button>
+                    </div>
+
+                    <!-- Modal Edit -->
+                    <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Change the document</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('vendor.updatedraft', ['id' => $record->id]) }}"
+                                        method="POST" enctype="multipart/form-data">
+                                        @csrf
+
+                                        <div class="row">
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Euro Rate</label>
+                                                <input type="number" step="0.0001" min="0" class="form-control"
+                                                    name="euro_rate"
+                                                    value="{{ isset($rates->eur->amount) ? number_format($rates->eur->amount, 2) : '' }}"
+                                                    autocomplete="on" required />
+                                            </div>
+
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Tz to $ Rate</label>
+                                                <input type="number" step="0.0001" min="0" class="form-control"
+                                                    name="tz_rate" value="{{ round((float) $rates->tz->amount, 2) }}"
+                                                    autocomplete="on" required />
+                                            </div>
+
+                                            <input type="hidden" step="1" min="0" class="form-control"
+                                                name="feri_quantity" value="{{ $invoice->feri_quantity ?? '' }}"
                                                 autocomplete="on" required />
-                                        </div>
 
-                                        <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">Tz to $ Rate</label>
-                                            <input type="number" step="0.0001" min="0" class="form-control"
-                                                name="tz_rate" value="{{ round((float) $rates->tz->amount, 2) }}"
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Feri Cost Per ton/cbm Unit Cost</label>
+                                                <input type="number" class="form-control" name="feri_units"
+                                                    value="{{ $invoice->feri_units ?? '' }}" autocomplete="on"
+                                                    required />
+                                            </div>
+
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Feri/COD Certificate Admin Quantity</label>
+                                                <input type="number" step="1" min="0" class="form-control"
+                                                    name="cod_quantities" value="{{ $invoice->cod_quantities ?? '' }}"
+                                                    autocomplete="on" required />
+                                            </div>
+
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Feri/COD Certificate Admin Unit Cost</label>
+                                                <input type="text" class="form-control" name="cod_units"
+                                                    value="{{ $invoice->cod_units ?? '' }}" autocomplete="on"
+                                                    required />
+                                            </div>
+
+                                            <input type="hidden" step="1" min="0" class="form-control"
+                                                name="transporter_quantity"
+                                                value="{{ ($record->additional_fees_value + $record->freight_value) }}"
                                                 autocomplete="on" required />
-                                        </div>
 
-                                        <input type="hidden" step="1" min="0" class="form-control" name="feri_quantity"
-                                            value="{{ $invoice->feri_quantity ?? '' }}" autocomplete="on" required />
-
-                                        <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">Feri Cost Per ton/cbm Unit Cost</label>
-                                            <input type="number" class="form-control" name="feri_units"
-                                                value="{{ $invoice->feri_units ?? '' }}" autocomplete="on" required />
-                                        </div>
-
-                                        <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">Feri/COD Certificate Admin Quantity</label>
-                                            <input type="number" step="1" min="0" class="form-control"
-                                                name="cod_quantities" value="{{ $invoice->cod_quantities ?? '' }}"
-                                                autocomplete="on" required />
-                                        </div>
-
-                                        <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">Feri/COD Certificate Admin Unit Cost</label>
-                                            <input type="text" class="form-control" name="cod_units"
-                                                value="{{ $invoice->cod_units ?? '' }}" autocomplete="on" required />
-                                        </div>
-
-                                        <input type="hidden" step="1" min="0" class="form-control"
-                                            name="transporter_quantity"
-                                            value="{{ $invoice->transporter_quantity ?? '' }}" autocomplete="on"
-                                            required />
-
-                                        <div class="col-12 col-md-6 mb-3">
+                                            <!-- <div class="col-12 col-md-6 mb-3">
                                             <label class="form-label">Customer Reference No</label>
                                             <input type="text" class="form-control" name="customer_ref"
                                                 value="{{ $invoice->customer_ref ?? '' }}" autocomplete="on" required />
-                                        </div>
+                                        </div> -->
+                                            <!-- <label class="form-label">Customer Reference No</label> -->
+                                            <input type="hidden" class="form-control" name="customer_ref"
+                                                placeholder="e.g. 11080320 -ALE 708" autocomplete="on"
+                                                value="{{ trim(Str::before($record->company_ref, '-')) }}" required />
 
-                                        <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">Customer PO</label>
-                                            <input type="text" class="form-control" name="customer_po"
-                                                value="{{ is_numeric($record->po) ? $record->po : 'TBS' }}"
-                                                autocomplete="on" required />
-                                        </div>
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Customer PO</label>
+                                                <input type="text" class="form-control" name="customer_po"
+                                                    value="{{ is_numeric($record->po) ? $record->po : 'TBS' }}"
+                                                    autocomplete="on" required />
+                                            </div>
 
-                                        <input type="hidden" class="form-control" name="customer_trip_no"
-                                            value="{{ $invoice->customer_trip_no ?? '' }}" autocomplete="on" required />
-
-
-
-                                        <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">FERI / COD Certificate Number</label>
-                                            <input type="text" class="form-control" name="certificate_no"
-                                                value="{{ $invoice->certificate_no ?? '' }}" autocomplete="on"
+                                            <input type="hidden" class="form-control" name="customer_trip_no"
+                                                value="{{ $invoice->customer_trip_no ?? '' }}" autocomplete="on"
                                                 required />
+
+
+
+                                            <div class="col-12 col-md-12 mb-3">
+                                                <label class="form-label">FERI / COD Certificate Number</label>
+                                                <input type="text" class="form-control" name="certificate_no"
+                                                    value="{{ $invoice->certificate_no ?? '' }}" autocomplete="on"
+                                                    required />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div class="mb-3">
-                                        <label for="recipient-name" class="col-form-label">Change Draft</label>
-                                        <input type="file" name="file" class="form-control" id="recipient-name">
-                                    </div>
+                                        <div class="mb-3">
+                                            <label for="recipient-name" class="col-form-label">Change Draft</label>
+                                            <input type="file" name="file" class="form-control" id="recipient-name">
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Change</button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Change</button>
-                                </form>
+                        </div>
+                    </div>
+                    @endif
+
+                </div>
+            </div>
+            @endif
+
+            @if($record->certificateFile)
+            <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Certificate</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Document</div>
+                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                    </div>
+
+                    <a href="{{ route('certificate.download', ['id' => $record->id]) }}" target="_blanck"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Certificate
                             </div>
+                            <div class="ribbon bg-success ribbon-top ribbon-start">
+                                <i class="fa fa-award fs-2 px-2"></i>
+                            </div>
+
                         </div>
-                    </div>
+                    </a>
+
+                    @if ($invoice)
+                    <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Draft Invoice
+                            </div>
+                            <div class="ribbon bg-success ribbon-top ribbon-start">
+                                <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+                    @endif
+
                 </div>
-                @endif
-
             </div>
+            @endif
         </div>
-        @endif
 
-        @if($record->certificateFile)
-        <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
-            <!-- <h2 class="mb-4">#</h2> -->
-            <h3 class="card-title mb-5">Certificate</h3>
 
-            <div class="row g-3">
 
-                <div class="col-12 mb-3 col-lg-12">
-                    <div class="form-label">Document</div>
-                    <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
-                </div>
 
-                <a href="{{ route('certificate.download', ['id' => $record->id]) }}" target="_blanck"
-                    class="text-decoration-none">
-                    <div class="card col-12 card-link">
-                        <div class="card-body pt-5" style="height: 5rem">
-                            Download Feri Certificate
-                        </div>
-                        <div class="ribbon bg-success ribbon-top ribbon-start">
-                            <i class="fa fa-award fs-2 px-2"></i>
-                        </div>
 
-                    </div>
-                </a>
-
-                @if ($invoice)
-                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
-                    class="text-decoration-none">
-                    <div class="card col-12 card-link">
-                        <div class="card-body pt-5" style="height: 5rem">
-                            Download Draft Invoice
-                        </div>
-                        <div class="ribbon bg-success ribbon-top ribbon-start">
-                            <i class="fa fa-dollar-sign fs-2 px-2"></i>
-                        </div>
-
-                    </div>
-                </a>
-                @endif
-
-            </div>
-        </div>
-        @endif
 
 
     </div>
 </div>
+@else
+<div class="card">
+    <div class="row g-0">
+        <div class="col-12 col-md-2 border-end">
+            <div class="card-body">
+                <h4 class="subheader"></h4>
+                <div class="list-group list-group-transparent nav nav-tabs card-header-tabs" data-bs-toggle="tabs"
+                    role="tablist">
+
+                    @if($record->applicationFile && !$record->certificateFile)
+                    <div class="nav-item border border-dark border-opacity-50" role="presentation">
+                        <a href="#tabs-home-7"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Draft
+                            <i class="fa fa-circle-down ms-2"></i>
+                        </a>
+                    </div>
+                    @endif
+
+                    @if($record->certificateFile)
+                    <div class="nav-item border border-dark border-opacity-50" role="presentation">
+                        <a href="#tabs-home-8" class="list-group-item list-group-item-action nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Certificate
+                            <i class="fa fa-circle-down text-end ms-2"></i>
+
+                        </a>
+                    </div>
+                    @endif
+
+                    <div class="nav-item" role="presentation">
+                        <a href="#tabs-home-1"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link active"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Freight Details
+                        </a>
+                    </div>
+
+                    <div class="nav-item" role="presentation">
+                        <a href="#tabs-home-2"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Transport & Cargo Details
+                        </a>
+                    </div>
+
+                    <div class="nav-item" role="presentation">
+                        <a href="#tabs-home-3"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Export + Value Details
+                        </a>
+                    </div>
+
+                </div>
+                <!-- <h4 class="subheader mt-4">#Leave</h4>
+                            <div class="list-group list-group-transparent">
+                                <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                            </div> -->
+            </div>
+        </div>
+        <div class="col-12 col-md-10 d-flex flex-column tab-content">
+            <div class="card-body tab-pane fade active show" id="tabs-home-1" role="tabpanel">
+
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Freight Details</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">Applicant</div>
+                        <input type="text" name="user_id" class="form-control" value="{{ $record->applicant }}"
+                            disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">Company Ref</div>
+                        <input type="text" name="company_ref" class="form-control" value="{{ $record->company_ref }}"
+                            disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">PO Number</div>
+                        <input type="text" name="po" class="form-control" value="{{ $record->po }}" disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">Entry Border DRC</div>
+                        <input type="text" name="entry_border_drc" class="form-control"
+                            value="{{ $record->entry_border_drc }}" disabled>
+                    </div>
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">Final Destination</div>
+                        <input type="text" name="final_destination" class="form-control"
+                            value="{{ $record->final_destination }}" disabled>
+                    </div>
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">Customs Decl No</div>
+                        <input type="text" name="customs_decl_no" class="form-control"
+                            value="{{ $record->customs_decl_no }}" disabled>
+                    </div>
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">Arrival Station</div>
+                        <input type="text" name="arrival_station" class="form-control"
+                            value="{{ $record->arrival_station }}" disabled>
+                    </div>
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">Truck Details</div>
+                        <input type="text" name="truck_details" class="form-control"
+                            value="{{ $record->truck_details }}" disabled>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-body tab-pane fade" id="tabs-home-2" role="tabpanel">
+
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Transport & Cargo Details</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 col-lg-4 mb-3">
+                        <label class="form-label">Transporter Company</label>
+                        @if($record->status < 2) <select class="form-select" name="transporter_company" disabled>
+                            <option value="">-- select --</option>
+                            @foreach($companies as $company)
+                            <option value="{{ $company->id }}"
+                                {{ old('transporter_company', $record->transporter_company ?? '') == $company->id ? 'selected' : '' }}>
+                                {{ $company->name }}
+                            </option>
+                            @endforeach
+                            </select>
+                            @else
+                            <input type="text" class="form-control"
+                                value="{{ $companies->where('id', $record->transporter_company)->first()->name ?? 'N/A' }}"
+                                disabled>
+                            <input type="hidden" name="transporter_company" value="{{ $record->transporter_company }}">
+                            @endif
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-4">
+                        <div class="form-label">Weight</div>
+                        <input type="text" name="weight" class="form-control" value="{{ $record->weight }}" disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-4">
+                        <div class="form-label">Volume</div>
+                        <input type="text" name="volume" class="form-control" value="{{ $record->volume }}" disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Importer Name</div>
+                        <input type="text" name="importer_name" class="form-control"
+                            value="{{ $record->importer_name }}" disabled>
+                    </div>
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">CF Agent</div>
+                        <input type="text" name="cf_agent" class="form-control" value="{{ $record->cf_agent }}"
+                            disabled>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card-body tab-pane fade" id="tabs-home-3" role="tabpanel">
+
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Export + Value Details</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">Exporter Name</div>
+                        <input type="text" name="exporter_name" class="form-control"
+                            value="{{ $record->exporter_name }}" disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">Freight Currency</div>
+                        <input type="text" name="freight_currency" class="form-control"
+                            value="{{ $record->freight_currency }}" disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">Freight Value</div>
+                        <input type="text" name="freight_value" class="form-control"
+                            value="{{ $record->freight_value }}" disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">FOB Value</div>
+                        <input type="text" name="fob_value" class="form-control" value="{{ $record->fob_value }}"
+                            disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">Insurance Value</div>
+                        <input type="text" name="insurance_value" class="form-control"
+                            value="{{ $record->insurance_value }}" disabled>
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Instructions</div>
+                        <input type="text" name="instructions" class="form-control" value="{{ $record->instructions }}"
+                            disabled>
+                    </div>
+
+                    @if($documents)
+                    @foreach($documents as $type => $path)
+                    <div class="col-12 mb-3 col-lg-4">
+                        <div class="form-label">{{ ucfirst(str_replace('_', ' ', $type)) }}</div>
+                        <a href="{{ route('file.downloadfile', ['id' => $record->id, 'type' => $type]) }}" download>
+                            <div class="card py-1">
+                                <div class="card-body p-1">
+                                    Download
+                                    File
+                                </div>
+                                <div class="ribbon ribbon-top">
+                                    <i class="fa fa-file"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endforeach
+                    @endif
+                </div>
+            </div>
+
+            @if($record->applicationFile)
+            <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Draft</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Document</div>
+                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                    </div>
+
+                    <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}"
+                        class="text-decoration-none" download>
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Document
+                            </div>
+                            <div class="ribbon bg-danger ribbon-top ribbon-start">
+                                <i class="fa fa-certificate fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+
+                    @if ($invoice)
+                    <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Draft Invoice
+                            </div>
+                            <div class="ribbon bg-danger ribbon-top ribbon-start">
+                                <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+                    @endif
+
+                    @if($record->status == 3 || $record->status == 6)
+                    <div class="col">
+                        <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                            data-bs-target="#edit">Edit</button>
+                    </div>
+
+                    <!-- Modal Edit -->
+                    <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Change the document</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('vendor.updatedraft', ['id' => $record->id]) }}"
+                                        method="POST" enctype="multipart/form-data">
+                                        @csrf
+
+                                        <div class="row">
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Euro Rate</label>
+                                                <input type="number" step="0.0001" min="0" class="form-control"
+                                                    name="euro_rate"
+                                                    value="{{ isset($rates->eur->amount) ? number_format($rates->eur->amount, 2) : '' }}"
+                                                    autocomplete="on" required />
+                                            </div>
+
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Tz to $ Rate</label>
+                                                <input type="number" step="0.0001" min="0" class="form-control"
+                                                    name="tz_rate" value="{{ round((float) $rates->tz->amount, 2) }}"
+                                                    autocomplete="on" required />
+                                            </div>
+
+                                            <input type="hidden" step="1" min="0" class="form-control"
+                                                name="feri_quantity" value="{{ $invoice->feri_quantity ?? '' }}"
+                                                autocomplete="on" required />
+
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Feri Cost Per ton/cbm Unit Cost</label>
+                                                <input type="number" class="form-control" name="feri_units"
+                                                    value="{{ $invoice->feri_units ?? '' }}" autocomplete="on"
+                                                    required />
+                                            </div>
+
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Feri/COD Certificate Admin Quantity</label>
+                                                <input type="number" step="1" min="0" class="form-control"
+                                                    name="cod_quantities" value="{{ $invoice->cod_quantities ?? '' }}"
+                                                    autocomplete="on" required />
+                                            </div>
+
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Feri/COD Certificate Admin Unit Cost</label>
+                                                <input type="text" class="form-control" name="cod_units"
+                                                    value="{{ $invoice->cod_units ?? '' }}" autocomplete="on"
+                                                    required />
+                                            </div>
+
+                                            <input type="hidden" step="1" min="0" class="form-control"
+                                                name="transporter_quantity"
+                                                value="{{ ($record->additional_fees_value + $record->freight_value) }}"
+                                                autocomplete="on" required />
+
+                                            <!-- <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label">Customer Reference No</label>
+                                            <input type="text" class="form-control" name="customer_ref"
+                                                value="{{ $invoice->customer_ref ?? '' }}" autocomplete="on" required />
+                                        </div> -->
+
+                                            <!-- <label class="form-label">Customer Reference No</label> -->
+                                            <input type="hidden" class="form-control" name="customer_ref"
+                                                placeholder="e.g. 11080320 -ALE 708" autocomplete="on"
+                                                value="{{ trim(Str::before($record->company_ref, '-')) }}" required />
+
+                                            <div class="col-12 col-md-6 mb-3">
+                                                <label class="form-label">Customer PO</label>
+                                                <input type="text" class="form-control" name="customer_po"
+                                                    value="{{ is_numeric($record->po) ? $record->po : 'TBS' }}"
+                                                    autocomplete="on" required />
+                                            </div>
+
+                                            <input type="hidden" class="form-control" name="customer_trip_no"
+                                                value="{{ $invoice->customer_trip_no ?? '' }}" autocomplete="on"
+                                                required />
+
+
+
+                                            <div class="col-12 col-md-12 mb-3">
+                                                <label class="form-label">FERI / COD Certificate Number</label>
+                                                <input type="text" class="form-control" name="certificate_no"
+                                                    value="{{ $invoice->certificate_no ?? '' }}" autocomplete="on"
+                                                    required />
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="recipient-name" class="col-form-label">Change Draft</label>
+                                            <input type="file" name="file" class="form-control" id="recipient-name">
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Change</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                </div>
+            </div>
+            @endif
+
+            @if($record->certificateFile)
+            <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Certificate</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Document</div>
+                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                    </div>
+
+                    <a href="{{ route('certificate.download', ['id' => $record->id]) }}" class="text-decoration-none"
+                        download>
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Certificate
+                            </div>
+                            <div class="ribbon bg-success ribbon-top ribbon-start">
+                                <i class="fa fa-certificate fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+                    @if ($invoice)
+                    <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blank"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Invoice
+                            </div>
+                            <div class="ribbon bg-success ribbon-top ribbon-start">
+                                <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                            </div>
+                        </div>
+                    </a>
+                    @endif
+
+                </div>
+            </div>
+            @endif
+
+
+        </div>
+
+
+
+
+
+    </div>
+
+</div>
+
+@if ($record->status == 1 && Auth::user()->role == 'transporter')
+<div class="row">
+    <div class="col py-3 pt-5 text-end">
+        <a href="{{ route(Auth::user()->role . '' . '.showApps') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button class="btn btn-primary" type="submit">Edit</button>
+    </div>
+</div>
+@endif
+</div>
+@endif
 
 
 <!-- modals modals -->
@@ -697,7 +1188,14 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Euro Rate</label>
                             <input type="number" step="0.0001" min="0" class="form-control" name="euro_rate"
-                                placeholder="e.g. 2630.2500" autocomplete="on" required />
+                                value="{{ isset($rates->eur->amount) ? number_format($rates->eur->amount, 2) : '' }}"
+                                autocomplete="on" required />
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Tz to $ Rate</label>
+                            <input type="number" step="0.0001" min="0" class="form-control" name="tz_rate"
+                                value="{{ round((float) $rates->tz->amount, 2) }}" autocomplete="on" required />
                         </div>
 
                         <input type="hidden" step="1" min="0" class="form-control" name="feri_quantity"
@@ -717,7 +1215,8 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Feri/COD Certificate Admin Unit Cost</label>
-                            <input type="number" class="form-control" name="cod_units" value="40"
+                            <input type="number" class="form-control" name="cod_units"
+                                value="{{ $record->feri_type == 'continuance' ? 20 : 40 }}"
                                 placeholder="e.g. containers, pallets" autocomplete="on" required />
                         </div>
 
@@ -725,30 +1224,25 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                             value="{{ ($record->additional_fees_value + $record->freight_value) }}"
                             name="transporter_quantity" placeholder="e.g. 3" autocomplete="on" required />
 
-                        <div class="col-12 col-md-6 mb-3">
-                            <label class="form-label">Customer Reference No</label>
-                            <input type="text" class="form-control" name="customer_ref"
-                                placeholder="e.g. 11080320 -ALE 708" autocomplete="on" required />
-                        </div>
+
+                        <!-- <label class="form-label">Customer Reference No</label> -->
+                        <input type="hidden" class="form-control" name="customer_ref"
+                            placeholder="e.g. 11080320 -ALE 708" autocomplete="on"
+                            value="{{ trim(Str::before($record->company_ref, '-')) }}" required />
 
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label">Customer PO</label>
                             <input type="text" class="form-control" name="customer_po"
-                                placeholder="Enter Purchase Order Number" value="{{ is_numeric($record->po) ? $record->po : 'TBS' }}
-" autocomplete="on" required />
+                                placeholder="Enter Purchase Order Number"
+                                value="{{ is_numeric($record->po) ? $record->po : 'TBS' }}" autocomplete="on"
+                                required />
                         </div>
 
                         <input type="hidden" class="form-control" name="customer_trip_no"
                             value="{{ $record->company_ref }}" placeholder="Enter Purchase Order Number"
                             autocomplete="on" required />
 
-                        <div class="col-12 col-md-6 mb-3">
-                            <label class="form-label">Application Invoice Number</label>
-                            <input type="text" class="form-control" name="application_invoice_no"
-                                placeholder="e.g. APP-2025-001" autocomplete="on" required />
-                        </div>
-
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-12 mb-3">
                             <label class="form-label">FERI / COD Certificate Number</label>
                             <input type="text" class="form-control" name="certificate_no"
                                 placeholder="e.g. CERT-2025-XYZ" autocomplete="on" required />

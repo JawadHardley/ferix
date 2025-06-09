@@ -241,7 +241,7 @@
 
     .hero .text h2 span {
         font-weight: 600;
-        color: rgb(0, 22, 87);
+        color: #001657;
     }
 
 

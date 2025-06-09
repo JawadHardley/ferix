@@ -74,7 +74,7 @@ class CertificateController extends Controller
         return response()->download(storage_path('app/public/' . $filePath));
     }
 
-    public function downloadfile($id)
+    public function downloadfile($id, $type)
     {
         // Fetch the feriApp record by ID
         $feriApp = feriApp::findOrFail($id);
@@ -84,8 +84,15 @@ class CertificateController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
-        // Get the file path from the feriApp record
-        $filePath = $feriApp->documents_upload; // Assuming 'documents_upload' is the column storing the file path
+        // Decode the JSON column to get all file paths
+        $documents = json_decode($feriApp->documents_upload ?? '[]', true);
+
+        // Check if the requested type exists
+        if (!isset($documents[$type])) {
+            abort(404, 'Requested file type not found.');
+        }
+
+        $filePath = $documents[$type];
 
         // Check if the file exists in storage
         if (!Storage::disk('public')->exists($filePath)) {

@@ -2,6 +2,8 @@
 @section('content')
 
 @php
+$documents = json_decode($record->documents_upload ?? '[]', true);
+
 $unreadChats = $chats->filter(function ($chat) {
 return $chat->user_id !== Auth::id() && $chat->read === 0;
 });
@@ -17,7 +19,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 <div class="card mb-3">
     <div class="card-body">
         <div class="row">
-            <div class="col py-2">
+            <div class="col-2 py-2">
 
                 @if ($record->status == 5)
                 <div class="ribbon ribbon-top ribbon-end bg-success">
@@ -39,6 +41,9 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                 <span class="status-dot status-dot-animated status-danger me-1"></span> Rejected
                 @endif
 
+            </div>
+            <div class="col py-2 text-muted">
+                <i class="fa fa-earth-americas me-1"></i> {{ Str::title($record->feri_type) }} Feri
             </div>
             <div class="col text-end">
 
@@ -92,7 +97,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
         </div>
     </div>
 </div>
-
+@if($record->feri_type == "regional")
 <div class="card">
     <div class="row g-0">
         <div class="col-12 col-md-2 border-end">
@@ -190,6 +195,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <h3 class="card-title mb-5">Transport & Cargo Details</h3>
 
                     <div class="row g-3">
+                        <input type="hidden" name="feri_type" value="{{ $record->feri_type }}" require />
 
                         <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Applicant</div>
@@ -426,15 +432,17 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <input type="text" name="additional_fees_currency" class="form-control"
                             value="{{ $record->additional_fees_currency }}">
                     </div>
-                    <div class="col-12 mb-3 col-lg-6">
+                    <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Additional Fees Value</div>
                         <input type="text" name="additional_fees_value" class="form-control"
                             value="{{ $record->additional_fees_value }}">
                     </div>
+                    @if($documents)
+                    @foreach($documents as $type => $path)
                     <div
-                        class="col-12 mb-3 col-lg-{{ $record->status == 1 ? '3' : ($record->status != 1 ? '6' : '') }}">
-                        <div class="form-label">Document</div>
-                        <a href="{{ route('file.downloadfile', ['id' => $record->id]) }}" download>
+                        class="col-12 mb-3 col-lg-{{ $record->status == 1 ? '6' : ($record->status != 1 ? '4' : '') }}">
+                        <div class="form-label">{{ ucfirst(str_replace('_', ' ', $type)) }}</div>
+                        <a href="{{ route('file.downloadfile', ['id' => $record->id, 'type' => $type]) }}" download>
                             <div class="card py-1">
                                 <div class="card-body p-1">
                                     Download
@@ -443,115 +451,457 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                 <div class="ribbon ribbon-top">
                                     <i class="fa fa-file"></i>
                                 </div>
+                            </div>
                         </a>
                     </div>
+
+                    @if($record->status == 1)
+
+                    <div
+                        class="col-12 mb-3 col-lg-{{ $record->status == 1 ? '6' : ($record->status != 1 ? '4' : '') }}">
+                        <div class="form-label">Edit {{ ucfirst(str_replace('_', ' ', $type)) }}</div>
+                        <input type="file" name="{{ $type }}" class="form-control">
+                    </div>
+
+                    @endif
+                    @endforeach
+                    @endif
                 </div>
-
-                @if($record->status == 1)
-
-                <div class="col-12 mb-3 col-lg-3">
-                    <div class="form-label">Edit Document</div>
-                    <input type="file" name="documents_upload" class="form-control">
-                </div>
-
-                @endif
-
-                <!-- <div class="col-12 mb-3 col-lg-3">
-                            <div class="form-label">Created At</div>
-                            <input type="text" name="created_at" class="form-control" value="{{ $record->created_at }}">
-                        </div> -->
-
 
             </div>
 
+            @if($record->applicationFile)
+            <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Draft</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Document</div>
+                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                    </div>
+
+                    <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}"
+                        class="text-decoration-none" download>
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Document
+                            </div>
+                            <div class="ribbon bg-danger ribbon-top ribbon-start">
+                                <i class="fa fa-certificate fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+
+                    @if ($invoice)
+                    <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Draft Invoice
+                            </div>
+                            <div class="ribbon bg-danger ribbon-top ribbon-start">
+                                <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+                    @endif
+
+                </div>
+            </div>
+            @endif
+
+            @if($record->certificateFile)
+            <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Certificate</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Document</div>
+                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                    </div>
+
+                    <a href="{{ route('certificate.download', ['id' => $record->id]) }}" class="text-decoration-none"
+                        download>
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Certificate
+                            </div>
+                            <div class="ribbon bg-success ribbon-top ribbon-start">
+                                <i class="fa fa-certificate fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+                    @if ($invoice)
+                    <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blank"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Invoice
+                            </div>
+                            <div class="ribbon bg-success ribbon-top ribbon-start">
+                                <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                            </div>
+                        </div>
+                    </a>
+                    @endif
+
+                </div>
+            </div>
+            @endif
         </div>
 
+    </div>
+</div>
+@if ($record->status == 1)
+<div class="row">
+    <div class="col py-3 pt-5 text-end">
+        <a href="{{ route(Auth::user()->role . '' . '.showApps') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button class="btn btn-primary" type="submit">Edit</button>
+    </div>
+</div>
+@endif
+</form>
+</div>
+@else
+<div class="card">
+    <div class="row g-0">
+        <div class="col-12 col-md-2 border-end">
+            <div class="card-body">
+                <h4 class="subheader"></h4>
+                <div class="list-group list-group-transparent nav nav-tabs card-header-tabs" data-bs-toggle="tabs"
+                    role="tablist">
 
-        @if($record->applicationFile)
-        <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
-            <!-- <h2 class="mb-4">#</h2> -->
-            <h3 class="card-title mb-5">Draft</h3>
+                    @if($record->applicationFile && !$record->certificateFile)
+                    <div class="nav-item border border-dark border-opacity-50" role="presentation">
+                        <a href="#tabs-home-7"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Draft
+                            <i class="fa fa-circle-down ms-2"></i>
+                        </a>
+                    </div>
+                    @endif
 
-            <div class="row g-3">
+                    @if($record->certificateFile)
+                    <div class="nav-item border border-dark border-opacity-50" role="presentation">
+                        <a href="#tabs-home-8" class="list-group-item list-group-item-action nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Certificate
+                            <i class="fa fa-circle-down text-end ms-2"></i>
 
-                <div class="col-12 mb-3 col-lg-12">
-                    <div class="form-label">Document</div>
-                    <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                        </a>
+                    </div>
+                    @endif
+
+                    <div class="nav-item" role="presentation">
+                        <a href="#tabs-home-1"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link active"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Freight Details
+                        </a>
+                    </div>
+
+                    <div class="nav-item" role="presentation">
+                        <a href="#tabs-home-2"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Transport & Cargo Details
+                        </a>
+                    </div>
+
+                    <div class="nav-item" role="presentation">
+                        <a href="#tabs-home-3"
+                            class="list-group-item list-group-item-action d-flex align-items-center nav-link"
+                            data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
+                            Export + Value Details
+                        </a>
+                    </div>
+
                 </div>
-
-                <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}" class="text-decoration-none"
-                    download>
-                    <div class="card col-12 card-link">
-                        <div class="card-body pt-5" style="height: 5rem">
-                            Download Feri Document
-                        </div>
-                        <div class="ribbon bg-danger ribbon-top ribbon-start">
-                            <i class="fa fa-certificate fs-2 px-2"></i>
-                        </div>
-
-                    </div>
-                </a>
-
-                @if ($invoice)
-                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
-                    class="text-decoration-none">
-                    <div class="card col-12 card-link">
-                        <div class="card-body pt-5" style="height: 5rem">
-                            Download Draft Invoice
-                        </div>
-                        <div class="ribbon bg-danger ribbon-top ribbon-start">
-                            <i class="fa fa-dollar-sign fs-2 px-2"></i>
-                        </div>
-
-                    </div>
-                </a>
-                @endif
-
+                <!-- <h4 class="subheader mt-4">#Leave</h4>
+                            <div class="list-group list-group-transparent">
+                                <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                            </div> -->
             </div>
         </div>
-        @endif
+        <div class="col-12 col-md-10 d-flex flex-column tab-content">
+            <div class="card-body tab-pane fade active show" id="tabs-home-1" role="tabpanel">
+                <form action="{{ route('transporter.editApp', ['id' => $record->id]) }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
 
-        @if($record->certificateFile)
-        <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
-            <!-- <h2 class="mb-4">#</h2> -->
-            <h3 class="card-title mb-5">Certificate</h3>
+                    <!-- <h2 class="mb-4">#</h2> -->
+                    <h3 class="card-title mb-5">Freight Details</h3>
 
-            <div class="row g-3">
+                    <div class="row g-3">
 
-                <div class="col-12 mb-3 col-lg-12">
-                    <div class="form-label">Document</div>
-                    <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                        <div class="col-12 mb-3 col-lg-3">
+                            <div class="form-label">Applicant</div>
+                            <input type="text" name="user_id" class="form-control" value="{{ $record->applicant }}"
+                                disabled>
+                        </div>
+
+                        <div class="col-12 mb-3 col-lg-3">
+                            <div class="form-label">Company Ref</div>
+                            <input type="text" name="company_ref" class="form-control"
+                                value="{{ $record->company_ref }}">
+                        </div>
+
+                        <div class="col-12 mb-3 col-lg-3">
+                            <div class="form-label">PO Number</div>
+                            <input type="text" name="po" class="form-control" value="{{ $record->po }}">
+                        </div>
+
+                        <div class="col-12 mb-3 col-lg-3">
+                            <div class="form-label">Entry Border DRC</div>
+                            <input type="text" name="entry_border_drc" class="form-control"
+                                value="{{ $record->entry_border_drc }}">
+                        </div>
+                        <div class="col-12 mb-3 col-lg-6">
+                            <div class="form-label">Final Destination</div>
+                            <input type="text" name="final_destination" class="form-control"
+                                value="{{ $record->final_destination }}">
+                        </div>
+                        <div class="col-12 mb-3 col-lg-6">
+                            <div class="form-label">Customs Decl No</div>
+                            <input type="text" name="customs_decl_no" class="form-control"
+                                value="{{ $record->customs_decl_no }}">
+                        </div>
+                        <div class="col-12 mb-3 col-lg-6">
+                            <div class="form-label">Arrival Station</div>
+                            <input type="text" name="arrival_station" class="form-control"
+                                value="{{ $record->arrival_station }}">
+                        </div>
+                        <div class="col-12 mb-3 col-lg-6">
+                            <div class="form-label">Truck Details</div>
+                            <input type="text" name="truck_details" class="form-control"
+                                value="{{ $record->truck_details }}">
+                        </div>
+
+                    </div>
+            </div>
+
+            <div class="card-body tab-pane fade" id="tabs-home-2" role="tabpanel">
+
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Transport & Cargo Details</h3>
+
+                <div class="row g-3">
+                    <input type="hidden" name="feri_type" value="{{ $record->feri_type }}" require />
+
+                    <div class="col-12 col-lg-4 mb-3">
+                        <label class="form-label">Transporter Company</label>
+                        @if($record->status < 2) <select class="form-select" name="transporter_company">
+                            <option value="">-- select --</option>
+                            @foreach($companies as $company)
+                            <option value="{{ $company->id }}"
+                                {{ old('transporter_company', $record->transporter_company ?? '') == $company->id ? 'selected' : '' }}>
+                                {{ $company->name }}
+                            </option>
+                            @endforeach
+                            </select>
+                            @else
+                            <input type="text" class="form-control"
+                                value="{{ $companies->where('id', $record->transporter_company)->first()->name ?? 'N/A' }}"
+                                disabled>
+                            <input type="hidden" name="transporter_company" value="{{ $record->transporter_company }}">
+                            @endif
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-4">
+                        <div class="form-label">Weight</div>
+                        <input type="text" name="weight" class="form-control" value="{{ $record->weight }}">
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-4">
+                        <div class="form-label">Volume</div>
+                        <input type="text" name="volume" class="form-control" value="{{ $record->volume }}">
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Importer Name</div>
+                        <input type="text" name="importer_name" class="form-control"
+                            value="{{ $record->importer_name }}">
+                    </div>
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">CF Agent</div>
+                        <input type="text" name="cf_agent" class="form-control" value="{{ $record->cf_agent }}">
+                    </div>
+
                 </div>
 
-                <a href="{{ route('certificate.download', ['id' => $record->id]) }}" class="text-decoration-none"
-                    download>
-                    <div class="card col-12 card-link">
-                        <div class="card-body pt-5" style="height: 5rem">
-                            Download Feri Certificate
-                        </div>
-                        <div class="ribbon bg-success ribbon-top ribbon-start">
-                            <i class="fa fa-certificate fs-2 px-2"></i>
-                        </div>
+            </div>
 
+            <div class="card-body tab-pane fade" id="tabs-home-3" role="tabpanel">
+
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Export + Value Details</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">Exporter Name</div>
+                        <input type="text" name="exporter_name" class="form-control"
+                            value="{{ $record->exporter_name }}">
                     </div>
-                </a>
-                @if ($invoice)
-                <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blank"
-                    class="text-decoration-none">
-                    <div class="card col-12 card-link">
-                        <div class="card-body pt-5" style="height: 5rem">
-                            Download Feri Invoice
-                        </div>
-                        <div class="ribbon bg-success ribbon-top ribbon-start">
-                            <i class="fa fa-dollar-sign fs-2 px-2"></i>
-                        </div>
+
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">Freight Currency</div>
+                        <input type="text" name="freight_currency" class="form-control"
+                            value="{{ $record->freight_currency }}">
                     </div>
-                </a>
-                @endif
+
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">Freight Value</div>
+                        <input type="text" name="freight_value" class="form-control"
+                            value="{{ $record->freight_value }}">
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">FOB Value</div>
+                        <input type="text" name="fob_value" class="form-control" value="{{ $record->fob_value }}">
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-6">
+                        <div class="form-label">Insurance Value</div>
+                        <input type="text" name="insurance_value" class="form-control"
+                            value="{{ $record->insurance_value }}">
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Instructions</div>
+                        <input type="text" name="instructions" class="form-control" value="{{ $record->instructions }}">
+                    </div>
+
+
+                    @if($documents)
+                    @foreach($documents as $type => $path)
+                    <div
+                        class="col-12 mb-3 col-lg-{{ $record->status == 1 ? '6' : ($record->status != 1 ? '4' : '') }}">
+                        <div class="form-label">{{ ucfirst(str_replace('_', ' ', $type)) }}</div>
+                        <a href="{{ route('file.downloadfile', ['id' => $record->id, 'type' => $type]) }}" download>
+                            <div class="card py-1">
+                                <div class="card-body p-1">
+                                    Download
+                                    File
+                                </div>
+                                <div class="ribbon ribbon-top">
+                                    <i class="fa fa-file"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    @if($record->status == 1)
+
+                    <div
+                        class="col-12 mb-3 col-lg-{{ $record->status == 1 ? '6' : ($record->status != 1 ? '4' : '') }}">
+                        <div class="form-label">Edit {{ ucfirst(str_replace('_', ' ', $type)) }}</div>
+                        <input type="file" name="{{ $type }}" class="form-control">
+                    </div>
+
+                    @endif
+                    @endforeach
+                    @endif
+                </div>
 
             </div>
+
+            @if($record->applicationFile)
+            <div class="card-body tab-pane fade" id="tabs-home-7" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Draft</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Document</div>
+                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                    </div>
+
+                    <a href="{{ route('certificate.downloaddraft', ['id' => $record->id]) }}"
+                        class="text-decoration-none" download>
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Document
+                            </div>
+                            <div class="ribbon bg-danger ribbon-top ribbon-start">
+                                <i class="fa fa-certificate fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+
+                    @if ($invoice)
+                    <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blanck"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Draft Invoice
+                            </div>
+                            <div class="ribbon bg-danger ribbon-top ribbon-start">
+                                <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+                    @endif
+
+                </div>
+            </div>
+            @endif
+
+            @if($record->certificateFile)
+            <div class="card-body tab-pane fade" id="tabs-home-8" role="tabpanel">
+                <!-- <h2 class="mb-4">#</h2> -->
+                <h3 class="card-title mb-5">Certificate</h3>
+
+                <div class="row g-3">
+
+                    <div class="col-12 mb-3 col-lg-12">
+                        <div class="form-label">Document</div>
+                        <input type="text" name="#" class="form-control" value="{{ $record->type }}" disabled />
+                    </div>
+
+                    <a href="{{ route('certificate.download', ['id' => $record->id]) }}" class="text-decoration-none"
+                        download>
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Certificate
+                            </div>
+                            <div class="ribbon bg-success ribbon-top ribbon-start">
+                                <i class="fa fa-certificate fs-2 px-2"></i>
+                            </div>
+
+                        </div>
+                    </a>
+                    @if ($invoice)
+                    <a href="{{ route('invoices.downloadinvoice', ['id' => $record->id]) }}" target="_blank"
+                        class="text-decoration-none">
+                        <div class="card col-12 card-link">
+                            <div class="card-body pt-5" style="height: 5rem">
+                                Download Feri Invoice
+                            </div>
+                            <div class="ribbon bg-success ribbon-top ribbon-start">
+                                <i class="fa fa-dollar-sign fs-2 px-2"></i>
+                            </div>
+                        </div>
+                    </a>
+                    @endif
+
+                </div>
+            </div>
+            @endif
+
         </div>
-        @endif
+
 
     </div>
     @if ($record->status == 1)
@@ -564,7 +914,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
     @endif
     </form>
 </div>
-</div>
+@endif
 
 
 @if ($record->status == 3)

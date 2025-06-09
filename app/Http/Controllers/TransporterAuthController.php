@@ -216,79 +216,135 @@ class TransporterAuthController extends Controller
         return view('transporter.applyferi', compact('records'));
     }
 
+    // Show feri application form
+    public function continueferi()
+    {
+        // Fetch all records from the Company table
+        $records = Company::all();
+
+        // Pass the records to the view
+        return view('transporter.continueferi', compact('records'));
+    }
+
     // Store method to save cargo entry
     public function feriApp(Request $request)
     {
-        // Validate incoming data
-        $validatedData = $request->validate([
-            'transport_mode' => 'required|string|max:255',
-            'transporter_company' => 'required|string|max:255',
-            'feri_type' => 'required|string|max:255',
-            'entry_border_drc' => 'required|string|max:255',
-            'truck_details' => 'required|string|max:255',
-            'arrival_station' => 'required|string|max:255',
-            'final_destination' => 'required|string|max:255',
-            'importer_name' => 'required|string|max:255',
-            'importer_phone' => 'required|string|max:20',
-            'importer_email' => 'nullable|email|max:255',
-            'importer_address' => 'nullable|string|max:255',
-            'exporter_address' => 'nullable|string|max:255',
-            'importer_details' => 'nullable|string|max:255',
-            'fix_number' => 'nullable|string|max:255',
-            'exporter_name' => 'required|string|max:255',
-            'exporter_phone' => 'required|string|max:20',
-            'exporter_email' => 'nullable|email|max:255',
-            'cf_agent' => 'required|string|max:255',
-            'cf_agent_contact' => 'required|string|max:255',
-            'cargo_description' => 'required|string|max:255',
-            'hs_code' => 'required|string|max:100',
-            'package_type' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
-            'company_ref' => 'nullable|string|max:255',
-            'cargo_origin' => 'nullable|string|max:255',
-            'customs_decl_no' => 'nullable|string|max:255',
-            'manifest_no' => 'nullable|string|max:255',
-            'occ_bivac' => 'nullable|string|max:255',
-            'instructions' => 'nullable|string',
-            // Extra values
-            'fob_currency' => 'nullable|string|max:50',
-            'fob_value' => 'nullable|numeric|max:100',
-            'po' => 'nullable|string|max:100',
-            'incoterm' => 'nullable|string|max:50',
-            'freight_currency' => 'nullable|string|max:50',
-            'freight_value' => 'nullable|numeric|max:100',
-            'insurance_currency' => 'nullable|string|max:50',
-            'insurance_value' => 'nullable|numeric|max:100',
-            'additional_fees_currency' => 'nullable|string|max:50',
-            'additional_fees_value' => 'nullable|numeric|max:100',
-            'documents_upload' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480', // max 20MB
-        ]);
+        // dd($request);
+        // List of fields for continuance
+        $continuanceFields = ['company_ref', 'po', 'validate_feri_cert', 'entry_border_drc', 'final_destination', 'customs_decl_no', 'arrival_station', 'truck_details', 'transporter_company', 'weight', 'quantity', 'volume', 'importer_name', 'cf_agent', 'exporter_name', 'freight_currency', 'freight_value', 'fob_value', 'insurance_value', 'instructions'];
 
-        // Add user_id to the validated data
-        try {
-            // Add user_id to the validated data
-            $validatedData['user_id'] = Auth::id();
-            $validatedData['status'] = 1;
-            if ($validatedData['feri_type'] == 'continuance') {
-                $validatedData['feri_type'] = 'continuance';
-            } else {
-                $validatedData['feri_type'] = 'regional';
+        // File fields to handle
+        $fileFields = ['invoice', 'manifest', 'packing_list'];
+        // dd($request->feri_type);
+        if ($request->feri_type === 'continuance') {
+            // Validate only the required fields for continuance
+            $validatedData = $request->validate([
+                'company_ref' => 'nullable|string|max:255',
+                'po' => 'nullable|string|max:100',
+                'validate_feri_cert' => 'nullable|string|max:255',
+                'entry_border_drc' => 'required|string|max:255',
+                'final_destination' => 'required|string|max:255',
+                'customs_decl_no' => 'nullable|string|max:255',
+                'arrival_station' => 'required|string|max:255',
+                'truck_details' => 'required|string|max:255',
+                'transporter_company' => 'required|string|max:255',
+                'weight' => 'required|integer|min:1',
+                'quantity' => 'required|integer|max:9999999999',
+                'volume' => 'required|string|max:255',
+                'importer_name' => 'required|string|max:255',
+                'cf_agent' => 'required|string|max:255',
+                'exporter_name' => 'required|string|max:255',
+                'freight_currency' => 'nullable|string|max:50',
+                'freight_value' => 'nullable|numeric|max:9999999999',
+                'fob_value' => 'nullable|numeric|max:9999999999',
+                'insurance_value' => 'nullable|numeric|max:9999999999',
+                'instructions' => 'nullable|string',
+                'invoice' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+            ]);
+
+            // Set all other fields to 0
+
+            $allFields = ['transport_mode', 'feri_type', 'importer_phone', 'importer_email', 'importer_address', 'exporter_address', 'importer_details', 'exporter_phone', 'exporter_email', 'cf_agent_contact', 'hs_code', 'package_type', 'quantity', 'cargo_origin', 'cargo_description', 'manifest_no', 'occ_bivac', 'fob_currency', 'incoterm', 'insurance_currency', 'additional_fees_currency', 'additional_fees_value'];
+            foreach ($allFields as $field) {
+                if (!array_key_exists($field, $validatedData)) {
+                    $validatedData[$field] = 0;
+                }
             }
 
-            // Handle file upload
-            if ($request->hasFile('documents_upload')) {
-                $file = $request->file('documents_upload');
+            $validatedData['feri_type'] = 'continuance';
+        } else {
+            // Original validation for regional
+            $validatedData = $request->validate([
+                'transport_mode' => 'required|string|max:255',
+                'transporter_company' => 'required|string|max:255',
+                'feri_type' => 'required|string|max:255',
+                'entry_border_drc' => 'required|string|max:255',
+                'truck_details' => 'required|string|max:255',
+                'arrival_station' => 'required|string|max:255',
+                'final_destination' => 'required|string|max:255',
+                'importer_name' => 'required|string|max:255',
+                'importer_phone' => 'required|string|max:20',
+                'importer_email' => 'nullable|email|max:255',
+                'importer_address' => 'nullable|string|max:255',
+                'exporter_address' => 'nullable|string|max:255',
+                'importer_details' => 'nullable|string|max:255',
+                'fix_number' => 'nullable|string|max:255',
+                'exporter_name' => 'required|string|max:255',
+                'exporter_phone' => 'required|string|max:20',
+                'exporter_email' => 'nullable|email|max:255',
+                'cf_agent' => 'required|string|max:255',
+                'cf_agent_contact' => 'required|string|max:255',
+                'cargo_description' => 'required|string|max:255',
+                'hs_code' => 'required|string|max:100',
+                'package_type' => 'required|string|max:255',
+                'quantity' => 'required|integer|min:1',
+                'company_ref' => 'nullable|string|max:255',
+                'cargo_origin' => 'nullable|string|max:255',
+                'customs_decl_no' => 'nullable|string|max:255',
+                'manifest_no' => 'nullable|string|max:255',
+                'occ_bivac' => 'nullable|string|max:255',
+                'instructions' => 'nullable|string',
+                // Extra values
+                'fob_currency' => 'nullable|string|max:50',
+                'fob_value' => 'nullable|numeric|max:9999999999',
+                'po' => 'nullable|string|max:100',
+                'incoterm' => 'nullable|string|max:50',
+                'freight_currency' => 'nullable|string|max:50',
+                'freight_value' => 'nullable|numeric|max:9999999999',
+                'insurance_currency' => 'nullable|string|max:50',
+                'insurance_value' => 'nullable|numeric|max:9999999999',
+                'additional_fees_currency' => 'nullable|string|max:50',
+                'additional_fees_value' => 'nullable|numeric|max:9999999999',
+                'invoice' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+            ]);
+            $validatedData['feri_type'] = 'regional';
+        }
+
+        // Add user_id and status
+        $validatedData['user_id'] = Auth::id();
+        $validatedData['status'] = 1;
+
+        // Handle file uploads for all types
+        $documentUploads = [];
+        foreach ($fileFields as $fileField) {
+            if ($request->hasFile($fileField)) {
+                $file = $request->file($fileField);
                 $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('feri_documents', $filename, 'public'); // stores in storage/app/public/feri_documents
-                $validatedData['documents_upload'] = $path;
+                $path = $file->storeAs('feri_documents', $filename, 'public');
+                $documentUploads[$fileField] = $path;
             }
+        }
+        $validatedData['documents_upload'] = json_encode($documentUploads);
 
-            // dd($validatedData);
-            // Create cargo entry
-            // dd($col = feriApp::create($validatedData));
+        // Remove file fields so they are not inserted as columns
+        unset($validatedData['invoice'], $validatedData['manifest'], $validatedData['packing_list']);
+
+        try {
             $r = feriApp::create($validatedData);
-            // dd($r);
-            // Redirect or respond as needed
             return redirect()
                 ->back()
                 ->with([
@@ -349,6 +405,102 @@ class TransporterAuthController extends Controller
             });
 
         return view('transporter.applications', compact('records', 'chats'));
+    }
+
+    public function showAppsRejected()
+    {
+        $records = feriApp::where('user_id', Auth::user()->id)
+            ->where('status', '=', 6)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Add applicant name, draft, and certificate file to each record
+        $records->transform(function ($record) {
+            // Add applicant name
+            $record->applicant = User::find($record->user_id)->name ?? 'Unknown Applicant';
+
+            // Fetch the latest certificate for the application
+            $latestCertificate = Certificate::where('application_id', $record->id)->where('type', 'certificate')->latest()->first();
+
+            // Fetch the latest draft for the application
+            $latestDraft = Certificate::where('application_id', $record->id)->where('type', 'draft')->latest()->first();
+
+            // Attach certificate data to the record if it exists
+            $record->certificateFile = $latestCertificate->file ?? null;
+
+            // Attach draft data to the record if it exists
+            $record->draftFile = $latestDraft->file ?? null;
+
+            return $record;
+        });
+
+        // Fetch all chats related to the feriApps being displayed
+        $feriAppIds = $records->pluck('id'); // Get all feriApp IDs
+        $chats = chats::whereIn('application_id', $feriAppIds)
+            ->orderBy('created_at', 'asc') // Order chats by creation time
+            ->get()
+            ->map(function ($chat) {
+                // Format the created_at timestamp
+                $now = now();
+                if ($chat->created_at->isToday()) {
+                    $chat->formatted_date = $chat->created_at->format('H:i'); // e.g., "21:33"
+                } elseif ($chat->created_at->diffInDays($now) < 365) {
+                    $chat->formatted_date = $chat->created_at->format('j M'); // e.g., "2 May"
+                } else {
+                    $chat->formatted_date = $chat->created_at->format('j M Y'); // e.g., "2 May 25"
+                }
+                return $chat;
+            });
+
+        return view('transporter.rejectedapps', compact('records', 'chats'));
+    }
+
+    public function showAppsCompleted()
+    {
+        $records = feriApp::where('user_id', Auth::user()->id)
+            ->where('status', '=', 5) // Fetch only completed applications (status 4 and above)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Add applicant name, draft, and certificate file to each record
+        $records->transform(function ($record) {
+            // Add applicant name
+            $record->applicant = User::find($record->user_id)->name ?? 'Unknown Applicant';
+
+            // Fetch the latest certificate for the application
+            $latestCertificate = Certificate::where('application_id', $record->id)->where('type', 'certificate')->latest()->first();
+
+            // Fetch the latest draft for the application
+            $latestDraft = Certificate::where('application_id', $record->id)->where('type', 'draft')->latest()->first();
+
+            // Attach certificate data to the record if it exists
+            $record->certificateFile = $latestCertificate->file ?? null;
+
+            // Attach draft data to the record if it exists
+            $record->draftFile = $latestDraft->file ?? null;
+
+            return $record;
+        });
+
+        // Fetch all chats related to the feriApps being displayed
+        $feriAppIds = $records->pluck('id'); // Get all feriApp IDs
+        $chats = chats::whereIn('application_id', $feriAppIds)
+            ->orderBy('created_at', 'asc') // Order chats by creation time
+            ->get()
+            ->map(function ($chat) {
+                // Format the created_at timestamp
+                $now = now();
+                if ($chat->created_at->isToday()) {
+                    $chat->formatted_date = $chat->created_at->format('H:i'); // e.g., "21:33"
+                } elseif ($chat->created_at->diffInDays($now) < 365) {
+                    $chat->formatted_date = $chat->created_at->format('j M'); // e.g., "2 May"
+                } else {
+                    $chat->formatted_date = $chat->created_at->format('j M Y'); // e.g., "2 May 25"
+                }
+                return $chat;
+            });
+
+        return view('transporter.completedapps', compact('records', 'chats'));
     }
 
     // Show single application
@@ -424,12 +576,13 @@ class TransporterAuthController extends Controller
     // update user profile
     public function editApp(Request $request, $id)
     {
+        // dd($request);
         $user = Auth::user();
 
         // Find the specific feriApp record
         $feriApp = feriApp::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
-        // Check if the status is not 1
+        // Only allow editing if status is 1
         if ($feriApp->status != 1 || $user->id != $feriApp->user_id) {
             return back()->with([
                 'status' => 'error',
@@ -437,57 +590,112 @@ class TransporterAuthController extends Controller
             ]);
         }
 
-        // Validate incoming data
-        $validatedData = $request->validate([
-            'transport_mode' => 'required|string|max:255',
-            'transporter_company' => 'required|integer|max:255',
-            'entry_border_drc' => 'required|string|max:255',
-            'truck_details' => 'required|string|max:255',
-            'arrival_station' => 'required|string|max:255',
-            'final_destination' => 'required|string|max:255',
-            'importer_name' => 'required|string|max:255',
-            'importer_phone' => 'required|string|max:20',
-            'importer_email' => 'nullable|email|max:255',
-            'importer_address' => 'nullable|string|max:255',
-            'exporter_address' => 'nullable|string|max:255',
-            'importer_details' => 'nullable|string|max:255',
-            'fix_number' => 'nullable|string|max:255',
-            'exporter_name' => 'required|string|max:255',
-            'exporter_phone' => 'required|string|max:20',
-            'exporter_email' => 'nullable|email|max:255',
-            'cf_agent' => 'required|string|max:255',
-            'cf_agent_contact' => 'required|string|max:255',
-            'cargo_description' => 'required|string',
-            'hs_code' => 'required|string|max:100',
-            'package_type' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
-            'company_ref' => 'nullable|string|max:255',
-            'cargo_origin' => 'nullable|string|max:255',
-            'customs_decl_no' => 'nullable|string|max:255',
-            'manifest_no' => 'nullable|string|max:255',
-            'occ_bivac' => 'nullable|string|max:255',
-            'instructions' => 'nullable|string',
-            // Extra values
-            'fob_currency' => 'nullable|string|max:50',
-            'po' => 'nullable|string|max:100',
-            'fob_value' => 'nullable|string|max:100',
-            'incoterm' => 'nullable|string|max:50',
-            'freight_currency' => 'nullable|string|max:50',
-            'freight_value' => 'nullable|string|max:100',
-            'insurance_currency' => 'nullable|string|max:50',
-            'insurance_value' => 'nullable|string|max:100',
-            'additional_fees_currency' => 'nullable|string|max:50',
-            'additional_fees_value' => 'nullable|string|max:100',
-            'documents_upload' => 'nullable|file|mimes:pdf|max:20480', // max 20MB
-        ]);
+        // File fields to handle
+        $fileFields = ['invoice', 'manifest', 'packing_list'];
 
-        // Handle file upload if necessary
-        if ($request->hasFile('documents_upload')) {
-            $file = $request->file('documents_upload');
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('feri_documents', $filename, 'public');
-            $validatedData['documents_upload'] = $path;
+        // Determine type and validate accordingly
+        if ($feriApp->feri_type === 'continuance') {
+            $validatedData = $request->validate([
+                'company_ref' => 'nullable|string|max:255',
+                'po' => 'nullable|string|max:100',
+                'validate_feri_cert' => 'nullable|string|max:255',
+                'entry_border_drc' => 'required|string|max:255',
+                'final_destination' => 'required|string|max:255',
+                'customs_decl_no' => 'nullable|string|max:255',
+                'arrival_station' => 'required|string|max:255',
+                'truck_details' => 'required|string|max:255',
+                'transporter_company' => 'required|string|max:255',
+                'weight' => 'required|integer|min:1',
+                'quantity' => 'required|integer|min:1',
+                'volume' => 'required|string|max:255',
+                'importer_name' => 'required|string|max:255',
+                'cf_agent' => 'required|string|max:255',
+                'exporter_name' => 'required|string|max:255',
+                'freight_currency' => 'nullable|string|max:50',
+                'freight_value' => 'nullable|numeric|max:9999999999',
+                'fob_value' => 'nullable|numeric|max:9999999999',
+                'insurance_value' => 'nullable|numeric|max:9999999999',
+                'instructions' => 'nullable|string',
+                'invoice' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+            ]);
+
+            // Set all other fields to 0
+            $allFields = ['transport_mode', 'feri_type', 'importer_phone', 'importer_email', 'importer_address', 'exporter_address', 'importer_details', 'exporter_phone', 'exporter_email', 'cf_agent_contact', 'hs_code', 'package_type', 'cargo_origin', 'cargo_description', 'manifest_no', 'occ_bivac', 'fob_currency', 'incoterm', 'insurance_currency', 'additional_fees_currency', 'additional_fees_value'];
+            foreach ($allFields as $field) {
+                if (!array_key_exists($field, $validatedData)) {
+                    $validatedData[$field] = 0;
+                }
+            }
+        } else {
+            // Validation for regional
+            $validatedData = $request->validate([
+                'transport_mode' => 'required|string|max:255',
+                'transporter_company' => 'required|string|max:255',
+                'feri_type' => 'required|string|max:255',
+                'entry_border_drc' => 'required|string|max:255',
+                'truck_details' => 'required|string|max:255',
+                'arrival_station' => 'required|string|max:255',
+                'final_destination' => 'required|string|max:255',
+                'importer_name' => 'required|string|max:255',
+                'importer_phone' => 'required|string|max:20',
+                'importer_email' => 'nullable|email|max:255',
+                'importer_address' => 'nullable|string|max:255',
+                'exporter_address' => 'nullable|string|max:255',
+                'importer_details' => 'nullable|string|max:255',
+                'fix_number' => 'nullable|string|max:255',
+                'exporter_name' => 'required|string|max:255',
+                'exporter_phone' => 'required|string|max:20',
+                'exporter_email' => 'nullable|email|max:255',
+                'cf_agent' => 'required|string|max:255',
+                'cf_agent_contact' => 'required|string|max:255',
+                'cargo_description' => 'required|string|max:255',
+                'hs_code' => 'required|string|max:100',
+                'package_type' => 'required|string|max:255',
+                'quantity' => 'required|integer|min:1',
+                'company_ref' => 'nullable|string|max:255',
+                'cargo_origin' => 'nullable|string|max:255',
+                'customs_decl_no' => 'nullable|string|max:255',
+                'manifest_no' => 'nullable|string|max:255',
+                'occ_bivac' => 'nullable|string|max:255',
+                'instructions' => 'nullable|string',
+                // Extra values
+                'fob_currency' => 'nullable|string|max:50',
+                'fob_value' => 'nullable|numeric|max:9999999999',
+                'po' => 'nullable|string|max:100',
+                'incoterm' => 'nullable|string|max:50',
+                'freight_currency' => 'nullable|string|max:50',
+                'freight_value' => 'nullable|numeric|max:9999999999',
+                'insurance_currency' => 'nullable|string|max:50',
+                'insurance_value' => 'nullable|numeric|max:9999999999',
+                'additional_fees_currency' => 'nullable|string|max:50',
+                'additional_fees_value' => 'nullable|numeric|max:9999999999',
+                'invoice' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+            ]);
         }
+
+        // Handle file uploads and update JSON
+        $documentUploads = json_decode($feriApp->documents_upload ?? '{}', true);
+
+        foreach ($fileFields as $fileField) {
+            if ($request->hasFile($fileField)) {
+                // Delete previous file if exists
+                if (!empty($documentUploads[$fileField]) && Storage::disk('public')->exists($documentUploads[$fileField])) {
+                    Storage::disk('public')->delete($documentUploads[$fileField]);
+                }
+                $file = $request->file($fileField);
+                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('feri_documents', $filename, 'public');
+                $documentUploads[$fileField] = $path;
+            }
+        }
+        $validatedData['documents_upload'] = json_encode($documentUploads);
+
+        // Remove file fields so they are not inserted as columns
+        unset($validatedData['invoice'], $validatedData['manifest'], $validatedData['packing_list']);
 
         // Update the feriApp record with validated data
         $feriApp->update($validatedData);

@@ -228,7 +228,7 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
                         </div>
 
                         <div class="col-sm-12 col-md-6 col-lg-6 mb-3">
-                            <a href="#" class="card card-link">
+                            <a href="{{  route('transporter.continueferi') }}" class="card card-link">
                                 <div class="card">
                                     <div class="card-body">
                                         <h3 class="card-title text-center p-5">

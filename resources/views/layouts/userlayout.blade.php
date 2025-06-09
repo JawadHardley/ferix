@@ -15,6 +15,18 @@
 </head>
 
 <body>
+
+    <!-- Loading Spinner Overlay -->
+    <div id="pageLoader" style="
+    position: fixed;
+    z-index: 9999;
+    background: rgba(255,255,255,0.85);
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+">
+        <div class="spinner-grow text-primary" style="width: 4rem; height: 4rem;" role="status"></div>
+    </div>
+
     <div class="page">
         <!-- Sidebar -->
         <aside class="navbar navbar-vertical navbar-expand-sm" data-bs-theme="dark">
@@ -40,14 +52,32 @@
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
                                 data-bs-auto-close="false" role="button" aria-expanded="false">
                                 <i class="fa fa-ferry pe-3"></i>
-                                <span class="nav-link-title"> Feri Applications </span>
+                                <span class="nav-link-title"> Road Freight Feri </span>
                             </a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('transporter.applyferi') }}">
-                                    Apply
+                                    Regional
                                 </a>
+                                <a class="dropdown-item" href="{{ route('transporter.continueferi') }}">
+                                    Continuance
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                data-bs-auto-close="false" role="button" aria-expanded="false">
+                                <i class="fa fa-list-ol pe-3"></i>
+                                <span class="nav-link-title"> My Applications </span>
+                            </a>
+                            <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('transporter.showApps') }}">
-                                    History
+                                    All Applications
+                                </a>
+                                <a class="dropdown-item" href="{{ route('transporter.rejectedapps') }}">
+                                    Rejected
+                                </a>
+                                <a class="dropdown-item" href="{{ route('transporter.completedapps') }}">
+                                    Completed
                                 </a>
                             </div>
                         </li>
@@ -144,6 +174,24 @@
         </div>
     </div>
 
+
+    <script>
+    // Hide loader when page is loaded
+    window.addEventListener('load', function() {
+        var loader = document.getElementById('pageLoader');
+        if (loader) loader.style.display = 'none';
+    });
+
+    // Show loader on any form submit
+    document.addEventListener('DOMContentLoaded', function() {
+        var loader = document.getElementById('pageLoader');
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                if (loader) loader.style.display = 'flex';
+            });
+        });
+    });
+    </script>
     <!-- <script src="{{ asset('js/ferixstyle.js') }}"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/js/tabler.min.js"></script>
     <script src="{{ asset('js/ferixstyle.js') }}?v={{ filemtime(public_path('js/ferixstyle.js')) }}"></script>

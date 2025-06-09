@@ -809,7 +809,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
         text-indent: 0pt;
         text-align: left;
       ">
-                    Customer Ref No: <span class="p">{{ $invoice->customer_ref}}</span>
+                    Customer Ref No: <span class="p">{{ $invoice->customer_trip_no}}</span>
                 </h3>
                 <h3 style="
         padding-top: 1pt;
@@ -825,7 +825,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
         text-indent: 0pt;
         text-align: left;
       ">
-                    Customer Trip No: <span class="p">{{ $invoice->customer_trip_no}}</span>
+                    Customer Trip No: <span class="p">{{ $invoice->customer_ref}}</span>
                 </h3>
                 <h3 style="
         padding-top: 1pt;

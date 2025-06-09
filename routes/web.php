@@ -34,7 +34,7 @@ Route::post('/email/verification-notification', [AdminAuthController::class, 've
 Route::get('/download-certificate/{id}', [CertificateController::class, 'download'])->name('certificate.download');
 
 Route::get('/download-draft/{id}', [CertificateController::class, 'downloaddraft'])->name('certificate.downloaddraft');
-Route::get('/download-file/{id}', [CertificateController::class, 'downloadfile'])->name('file.downloadfile');
+Route::get('/download-file/{id}/{type}', [CertificateController::class, 'downloadfile'])->name('file.downloadfile');
 
 Route::get('/download-invoice/{id}', [CertificateController::class, 'downloadinvoice'])->name('invoices.downloadinvoice');
 
@@ -134,8 +134,17 @@ Route::prefix('transporter')
         Route::get('apply', [TransporterAuthController::class, 'applyferi'])
             ->name('applyferi')
             ->middleware('role');
+        Route::get('applycontinueferi', [TransporterAuthController::class, 'continueferi'])
+            ->name('continueferi')
+            ->middleware('role');
         Route::get('applications', [TransporterAuthController::class, 'showApps'])
             ->name('showApps')
+            ->middleware('role');
+        Route::get('completedapps', [TransporterAuthController::class, 'showAppsCompleted'])
+            ->name('completedapps')
+            ->middleware('role');
+        Route::get('rejectedapps', [TransporterAuthController::class, 'showAppsRejected'])
+            ->name('rejectedapps')
             ->middleware('role');
         Route::post('feriapp', [TransporterAuthController::class, 'feriApp'])
             ->name('feriApp')
@@ -206,6 +215,12 @@ Route::prefix('vendor')
             ->middleware('role');
         Route::post('applications/process/{id}/', [VendorAuthController::class, 'process1'])
             ->name('process1')
+            ->middleware('role');
+        Route::get('completedapps', [VendorAuthController::class, 'showAppsCompleted'])
+            ->name('completedapps')
+            ->middleware('role');
+        Route::get('rejectedapps', [VendorAuthController::class, 'showAppsRejected'])
+            ->name('rejectedapps')
             ->middleware('role');
         Route::post('applications/draft/{id}/', [VendorAuthController::class, 'process2'])
             ->name('process2')

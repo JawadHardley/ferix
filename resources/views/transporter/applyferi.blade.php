@@ -79,7 +79,7 @@
                             <label class="form-label">Truck Details</label>
                             <input type="text" class="form-control" name="truck_details"
                                 value="{{ old('truck_details') }}" autocomplete="on" required />
-                            <input type="hidden" class="form-control" name="feri_type" value="continuance"
+                            <input type="hidden" class="form-control" name="feri_type" value="regional"
                                 autocomplete="on" required />
                         </div>
 
@@ -329,7 +329,7 @@
                         </div>
 
                         <div class="col-12 col-lg-12 mb-3">
-                            <label class="form-label">Instructions / Validation Notes</label>
+                            <label class="form-label">Additional Comments</label>
                             <textarea class="form-control" name="instructions" rows="1" autocomplete="on"
                                 required>{{ old('instructions') }}</textarea>
                         </div>
@@ -459,7 +459,7 @@
                                 value="{{ old('additional_fees_value') }}" autocomplete="on" required />
                         </div>
 
-                        <div class="col-12 col-lg-6 mb-3">
+                        <div class="col-12 col-lg-3 mb-3">
                             <label class="form-label">Incoterm</label>
                             <select class="form-select" name="incoterm">
                                 <option value="0" {{ old('incoterm') == '0' ? 'selected' : '' }}>-- select --
@@ -483,11 +483,21 @@
                             </select>
                         </div>
 
-                        <div class="col-12 col-lg-6 mb-3">
-                            <label class="form-label">Documents Upload</label>
-                            <input type="file" class="form-control" name="documents_upload" autocomplete="on"
-                                required />
+                        <div class="col-12 col-lg-3 mb-3">
+                            <label class="form-label">Commercial Invoice</label>
+                            <input type="file" class="form-control" name="invoice" autocomplete="on" required />
                         </div>
+
+                        <div class="col-12 col-lg-3 mb-3">
+                            <label class="form-label">Packing list</label>
+                            <input type="file" class="form-control" name="packing_list" autocomplete="on" required />
+                        </div>
+
+                        <div class="col-12 col-lg-3 mb-3">
+                            <label class="form-label">Manifest</label>
+                            <input type="file" class="form-control" name="manifest" autocomplete="on" required />
+                        </div>
+
                     </div>
                 </div>
                 <div class="mt-3">

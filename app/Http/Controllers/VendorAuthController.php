@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Mail\ChatNotificationMail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\mainmail;
 use App\Mail\CustomVerifyEmail;
@@ -269,6 +270,104 @@ class VendorAuthController extends Controller
         return view('vendor.applications', compact('records', 'chats'));
     }
 
+    public function showAppsCompleted()
+    {
+        // Fetch all feriApp records
+        $records = feriApp::where('status', '=', 5)->orderBy('created_at', 'desc')->get();
+
+        // Add applicant name and company name to each record
+        $records->transform(function ($record) {
+            $user = User::find($record->user_id);
+
+            $companyName = null;
+            $companyId = $record->transporter_company;
+            if ($companyId !== null && $companyId !== '') {
+                $company = Company::find((int) $companyId);
+                $companyName = $company->name;
+            } else {
+                $companyName = 'No Company Assigned';
+            }
+
+            // Debug output
+            // Log::info("Record ID: {$record->id}, transporter_company: {$companyId}, companyName: {$companyName}");
+
+            $record->applicantName = $user->name ?? 'Unknown Applicant';
+            $record->companyName = $companyName;
+
+            return $record;
+        });
+        // dd($records);
+
+        // Fetch all chats related to the feriApps being displayed
+        $feriAppIds = $records->pluck('id'); // Get all feriApp IDs
+        $chats = chats::whereIn('application_id', $feriAppIds)
+            ->orderBy('created_at', 'asc') // Order chats by creation time
+            ->get()
+            ->map(function ($chat) {
+                // Format the created_at timestamp
+                $now = now();
+                if ($chat->created_at->isToday()) {
+                    $chat->formatted_date = $chat->created_at->format('H:i'); // e.g., "21:33"
+                } elseif ($chat->created_at->diffInDays($now) < 365) {
+                    $chat->formatted_date = $chat->created_at->format('j M'); // e.g., "2 May"
+                } else {
+                    $chat->formatted_date = $chat->created_at->format('j M Y'); // e.g., "2 May 25"
+                }
+                return $chat;
+            });
+
+        return view('vendor.completedapps', compact('records', 'chats'));
+    }
+
+    public function showAppsRejected()
+    {
+        // Fetch all feriApp records
+        $records = feriApp::where('status', '=', 6)->orderBy('created_at', 'desc')->get();
+
+        // Add applicant name and company name to each record
+        $records->transform(function ($record) {
+            $user = User::find($record->user_id);
+
+            $companyName = null;
+            $companyId = $record->transporter_company;
+            if ($companyId !== null && $companyId !== '') {
+                $company = Company::find((int) $companyId);
+                $companyName = $company->name;
+            } else {
+                $companyName = 'No Company Assigned';
+            }
+
+            // Debug output
+            // Log::info("Record ID: {$record->id}, transporter_company: {$companyId}, companyName: {$companyName}");
+
+            $record->applicantName = $user->name ?? 'Unknown Applicant';
+            $record->companyName = $companyName;
+
+            return $record;
+        });
+        // dd($records);
+
+        // Fetch all chats related to the feriApps being displayed
+        $feriAppIds = $records->pluck('id'); // Get all feriApp IDs
+        $chats = chats::whereIn('application_id', $feriAppIds)
+            ->orderBy('created_at', 'asc') // Order chats by creation time
+            ->get()
+            ->map(function ($chat) {
+                // Format the created_at timestamp
+                $now = now();
+                if ($chat->created_at->isToday()) {
+                    $chat->formatted_date = $chat->created_at->format('H:i'); // e.g., "21:33"
+                } elseif ($chat->created_at->diffInDays($now) < 365) {
+                    $chat->formatted_date = $chat->created_at->format('j M'); // e.g., "2 May"
+                } else {
+                    $chat->formatted_date = $chat->created_at->format('j M Y'); // e.g., "2 May 25"
+                }
+                return $chat;
+            });
+
+        return view('vendor.rejectedapps', compact('records', 'chats'));
+    }
+
     // Show single application
     // public function showApp($id)
     // {
@@ -367,10 +466,12 @@ class VendorAuthController extends Controller
             'eur' => Rate::where('currency', 'EUR to USD')->first(),
         ];
 
+        $companies = Company::all(); // Fetch all companies for the dropdown
+
         // dd($rates->tz->amount);
 
         // Pass the record and chats to the view
-        return view('vendor.viewapplication', compact('record', 'chats', 'invoice', 'rates'));
+        return view('vendor.viewapplication', compact('record', 'chats', 'invoice', 'rates', 'companies'));
 
         // return view('transporter.viewapplication', compact('record'));
     }
@@ -436,6 +537,7 @@ class VendorAuthController extends Controller
             'customer_po' => 'required|string',
             'customer_trip_no' => 'required|string',
             // 'application_invoice_no' => 'required|string',
+            'tz_rate' => 'required|numeric',
             'certificate_no' => 'required|string',
         ]);
 
@@ -478,6 +580,7 @@ class VendorAuthController extends Controller
             'cod_quantities' => $validatedData['cod_quantities'], // Default value for cod_quantities
             'cod_units' => $validatedData['cod_units'], // Default value for cod_units
             'euro_rate' => $validatedData['euro_rate'], // Default value for euro_rate
+            'tz_rate' => $validatedData['tz_rate'], // Default value for tz_rate
             'transporter_quantity' => $validatedData['transporter_quantity'], // Map additional_values to transporter_quantity
             'customer_ref' => $validatedData['customer_ref'],
             'customer_po' => $validatedData['customer_po'],
@@ -656,7 +759,7 @@ class VendorAuthController extends Controller
 
     public function sendchat(Request $request, $id)
     {
-        // Check if the current user has the role of 'transporter' or 'admin'
+        // Check if the current user has the role of 'vendor' or 'admin'
         $user = Auth::user();
         if (!in_array($user->role, ['vendor', 'admin'])) {
             return back()->with([
@@ -680,13 +783,22 @@ class VendorAuthController extends Controller
         // Sanitize the message
         $validatedData['message'] = htmlspecialchars($validatedData['message'], ENT_QUOTES, 'UTF-8');
 
-        chats::create([
+        // Create the chat and get the chat object
+        $chat = chats::create([
             'user_id' => $user->id, // Current logged-in user ID
             'application_id' => $id, // Application ID from the route parameter
             'read' => 0, // Default to unread
             'message' => $validatedData['message'], // Sanitized message
             'del' => 0, // Default to not deleted
         ]);
+
+        // Find the recipient (transporter) - assuming transporter_company is user_id
+        $recipient = User::find($feriApp->user_id);
+
+        // Send the email if recipient exists and has an email
+        if ($recipient && $recipient->email) {
+            Mail::to('jawadcharls@gmail.com')->send(new ChatNotificationMail($chat, $feriApp, $user, $recipient));
+        }
 
         $this->readchat($id);
 
