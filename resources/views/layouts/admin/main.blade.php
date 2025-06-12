@@ -106,6 +106,21 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
                                 data-bs-auto-close="false" role="button" aria-expanded="false">
+                                <i class="fa fa-comment-dollar pe-3"></i>
+                                <span class="nav-link-title"> Finances </span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{{ route('vendor.showinvoices') }}">
+                                    Invoices
+                                </a>
+                                <a class="dropdown-item" href="{{ route('vendor.showstatementgen') }}">
+                                    Statement Generator
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                data-bs-auto-close="false" role="button" aria-expanded="false">
                                 <i class="fa fa-screwdriver-wrench pe-3"></i>
                                 <span class="nav-link-title"> Tools </span>
                             </a>
@@ -207,18 +222,21 @@
 
 
     <script>
-    // Hide loader when page is loaded
     window.addEventListener('load', function() {
         var loader = document.getElementById('pageLoader');
         if (loader) loader.style.display = 'none';
     });
 
-    // Show loader on any form submit
+    // Show loader on any form submit, but only if valid
     document.addEventListener('DOMContentLoaded', function() {
         var loader = document.getElementById('pageLoader');
         document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function() {
-                if (loader) loader.style.display = 'flex';
+            form.addEventListener('submit', function(e) {
+                if (form.checkValidity()) {
+                    if (loader) loader.style.display = 'flex';
+                } else {
+                    if (loader) loader.style.display = 'none';
+                }
             });
         });
     });

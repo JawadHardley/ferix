@@ -9,6 +9,7 @@ $completed = 0;
 $pending = 0;
 $draft = 0;
 $waiting = 0;
+$rejected = 0;
 $today = 0;
 $total = 0;
 
@@ -22,7 +23,8 @@ $waiting++;
 $draft++;
 }elseif ($feri->status == 1) {
 $pending++;
-}
+}elseif ($feri->status == 6) {
+$rejected++;
 }
 
 if ($feri->created_at->isToday()) {
@@ -30,6 +32,7 @@ $today++;
 }
 $total++;
 
+}
 }
 
 $transporter = null;
@@ -54,19 +57,19 @@ $rate = number_format($rate, 0);
 $rate = 0;
 }
 
-if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp <div class="row">
+if($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp <div class="row fade-slide-in">
     <div class="col-12 col-md-4 col-lg-3 mb-3">
         <div class="card card-sm">
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-auto">
-                        <span class="bg-primary text-white avatar">
-                            <i class="fa fa-layer-group"></i>
+                        <span class="bg-teal text-white avatar">
+                            <i class="fa fa-circle-check"></i>
                         </span>
                     </div>
                     <div class="col">
-                        <div class="font-weight-medium">{{ $total }}</div>
-                        <div class="text-secondary">Total Applications</div>
+                        <div class="font-weight-medium">{{ $waiting }}</div>
+                        <div class="text-secondary">Waiting Certificate</div>
                     </div>
                 </div>
             </div>
@@ -77,7 +80,7 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp <div class
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-auto">
-                        <span class="bg-danger text-white avatar">
+                        <span class="bg-primary text-white avatar">
                             <i class="fa fa-clock-rotate-left"></i>
                         </span>
                     </div>
@@ -111,13 +114,13 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp <div class
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-auto">
-                        <span class="bg-teal text-white avatar">
-                            <i class="fa fa-circle-check"></i>
+                        <span class="bg-danger text-white avatar">
+                            <i class="fa fa-circle-xmark"></i>
                         </span>
                     </div>
                     <div class="col">
-                        <div class="font-weight-medium">{{ $waiting }}</div>
-                        <div class="text-secondary">Waiting Certificate</div>
+                        <div class="font-weight-medium">{{ $rejected }}</div>
+                        <div class="text-secondary">Rejected Applications</div>
                     </div>
                 </div>
             </div>
@@ -125,7 +128,7 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp <div class
     </div>
     </div>
 
-    <div class="row g-3 align-items-stretch">
+    <div class="row g-3 align-items-stretch fade-slide-in">
         <div class="col-sm-12 col-lg-6 d-flex">
             <div class="card flex-fill">
                 <div class="card-body">

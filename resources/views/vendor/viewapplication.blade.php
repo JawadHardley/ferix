@@ -503,7 +503,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                     <!-- Modal Edit -->
                     <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel"
-                        aria-hidden="true">
+                        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -562,12 +562,6 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                                 value="{{ ($record->additional_fees_value + $record->freight_value) }}"
                                                 autocomplete="on" required />
 
-                                            <!-- <div class="col-12 col-md-6 mb-3">
-                                            <label class="form-label">Customer Reference No</label>
-                                            <input type="text" class="form-control" name="customer_ref"
-                                                value="{{ $invoice->customer_ref ?? '' }}" autocomplete="on" required />
-                                        </div> -->
-                                            <!-- <label class="form-label">Customer Reference No</label> -->
                                             <input type="hidden" class="form-control" name="customer_ref"
                                                 placeholder="e.g. 11080320 -ALE 708" autocomplete="on"
                                                 value="{{ trim(Str::before($record->company_ref, '-')) }}" required />
@@ -1166,8 +1160,8 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 <form action="{{ route('vendor.process2', ['id' => $record->id]) }}" method="POST" enctype="multipart/form-data"
     class="d-inline">
     @csrf
-    <div class="modal fade" id="b{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="b{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1253,7 +1247,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <label class="form-label">
                             {{ $record->status == 2 ? 'Draft' : ($record->status == 4 ? '' : '') }} Ceritificate
                         </label>
-                        <input type="file" class="form-control" name="file" />
+                        <input type="file" class="form-control" name="file" required />
                     </div>
 
                     <!-- <div class="text-secondary">
@@ -1267,7 +1261,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                 <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
                             </div>
                             <div class="col">
-                                <button type="submit" class="btn btn-primary w-100" data-bs-dismiss="modal">
+                                <button type="submit" class="btn btn-primary w-100">
                                     Save </button>
                             </div>
                         </div>
@@ -1283,8 +1277,8 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 <form action="{{ route('vendor.process3', ['id' => $record->id]) }}" method="POST" enctype="multipart/form-data"
     class="d-inline">
     @csrf
-    <div class="modal fade" id="c{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="c{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1304,7 +1298,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                             {{ $record->status == 2 ? 'Draft' : ($record->status == 4 ? '' : '') }}
                             Ceritificate
                         </label>
-                        <input type="file" class="form-control" name="file" />
+                        <input type="file" class="form-control" name="file" required />
                     </div>
                     <!-- <div class="text-secondary">
                         Do you want to proceed with the application ?
@@ -1317,7 +1311,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                 <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel </a>
                             </div>
                             <div class="col">
-                                <button type="submit" class="btn btn-success w-100" data-bs-dismiss="modal">
+                                <button type="submit" class="btn btn-success w-100">
                                     Save </button>
                             </div>
                         </div>
@@ -1331,7 +1325,8 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
 
 <!-- Modal -->
-<div class="modal fade" id="chat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="chat" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

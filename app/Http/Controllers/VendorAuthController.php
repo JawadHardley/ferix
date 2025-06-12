@@ -16,11 +16,14 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Mail\ChatNotificationMail;
+use App\Mail\DraftInvoiceMail;
+use App\Mail\CertificateMail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\mainmail;
 use App\Mail\CustomVerifyEmail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class VendorAuthController extends Controller
 {
@@ -98,7 +101,7 @@ class VendorAuthController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string'],
-            'company' => ['required', 'string'],
+            'company' => ['required', 'integer', 'exists:companies,id'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:6'],
         ]);
@@ -106,7 +109,7 @@ class VendorAuthController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'company' => 0,
+            'company' => $validated['company'],
             'password' => Hash::make($validated['password']),
             'role' => 'vendor', // Set role explicitly
             'user_auth' => 0, // or 0 if you want to authorize later
@@ -589,6 +592,35 @@ class VendorAuthController extends Controller
             'certificate_no' => $validatedData['certificate_no'],
         ]);
 
+        // Find the recipient (transporter)
+        $recipient = User::find($feriApp->user_id);
+
+        //store file path in the certificate
+        $certificatePath = $filePath;
+
+        // Sender is the current user
+        $sender = $user;
+
+        // Get the invoice just created (if you want to pass it)
+        $invoice = Invoice::where('cert_id', $certificate->id)->first();
+
+        // File path for the draft certificate
+        $certificatePath = $filePath; // This is set above when you store the file
+
+        // Fetch the applicant's name
+        $applicantName = $recipient->name;
+
+        // Pass $invoice, $feriApp, and $applicantName to the view
+        $pdf = Pdf::loadView('layouts.theinvoice', [
+            'invoice' => $invoice,
+            'feriapp' => $feriApp,
+            'applicantName' => Str::title($applicantName),
+        ])->output();
+
+        if ($recipient && $recipient->email && $certificatePath) {
+            Mail::to($recipient->email)->send(new DraftInvoiceMail($invoice, $feriApp, $recipient, $certificatePath, $sender, $pdf));
+        }
+
         return back()->with([
             'status' => 'success',
             'message' => 'Application updated successfully.',
@@ -634,12 +666,43 @@ class VendorAuthController extends Controller
         $feriApp->update(['status' => 5]);
 
         // Add a new entry in the Certificates table
-        Certificate::create([
+        $certificate = Certificate::create([
             'user_id' => $user->id,
             'application_id' => $id,
             'type' => 'certificate',
             'file' => $filePath, // Save the file path
         ]);
+
+        // Find the recipient (transporter)
+        $recipient = User::find($feriApp->user_id);
+
+        //store file path in the certificate
+        $certificatePath = $filePath;
+
+        // Sender is the current user
+        $sender = $user;
+
+        // Get the invoice just created (if you want to pass it)
+        $draft1 = Certificate::where('application_id', $feriApp->id)->where('type', 'draft')->first();
+        $invoice = Invoice::where('cert_id', $draft1->id)->first();
+
+        // dd($invoice);
+
+        // Fetch the applicant's name
+        $applicantName = $recipient->name;
+
+        // Pass $invoice, $feriApp, and $applicantName to the view
+        $pdf = Pdf::loadView('layouts.theinvoice', [
+            'invoice' => $invoice,
+            'feriapp' => $feriApp,
+            'applicantName' => Str::title($applicantName),
+        ])->output();
+
+        // dd($recipient, $recipient->email, $certificatePath);
+
+        if ($recipient && $recipient->email && $certificatePath) {
+            Mail::to($recipient->email)->send(new CertificateMail($invoice, $feriApp, $recipient, $certificatePath, $sender, $pdf));
+        }
 
         return back()->with([
             'status' => 'success',
@@ -792,12 +855,13 @@ class VendorAuthController extends Controller
             'del' => 0, // Default to not deleted
         ]);
 
+
         // Find the recipient (transporter) - assuming transporter_company is user_id
         $recipient = User::find($feriApp->user_id);
 
         // Send the email if recipient exists and has an email
         if ($recipient && $recipient->email) {
-            Mail::to('jawadcharls@gmail.com')->send(new ChatNotificationMail($chat, $feriApp, $user, $recipient));
+            Mail::to($recipient->email)->send(new ChatNotificationMail($chat, $feriApp, $user, $recipient));
         }
 
         $this->readchat($id);
@@ -918,5 +982,56 @@ class VendorAuthController extends Controller
             'status' => 'success',
             'message' => 'Rate updated successfully.',
         ]);
+    }
+
+    public function fetchChatMessages($id)
+    {
+        $chats = chats::where('application_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($chat) {
+                $now = now();
+                if ($chat->created_at->isToday()) {
+                    $chat->formatted_date = $chat->created_at->format('H:i');
+                } elseif ($chat->created_at->diffInDays($now) < 365) {
+                    $chat->formatted_date = $chat->created_at->format('j M');
+                } else {
+                    $chat->formatted_date = $chat->created_at->format('j M Y');
+                }
+                return $chat;
+            });
+        return view('components.chat_messages', compact('chats'))->render();
+    }
+
+    public function showinvoices()
+    {
+        $records = Invoice::all();
+
+        // Add grandTotal to each record
+        $records->transform(function ($invoice) {
+            $feriQty = (float) ($invoice->feri_quantity ?? 0);
+            $feriUnits = (float) ($invoice->feri_units ?? 0);
+            $codQty = (float) ($invoice->cod_quantities ?? 0);
+            $codUnits = (float) ($invoice->cod_units ?? 0);
+            $euroRate = (float) ($invoice->euro_rate ?? 1);
+            $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
+
+            // Calculating the amounts
+            $feriAmount = $feriQty * $feriUnits;
+            $codAmount = $codQty * $codUnits;
+            $upTotal = $feriAmount + $codAmount;
+            $transporterAmount = $transporterQty * 0.018;
+            $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
+
+            $invoice->grandTotal = $grandTotal;
+            return $invoice;
+        });
+
+        return view('vendor.invoices', compact('records'));
+    }
+
+    public function showstatementgen()
+    {
+        return view('vendor.stateform');
     }
 }

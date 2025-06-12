@@ -372,7 +372,7 @@
                                     <div style="color: #3a3a3a; text-align: justify; padding-top: 15px;">
                                         Dear {{ $recipient->name }}, <br><br>
 
-                                        We hope you're doing well.
+
 
                                         This is to inform you that a new query has been raised regarding one of your
                                         FERI applications (Details below). Kindly review the query and provide a
@@ -385,10 +385,7 @@
 
 
                                         To respond to this query and continue processing your application, please log in
-                                        to the Ferix.io system using the link below: <br><br>
-
-                                        🔗 [Access your account to respond]
-                                        <br><br>
+                                        to the system <br><br>
 
                                         If you have any questions or need assistance, feel free to contact our support
                                         team.
@@ -406,7 +403,7 @@
             <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
                 style="margin: auto;">
                 <tr>
-                    <td class="bg_light" style="text-align: center; background-color: #f1f1f1;">
+                    <td class="bg_light" style="text-align: center; background-color: #f1f1f1; padding: 2em;">
                         <p>© All rights reserved. 2025 ferix io</p>
                     </td>
                 </tr>

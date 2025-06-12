@@ -38,7 +38,7 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
     src="https://code.jquery.com/jquery-3.7.1.js">
     </script>
     <script src="https://cdn.datatables.net/2.3.1/js/dataTables.js"></script>
-    <div class="row">
+    <div class="row fade-slide-in">
         <div class="col-12 col-md-4 col-lg-3 mb-3">
             <div class="card card-sm">
                 <div class="card-body">
@@ -109,7 +109,7 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
         </div>
     </div>
 
-    <div class="row">
+    <div class="row fade-slide-in">
         <div class="col-12 col-md-6 mb-3">
             <div class="card">
                 <div class="card-body">
@@ -132,11 +132,9 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
                             </div>
                         </div>
                         <div class="col-12 col-sm-auto d-flex justify-content-center">
-                            <a href="./illustrations.html">
-                                <!-- here come  height="200" fill="none" viewBox="0 0 800 600" -->
-                                <img src="{{ $tile1 }}" alt="stats illustrations" class="img-fluid"
-                                    style="width: 200px; height: 200px;">
-                            </a>
+                            <!-- here come  height="200" fill="none" viewBox="0 0 800 600" -->
+                            <img src="{{ $tile1 }}" alt="stats illustrations" class="img-fluid"
+                                style="width: 200px; height: 200px;">
                         </div>
                     </div>
                 </div>
@@ -148,7 +146,7 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
                     <div class="d-flex align-items-center">
                         <div class="subheader">Applications</div>
                     </div>
-                    <div class="h1 mb-3">{{ $rate }}%</div>
+                    <div class="h1 mb-3 data-countup"><span data-countup>{{ $rate }}</span>%</div>
                     <div class="d-flex mb-2">
                         <div>Completion rate</div>
                     </div>
@@ -161,7 +159,7 @@ if ($rate <= 50) { $bg="warning" ; } else { $bg="success" ; } @endphp<script
         </div>
     </div>
 
-    <div class="row">
+    <div class="row fade-slide-in">
         <div class="col-sm-12 col-md-12 col-lg-4 mb-3">
             <a href="{{  route(Auth::user()->role . '.applyferi') }}" class="card card-link" data-bs-toggle="modal"
                 data-bs-target="#ask">

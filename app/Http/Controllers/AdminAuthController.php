@@ -356,7 +356,7 @@ class AdminAuthController extends Controller
 
         $record = DB::table('password_reset_tokens')->where('email', $request->email)->where('token', $request->token)->first();
 
-        if (!$record || Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+        if (!$record || Carbon::parse($record->created_at)->addMinutes(6)->isPast()) {
             return back()->withErrors(['token' => 'This reset token is invalid or has expired.']);
         }
 

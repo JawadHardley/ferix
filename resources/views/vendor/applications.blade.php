@@ -368,6 +368,24 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // For all chat modals
+    document.querySelectorAll('.modal[id^="chat"]').forEach(function(modal) {
+        modal.addEventListener('shown.bs.modal', function() {
+            // Find the scrollable chat body inside this modal
+            var chatBody = modal.querySelector('.card-body.scrollable');
+            if (chatBody) {
+                chatBody.scrollTo({
+                    top: chatBody.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+});
+</script>
+
+<script>
 new DataTable('#linework', {
     initComplete: function() {
         // Use the existing advanced-table-search input for global search

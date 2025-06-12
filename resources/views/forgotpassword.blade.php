@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="text-center text-secondary mt-3">
-            <a class="text-decoration-none" href="{{ route('login') }}" tabindex="-1">
+            <a class="text-decoration-none" href="{{ route('homesweethome') }}" tabindex="-1">
                 Home >
             </a>
         </div>

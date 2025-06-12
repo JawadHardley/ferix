@@ -1,6 +1,6 @@
 <div class="container general mb-3 card">
     <div class="row p-5">
-        <h1 class="mb-5">Certificate Cost Calculator</h1>
+        <h1 class="mb-5">Freight Certificate Cost Calculator || Presis Consultancy Ltd</h1> 
         <div class="col-12 col-md-4 mb-3">
             From:
         </div>
@@ -20,6 +20,7 @@
             <select class="form-select" name="currency">
                 <option selected value="1">USD</option>
                 <option value="2">EUR</option>
+                <option value="3">TZS</option>
             </select>
         </div>
         <div class="col-12 col-md-4 mb-3">
@@ -45,7 +46,7 @@
         <div class="col-12 col-md-8 mb-3">
             <select class="form-select" name="type">
                 <option selected value="2">Continuance</option>
-                <option value="1">Reginal</option>
+                <option value="1">regional</option>
             </select>
         </div>
     </div>
@@ -80,9 +81,8 @@
             <input type="number" class="form-control" name="ucost" placeholder="Eg 250">
         </div>
         <div class="col-12 col-md-4 mb-3">
-            <select class="form-select" aria-label="Default select example">
+            <select class="form-select" name="currency2" aria-label="Default select example">
                 <option selected value="1">USD</option>
-                <option value="2">EUR</option>
             </select>
         </div>
         <div class="col-12 col-md-4 mb-3">
@@ -141,8 +141,13 @@
 
     </div>
 </div>
+
 <script>
 window.tzRate = {{$eur}};
+</script>
+
+<script>
+window.tshRate = {{$tz}};
 </script>
 
 <script>
@@ -221,57 +226,82 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Calculate button logic
     calcBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const typeSelect = document.querySelector('.general select[name="type"]');
-        const typeValue = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text.toLowerCase() :
-            '';
-        const ucostInput = document.querySelector('.freight input[name="ucost"]');
-        const grossInput = document.querySelector('.freight input[name="gross"]');
-        const volumeInput = document.querySelector('.freight input[name="volume"]');
-        const ucost = parseFloat(ucostInput ? ucostInput.value : '');
-        const gross = parseFloat(grossInput ? grossInput.value : '');
-        const volume = parseFloat(volumeInput ? volumeInput.value : '');
+    e.preventDefault();
+    const typeSelect = document.querySelector('.general select[name="type"]');
+    const typeValue = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text.toLowerCase() : '';
+    const ucostInput = document.querySelector('.freight input[name="ucost"]');
+    const grossInput = document.querySelector('.freight input[name="gross"]');
+    const volumeInput = document.querySelector('.freight input[name="volume"]');
+    const currencySelect = document.querySelector('.general select[name="currency"]');
+    const currencyValue = currencySelect ? currencySelect.value : '1';
+    const ucost = parseFloat(ucostInput ? ucostInput.value : '');
+    const gross = parseFloat(grossInput ? grossInput.value : '');
+    const volume = parseFloat(volumeInput ? volumeInput.value : '');
 
-        // Always hide regional row first
+    // Always hide regional row first
+    if (regionalRow) regionalRow.classList.add('d-none');
+
+    let finalAns2 = 0;
+    let finalCurrency = 'USD';
+
+    if (typeValue === 'continuance' && !isNaN(ucost)) {
+        document.querySelector('.fcost').textContent = ucost.toFixed(2);
+        const ans1 = +(ucost * 0.018).toFixed(2);
+        document.querySelector('.ans1').textContent = ans1.toFixed(2);
+        finalAns2 = ans1 + 20;
+
+        // Reset the fields to their "continuance" values
+        document.querySelector('.disc1').textContent = 'ADMIN-COD-Continuance';
+        document.querySelector('.disc1-c').textContent = 'USD';
+        document.querySelector('.disc1-d').textContent = '20.00';
+        document.querySelector('.codunit').textContent = '20.00';
+        document.querySelector('.callunit').textContent = '1.00';
+        document.querySelector('.calltotal').textContent = '20.00';
+
+        fadeShow(answersDiv);
+    } else if (typeValue === 'regional' && !isNaN(gross) && !isNaN(volume) && !isNaN(ucost)) {
+        // Show the regional row
+        if (regionalRow) regionalRow.classList.remove('d-none');
+        // Step 1: m = gross / 1000
+        const m = gross / 1000;
+        // Step 2: use max(volume, m)
+        const x = (volume >= m) ? volume : m;
+        // Step 3: (x * 4 + 40) * 1.15
+        const regionalResult = ((x * 4) + 40) * window.tzRate;
+        // Step 4: ucost * 1.18%
+        const ans1 = +(ucost * 0.018).toFixed(2);
+        document.querySelector('.fcost').textContent = ucost.toFixed(2);
+        document.querySelector('.ans1').textContent = ans1.toFixed(2);
+        // Step 5: add regionalResult + ans1
+        finalAns2 = regionalResult + ans1;
+
+        // Set your requested fields for regional
+        document.querySelector('.disc1').textContent = 'Feri/COD Admin Fee';
+        document.querySelector('.disc1-c').textContent = 'EUR';
+        document.querySelector('.disc1-d').textContent = '40.00';
+        document.querySelector('.codunit').textContent = '40.00';
+        document.querySelector('.callunit').textContent = x.toFixed(2);
+        document.querySelector('.calltotal').textContent = (x * 4).toFixed(2);
+
+        fadeShow(answersDiv);
+    } else {
+        fadeHide(answersDiv);
         if (regionalRow) regionalRow.classList.add('d-none');
+    }
 
-        if (typeValue === 'continuance' && !isNaN(ucost)) {
-            document.querySelector('.fcost').textContent = ucost.toFixed(2);
-            const ans1 = +(ucost * 0.018).toFixed(2);
-            document.querySelector('.ans1').textContent = ans1.toFixed(2);
-            document.querySelector('.ans2').textContent = (ans1 + 20).toFixed(2) + ' USD';
-            fadeShow(answersDiv);
-        } else if (typeValue === 'reginal' && !isNaN(gross) && !isNaN(volume) && !isNaN(ucost)) {
-            // Show the regional row
-            if (regionalRow) regionalRow.classList.remove('d-none');
-            // Step 1: m = gross / 1000
-            const m = gross / 1000;
-            // Step 2: use max(volume, m)
-            const x = (volume >= m) ? volume : m;
-            // Step 3: (x * 4 + 40) * 1.15
-            const regionalResult = ((x * 4) + 40) * window.tzRate;
-            // Step 4: ucost * 1.18%
-            const ans1 = +(ucost * 0.018).toFixed(2);
-            document.querySelector('.fcost').textContent = ucost.toFixed(2);
-            document.querySelector('.ans1').textContent = ans1.toFixed(2);
-            // Step 5: add regionalResult + ans1
-            const ans2 = regionalResult + ans1;
-            document.querySelector('.ans2').textContent = ans2.toFixed(2) + ' USD';
-
-            // Set your requested fields
-            document.querySelector('.disc1').textContent = 'FERI/COD Cert Admin/BOL/BOE';
-            document.querySelector('.disc1-c').textContent = 'EUR';
-            document.querySelector('.disc1-d').textContent = '40.00';
-            document.querySelector('.codunit').textContent = '40.00';
-            document.querySelector('.callunit').textContent = x.toFixed(2);
-            document.querySelector('.calltotal').textContent = (x * 4).toFixed(2);
-
-            fadeShow(answersDiv);
-        } else {
-            fadeHide(answersDiv);
-            if (regionalRow) regionalRow.classList.add('d-none');
+    // Currency conversion for ans2
+    if (!isNaN(finalAns2) && finalAns2 > 0) {
+        if (currencyValue === '2') { // EUR
+            finalAns2 = finalAns2 / window.tzRate;
+            finalCurrency = 'EUR';
+        } else if (currencyValue === '3') { // TZS
+            finalAns2 = finalAns2 * window.tshRate;
+            finalCurrency = 'TZS';
         }
-    });
+        document.querySelector('.ans2').textContent = finalAns2.toFixed(2) + ' ' + finalCurrency;
+    }
+
+});
 
     // Reset button logic
     resetBtn.addEventListener('click', function(e) {

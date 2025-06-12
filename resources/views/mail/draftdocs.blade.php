@@ -241,7 +241,7 @@
 
     .hero .text h2 span {
         font-weight: 600;
-        color: #001657;
+        color: rgb(0, 22, 87);
     }
 
 
@@ -340,8 +340,6 @@
 
     @media screen and (max-width: 500px) {}
     </style>
-
-
 </head>
 
 <body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #f1f1f1;">
@@ -355,59 +353,35 @@
             <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
                 style="margin: auto;">
                 <tr>
-                    <td valign="top" class="bg_white" style="padding: 1em 2.5em 0 2.5em;">
+                    <td valign="top" class="bg_white" style="padding: 1em 2.5em 0 2.5em; background-color: #f1f1f1;">
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                             <tr>
-                                <td class="logo" style="text-align: center; color:  rgb(4, 0, 255);">
-                                    <h1><a href="#">Ferix io.</a></h1>
+                                <td class="logo" style="text-align: left; background-color: #f1f1f1;">
+                                    <h1><a href="#">Ferix io</a></h1>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr><!-- end tr -->
                 <tr>
-                    <!-- <td valign="middle" class="hero bg_white" style="padding: 3em 0 2em 0;">
-						<img src="images/email.png" alt=""
-							style="width: 300px; max-width: 600px; height: auto; margin: auto; display: block;">
-					</td> -->
-                    <img src="images/email.png" alt="">
-                </tr><!-- end tr -->
-                <tr>
                     <td valign="middle" class="hero bg_white" style="padding: 2em 0 4em 0;">
-                        <table>
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                             <tr>
-                                <td>
-                                    <div class="text" style="padding: 0 2.5em; text-align: center;">
-                                        <!-- <h3>Please verify your email</h3> -->
-                                        <p style="color: #888;">
-                                            <b>Hello!</b> {{ $user->name }}
-                                        </p>
-                                        <p style="color: #888;">
-                                            You are receiving this email because we received a password reset request
-                                            for your account.
-                                        </p>
-                                        <p style="align-items: center;"><a href="{{ $resetUrl }}"
-                                                class="btn btn-primary">Reset Password</a></p>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div style="padding: 0 2.5em;" style="color: #444;">
-                                        This password reset link will expire in 6 minutes.
-                                    </div>
-                                    <div style="padding: 0 2.5em;" style="color: #444;">
-                                        If you did not request a password reset, no further action is required.
-                                    </div>
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <div class="text" style="padding: 0 2.5em;">
-                                        If the button above doesn't work, please copy and paste the following link into
-                                        your browser:
-                                        <a href="{{ $resetUrl }}" style="font-size: 12px; line-height: 1;">
-                                            {{ $resetUrl }}
-                                        </a>
+                                <td style="padding: 0 2.5em; text-align: center;">
+                                    <div style="color: #3a3a3a; text-align: justify; padding-top: 15px;">
+                                        Dear {{ $recipient->name }}, <br><br>
+
+                                        Please find attached the draft FERI certificate and draft invoice for your
+                                        review.<br><br>
+                                        ~ Application Reference: {{ $feriApp->company_ref }}<br> <br>
+
+                                        Kindly log into the system to either approve or reject the documents at your
+                                        earliest convenience.<br><br>
+
+                                        Let us know if you have any questions or require any adjustments.
+
+                                        <br><br>
+                                        ~ {{ $sender->name }} <br>
                                     </div>
                                 </td>
                             </tr>
@@ -419,8 +393,8 @@
             <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
                 style="margin: auto;">
                 <tr>
-                    <td class="bg_light" style="text-align: center; padding: 0 2.5em;">
-                        <p> &copy; All rights reserved. 2025 ferix io</p>
+                    <td class="bg_light" style="text-align: center; background-color: #f1f1f1; padding: 2em;">
+                        <p>© All rights reserved. 2025 ferix io</p>
                     </td>
                 </tr>
             </table>

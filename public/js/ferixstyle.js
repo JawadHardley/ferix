@@ -1,4 +1,17 @@
+
+
 document.addEventListener("DOMContentLoaded", function () {
+
+    // Animation for .fade-slide-in elements
+    const animatedElements = document.querySelectorAll('.fade-slide-in');
+    animatedElements.forEach((el, index) => {
+        setTimeout(() => {
+            el.classList.add('visible');
+        }, index * 100); // stagger animation
+    });
+    
+
+
     const html = document.documentElement;
     const toggleBtn = document.getElementById("themeToggle");
     const themeIcon = document.getElementById("themeIcon");

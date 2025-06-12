@@ -52,7 +52,7 @@
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
                                 data-bs-auto-close="false" role="button" aria-expanded="false">
                                 <i class="fa fa-ferry pe-3"></i>
-                                <span class="nav-link-title"> Road Freight Feri </span>
+                                <span class="nav-link-title"> Feri Application </span>
                             </a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('transporter.applyferi') }}">
@@ -174,26 +174,29 @@
         </div>
     </div>
 
-
     <script>
-    // Hide loader when page is loaded
     window.addEventListener('load', function() {
         var loader = document.getElementById('pageLoader');
         if (loader) loader.style.display = 'none';
     });
 
-    // Show loader on any form submit
+    // Show loader on any form submit, but only if valid
     document.addEventListener('DOMContentLoaded', function() {
         var loader = document.getElementById('pageLoader');
         document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function() {
-                if (loader) loader.style.display = 'flex';
+            form.addEventListener('submit', function(e) {
+                if (form.checkValidity()) {
+                    if (loader) loader.style.display = 'flex';
+                } else {
+                    if (loader) loader.style.display = 'none';
+                }
             });
         });
     });
     </script>
     <!-- <script src="{{ asset('js/ferixstyle.js') }}"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/js/tabler.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/countup.js@2.6.2/dist/countUp.umd.js"></script>
     <script src="{{ asset('js/ferixstyle.js') }}?v={{ filemtime(public_path('js/ferixstyle.js')) }}"></script>
 </body>
 

@@ -556,17 +556,18 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
             </div>
             @endif
         </div>
+        @if ($record->status == 1)
+        <div class="row">
+            <div class="col py-3 pt-5 text-end">
+                <a href="{{ route(Auth::user()->role . '' . '.showApps') }}"
+                    class="btn btn-outline-secondary">Cancel</a>
+                <button class="btn btn-primary" type="submit">Edit</button>
+            </div>
+        </div>
+        @endif
 
     </div>
 </div>
-@if ($record->status == 1)
-<div class="row">
-    <div class="col py-3 pt-5 text-end">
-        <a href="{{ route(Auth::user()->role . '' . '.showApps') }}" class="btn btn-outline-secondary">Cancel</a>
-        <button class="btn btn-primary" type="submit">Edit</button>
-    </div>
-</div>
-@endif
 </form>
 </div>
 @else
@@ -696,7 +697,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                 <div class="row g-3">
                     <input type="hidden" name="feri_type" value="{{ $record->feri_type }}" require />
 
-                    <div class="col-12 col-lg-4 mb-3">
+                    <div class="col-12 col-lg-3 mb-3">
                         <label class="form-label">Transporter Company</label>
                         @if($record->status < 2) <select class="form-select" name="transporter_company">
                             <option value="">-- select --</option>
@@ -715,12 +716,17 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                             @endif
                     </div>
 
-                    <div class="col-12 mb-3 col-lg-4">
+                    <div class="col-12 mb-3 col-lg-3">
+                        <div class="form-label">Quantity</div>
+                        <input type="text" name="quantity" class="form-control" value="{{ $record->quantity }}">
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Weight</div>
                         <input type="text" name="weight" class="form-control" value="{{ $record->weight }}">
                     </div>
 
-                    <div class="col-12 mb-3 col-lg-4">
+                    <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Volume</div>
                         <input type="text" name="volume" class="form-control" value="{{ $record->volume }}">
                     </div>
@@ -901,17 +907,18 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
             @endif
 
         </div>
-
-
-    </div>
-    @if ($record->status == 1)
-    <div class="row">
-        <div class="col py-3 pt-5 text-end">
-            <a href="{{ route(Auth::user()->role . '' . '.showApps') }}" class="btn btn-outline-secondary">Cancel</a>
-            <button class="btn btn-primary" type="submit">Edit</button>
+        @if ($record->status == 1)
+        <div class="row">
+            <div class="col py-3 pt-5 text-end">
+                <a href="{{ route(Auth::user()->role . '' . '.showApps') }}"
+                    class="btn btn-outline-secondary">Cancel</a>
+                <button class="btn btn-primary" type="submit">Edit</button>
+            </div>
         </div>
+        @endif
+
+
     </div>
-    @endif
     </form>
 </div>
 @endif

@@ -266,7 +266,7 @@ class TransporterAuthController extends Controller
 
             // Set all other fields to 0
 
-            $allFields = ['transport_mode', 'feri_type', 'importer_phone', 'importer_email', 'importer_address', 'exporter_address', 'importer_details', 'exporter_phone', 'exporter_email', 'cf_agent_contact', 'hs_code', 'package_type', 'quantity', 'cargo_origin', 'cargo_description', 'manifest_no', 'occ_bivac', 'fob_currency', 'incoterm', 'insurance_currency', 'additional_fees_currency', 'additional_fees_value'];
+            $allFields = ['transport_mode', 'importer_phone', 'importer_email', 'importer_address', 'exporter_address', 'importer_details', 'exporter_phone', 'exporter_email', 'cf_agent_contact', 'hs_code', 'package_type', 'quantity', 'cargo_origin', 'cargo_description', 'manifest_no', 'occ_bivac', 'fob_currency', 'incoterm', 'insurance_currency', 'additional_fees_currency', 'additional_fees_value'];
             foreach ($allFields as $field) {
                 if (!array_key_exists($field, $validatedData)) {
                     $validatedData[$field] = 0;

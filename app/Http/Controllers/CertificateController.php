@@ -138,4 +138,68 @@ class CertificateController extends Controller
 
         return $pdf->download("{$invoice->customer_trip_no}.pdf");
     }
+
+    public function downloadinvoice2($id)
+    {
+        // Get the draft certificate for this application
+        $cert = Certificate::where('id', $id)->where('type', 'draft')->latest()->firstOrFail();
+
+        // Get the invoice related to this certificate
+        $invoice = Invoice::where('cert_id', $cert->id)->latest()->firstOrFail();
+
+        // Fetch the related feriApp record
+        $feriApp = feriApp::where('id', $cert->application_id)->firstOrFail();
+        // Fetch the applicant's name
+        $applicantName = User::find($feriApp->user_id)?->name ?? 'N/A';
+
+        // Pass $invoice, $feriApp, and $applicantName to the view
+        $pdf = Pdf::loadView('layouts.theinvoice', [
+            'invoice' => $invoice,
+            'feriapp' => $feriApp,
+            'applicantName' => Str::title($applicantName),
+        ]);
+
+        return $pdf->download("{$invoice->customer_trip_no}.pdf");
+    }
+
+    public function statement_download(Request $request)
+    {
+        // Validate the request data
+        $validatedData = $request->validate([
+            'start' => 'required|date',
+            'end' => 'required|date|after_or_equal:start',
+        ]);
+
+        // Fetch the invoices within the specified date range
+        $records = Invoice::whereBetween('invoice_date', [$validatedData['start'], $validatedData['end']])->get();
+
+        // Add grandTotal to each record
+        $records->transform(function ($invoice) {
+            $feriQty = (float) ($invoice->feri_quantity ?? 0);
+            $feriUnits = (float) ($invoice->feri_units ?? 0);
+            $codQty = (float) ($invoice->cod_quantities ?? 0);
+            $codUnits = (float) ($invoice->cod_units ?? 0);
+            $euroRate = (float) ($invoice->euro_rate ?? 1);
+            $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
+
+            // Calculating the amounts
+            $feriAmount = $feriQty * $feriUnits;
+            $codAmount = $codQty * $codUnits;
+            $upTotal = $feriAmount + $codAmount;
+            $transporterAmount = $transporterQty * 0.018;
+            $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
+
+            $invoice->amount = $grandTotal;
+            return $invoice;
+        });
+
+        // Pass $invoice, $feriApp, and $applicantName to the view
+        $pdf = Pdf::loadView('layouts.thestatement', [
+            'invoice' => $records,
+        ]);
+
+        // dd($records);
+
+        return $pdf->download('ALM_STATEMENT.pdf');
+    }
 }

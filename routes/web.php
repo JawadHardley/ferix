@@ -15,7 +15,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 
 Route::get('/', function () {
     return view('landingpage');
-});
+})->name('homesweethome');
 
 Route::get('/email/verify/success', function () {
     return view('auth.verify-success');
@@ -37,6 +37,7 @@ Route::get('/download-draft/{id}', [CertificateController::class, 'downloaddraft
 Route::get('/download-file/{id}/{type}', [CertificateController::class, 'downloadfile'])->name('file.downloadfile');
 
 Route::get('/download-invoice/{id}', [CertificateController::class, 'downloadinvoice'])->name('invoices.downloadinvoice');
+Route::get('/download-invoices/{id}', [CertificateController::class, 'downloadinvoice2'])->name('invoices.downloadinvoice2');
 
 Route::post('/logout', function (Request $request) {
     Auth::logout();
@@ -258,6 +259,20 @@ Route::prefix('vendor')
         Route::post('rates/edit/{id}', [VendorAuthController::class, 'rateupdate'])
             ->name('rateupdate')
             ->middleware('role');
+
+        Route::get('invoices', [VendorAuthController::class, 'showinvoices'])
+            ->name('showinvoices')
+            ->middleware('role');
+
+        Route::get('statements', [VendorAuthController::class, 'showstatementgen'])
+            ->name('showstatementgen')
+            ->middleware('role');
+
+        Route::post('statement', [CertificateController::class, 'statement_download'])
+            ->name('statement_download')
+            ->middleware('role');
+
+        Route::get('/chat/messages/{id}', [VendorAuthController::class, 'fetchChatMessages'])->name('chat.fetch');
     });
 
 Route::get('/email', function () {
