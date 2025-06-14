@@ -31,7 +31,7 @@
 document.getElementById('statementForm').addEventListener('submit', function(e) {
     setTimeout(function() {
         window.location.reload();
-    }, 2000); // Adjust delay as needed
+    }, 3500); // Adjust delay as needed
 });
 </script>
 

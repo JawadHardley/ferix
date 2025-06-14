@@ -205,16 +205,36 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <input type="text" name="transport_mode" class="form-control"
                             value="{{ $record->transport_mode }}" disabled>
                     </div>
-                    <div class="col-12 mb-3 col-lg-4">
-                        <div class="form-label">Transporter Company</div>
-                        <input type="text" name="transporter_company" class="form-control"
-                            value="{{ $record->companyName }}" disabled>
+                    <div class="col-12 col-lg-4 mb-3">
+                        <label class="form-label">Transporter Company</label>
+                        @if($record->status < 2) <select class="form-select" name="transporter_company" disabled>
+                            <option value="">-- select --</option>
+                            @foreach($companies as $company)
+                            <option value="{{ $company->id }}"
+                                {{ old('transporter_company', $record->transporter_company ?? '') == $company->id ? 'selected' : '' }}>
+                                {{ $company->name }}
+                            </option>
+                            @endforeach
+                            </select>
+                            @else
+                            <input type="text" class="form-control"
+                                value="{{ $companies->where('id', $record->transporter_company)->first()->name ?? 'N/A' }}"
+                                disabled>
+                            <input type="hidden" name="transporter_company" value="{{ $record->transporter_company }}">
+                            @endif
                     </div>
-                    <div class="col-12 mb-3 col-lg-12">
+                    <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Entry Border DRC</div>
                         <input type="text" name="entry_border_drc" class="form-control"
                             value="{{ $record->entry_border_drc }}" disabled>
                     </div>
+
+                    <div class="col-12 col-lg-6 mb-3">
+                        <label class="form-label">Border ETA</label>
+                        <input type="date" class="form-control" name="arrival_date" value="{{ $record->arrival_date }}"
+                            autocomplete="on" disabled />
+                    </div>
+
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Truck Details</div>
                         <input type="text" name="truck_details" class="form-control"
@@ -230,6 +250,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <input type="text" name="final_destination" class="form-control"
                             value="{{ $record->final_destination }}" disabled>
                     </div>
+
 
                 </div>
 
@@ -577,14 +598,6 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                                 value="{{ $invoice->customer_trip_no ?? '' }}" autocomplete="on"
                                                 required />
 
-
-
-                                            <div class="col-12 col-md-12 mb-3">
-                                                <label class="form-label">FERI / COD Certificate Number</label>
-                                                <input type="text" class="form-control" name="certificate_no"
-                                                    value="{{ $invoice->certificate_no ?? '' }}" autocomplete="on"
-                                                    required />
-                                            </div>
                                         </div>
 
                                         <div class="mb-3">
@@ -752,12 +765,19 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <input type="text" name="entry_border_drc" class="form-control"
                             value="{{ $record->entry_border_drc }}" disabled>
                     </div>
-                    <div class="col-12 mb-3 col-lg-6">
+                    <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Final Destination</div>
                         <input type="text" name="final_destination" class="form-control"
                             value="{{ $record->final_destination }}" disabled>
                     </div>
-                    <div class="col-12 mb-3 col-lg-6">
+
+                    <div class="col-12 col-lg-4 mb-3">
+                        <label class="form-label">Border ETA</label>
+                        <input type="date" class="form-control" name="arrival_date" value="{{ $record->arrival_date }}"
+                            autocomplete="on" disabled />
+                    </div>
+
+                    <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Customs Decl No</div>
                         <input type="text" name="customs_decl_no" class="form-control"
                             value="{{ $record->customs_decl_no }}" disabled>
@@ -1235,12 +1255,6 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <input type="hidden" class="form-control" name="customer_trip_no"
                             value="{{ $record->company_ref }}" placeholder="Enter Purchase Order Number"
                             autocomplete="on" required />
-
-                        <div class="col-12 col-md-12 mb-3">
-                            <label class="form-label">FERI / COD Certificate Number</label>
-                            <input type="text" class="form-control" name="certificate_no"
-                                placeholder="e.g. CERT-2025-XYZ" autocomplete="on" required />
-                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -1293,6 +1307,13 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                             value="{{ $record->status == 2 ? 'draft' : ($record->status == 4 ? 'certificate' : '') }}"
                             disabled />
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">FERI / COD Certificate Number</label>
+                        <input type="text" class="form-control" name="certificate_no" placeholder="e.g. CERT-2025-XYZ"
+                            autocomplete="on" required />
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label">
                             {{ $record->status == 2 ? 'Draft' : ($record->status == 4 ? '' : '') }}

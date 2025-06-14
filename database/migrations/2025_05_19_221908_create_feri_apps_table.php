@@ -65,7 +65,7 @@ return new class extends Migration {
             $table->string('insurance_value')->nullable();
             $table->string('additional_fees_currency')->nullable();
             $table->string('additional_fees_value')->nullable();
-            $table->string('documents_upload')->nullable(); // store filename/path
+            $table->text('documents_upload')->nullable(); // store filename/path
 
             $table->timestamps();
 

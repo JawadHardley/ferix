@@ -39,9 +39,9 @@
                             <th>
                                 ID
                             </th>
+                            <th>Company Ref</th>
                             <th>Invoice</th>
                             <th>Customer Trip No</th>
-                            <th>Company</th>
                             <th>Date</th>
                             <th>PO</th>
                             <th>Cert No</th>
@@ -55,13 +55,13 @@
                             <td><span class="text-secondary">{{ $record->id }}</span></td>
                             <td><a href="{{ route('vendor.showApp', ['id' => $record->id]) }}" class="text-reset"
                                     tabindex="-1">
-                                    PRES-{{ $record->created_at->format('Y') }}-{{ $record->id }}
+                                    {{ $record->customer_ref }}
                                 </a></td>
                             <td>
-                                {{ $record->customer_trip_no }}
+                                PRES-{{ $record->created_at->format('Y') }}-{{ $record->id }}
                             </td>
                             <td>
-                                ...
+                                {{ $record->customer_trip_no }}
                             </td>
                             <td>
                                 {{ $record->created_at->format('j F Y') }}

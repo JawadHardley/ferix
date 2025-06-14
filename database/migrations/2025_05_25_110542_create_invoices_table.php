@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('customer_po');
             $table->string('customer_trip_no');
             $table->string('application_invoice_no')->nullable();
-            $table->string('certificate_no');
+            $table->string('certificate_no')->nullable();
             $table->timestamps();
 
             // Add foreign key constraint

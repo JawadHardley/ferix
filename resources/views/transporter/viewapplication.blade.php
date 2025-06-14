@@ -226,11 +226,29 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                     value="{{ $record->transporter_company }}">
                                 @endif
                         </div>
-                        <div class="col-12 mb-3 col-lg-12">
-                            <div class="form-label">Entry Border DRC</div>
-                            <input type="text" name="entry_border_drc" class="form-control"
-                                value="{{ $record->entry_border_drc }}">
+
+                        <div class="col-12 col-lg-6 mb-3">
+                            <label class="form-label">Entry Border to DRC</label>
+                            <select class="form-select" name="entry_border_drc" required>
+                                <option value="0"
+                                    {{ ($record->entry_border_drc == '0' || !$record->entry_border_drc) ? 'selected' : '' }}>
+                                    -- select --</option>
+                                <option value="Kasumbalesa"
+                                    {{ $record->entry_border_drc == 'Kasumbalesa' ? 'selected' : '' }}>Kasumbalesa
+                                </option>
+                                <option value="Mokambo" {{ $record->entry_border_drc == 'Mokambo' ? 'selected' : '' }}>
+                                    Mokambo</option>
+                                <option value="Sakania" {{ $record->entry_border_drc == 'Sakania' ? 'selected' : '' }}>
+                                    Sakania</option>
+                            </select>
                         </div>
+
+                        <div class="col-12 col-lg-6 mb-3">
+                            <label class="form-label">Border ETA</label>
+                            <input type="date" class="form-control" name="arrival_date"
+                                value="{{$record->arrival_date }}" autocomplete="on" required />
+                        </div>
+
                         <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Truck Details</div>
                             <input type="text" name="truck_details" class="form-control"
@@ -241,10 +259,27 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                             <input type="text" name="arrival_station" class="form-control"
                                 value="{{ $record->arrival_station }}">
                         </div>
+
                         <div class="col-12 mb-3 col-lg-4">
-                            <div class="form-label">Final Destination</div>
-                            <input type="text" name="final_destination" class="form-control"
-                                value="{{ $record->final_destination }}">
+                            <label class="form-label">Final Destination</label>
+                            <select class="form-select" name="final_destination" required>
+                                <option value="" {{ !$record->final_destination ? 'selected' : '' }}>-- select --
+                                </option>
+                                <option value="Likasi DRC"
+                                    {{ $record->final_destination == 'Likasi DRC' ? 'selected' : '' }}>Likasi DRC
+                                </option>
+                                <option value="Lubumbashi DRC"
+                                    {{ $record->final_destination == 'Lubumbashi DRC' ? 'selected' : '' }}>Lubumbashi
+                                    DRC</option>
+                                <option value="Kolwezi DRC"
+                                    {{ $record->final_destination == 'Kolwezi DRC' ? 'selected' : '' }}>Kolwezi DRC
+                                </option>
+                                <option value="Tenke DRC"
+                                    {{ $record->final_destination == 'Tenke DRC' ? 'selected' : '' }}>Tenke DRC</option>
+                                <option value="Kisanfu DRC"
+                                    {{ $record->final_destination == 'Kisanfu DRC' ? 'selected' : '' }}>Kisanfu DRC
+                                </option>
+                            </select>
                         </div>
 
                     </div>
@@ -303,10 +338,55 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <input type="text" name="exporter_email" class="form-control"
                             value="{{ $record->exporter_email }}">
                     </div>
+
                     <div class="col-12 mb-3 col-lg-12">
-                        <div class="form-label">CF Agent</div>
-                        <input type="text" name="cf_agent" class="form-control" value="{{ $record->cf_agent }}">
+                        <label class="form-label">CF Agent</label>
+                        <select class="form-select" name="cf_agent" required>
+                            <option value="" {{ !$record->cf_agent ? 'selected' : '' }}>-- select --</option>
+                            <option value="AGL" {{ $record->cf_agent == 'AGL' ? 'selected' : '' }}>AGL</option>
+                            <option value="CARGO CONGO" {{ $record->cf_agent == 'CARGO CONGO' ? 'selected' : '' }}>CARGO
+                                CONGO</option>
+                            <option value="CONNEX" {{ $record->cf_agent == 'CONNEX' ? 'selected' : '' }}>CONNEX</option>
+                            <option value="African Logistics"
+                                {{ $record->cf_agent == 'African Logistics' ? 'selected' : '' }}>African Logistics
+                            </option>
+                            <option value="Afritac" {{ $record->cf_agent == 'Afritac' ? 'selected' : '' }}>Afritac
+                            </option>
+                            <option value="Amicongo" {{ $record->cf_agent == 'Amicongo' ? 'selected' : '' }}>Amicongo
+                            </option>
+                            <option value="Aristote" {{ $record->cf_agent == 'Aristote' ? 'selected' : '' }}>Aristote
+                            </option>
+                            <option value="Bollore" {{ $record->cf_agent == 'Bollore' ? 'selected' : '' }}>Bollore
+                            </option>
+                            <option value="Brasimba" {{ $record->cf_agent == 'Brasimba' ? 'selected' : '' }}>Brasimba
+                            </option>
+                            <option value="Brasimba S.A" {{ $record->cf_agent == 'Brasimba S.A' ? 'selected' : '' }}>
+                                Brasimba S.A</option>
+                            <option value="Chemaf" {{ $record->cf_agent == 'Chemaf' ? 'selected' : '' }}>Chemaf</option>
+                            <option value="Comexas Afrique"
+                                {{ $record->cf_agent == 'Comexas Afrique' ? 'selected' : '' }}>Comexas Afrique</option>
+                            <option value="Comexas" {{ $record->cf_agent == 'Comexas' ? 'selected' : '' }}>Comexas
+                            </option>
+                            <option value="DCG" {{ $record->cf_agent == 'DCG' ? 'selected' : '' }}>DCG</option>
+                            <option value="Evele & Co" {{ $record->cf_agent == 'Evele & Co' ? 'selected' : '' }}>Evele &
+                                Co</option>
+                            <option value="Gecotrans" {{ $record->cf_agent == 'Gecotrans' ? 'selected' : '' }}>Gecotrans
+                            </option>
+                            <option value="Global Logistics"
+                                {{ $record->cf_agent == 'Global Logistics' ? 'selected' : '' }}>Global Logistics
+                            </option>
+                            <option value="Malabar" {{ $record->cf_agent == 'Malabar' ? 'selected' : '' }}>Malabar
+                            </option>
+                            <option value="Polytra" {{ $record->cf_agent == 'Polytra' ? 'selected' : '' }}>Polytra
+                            </option>
+                            <option value="Spedag" {{ $record->cf_agent == 'Spedag' ? 'selected' : '' }}>Spedag</option>
+                            <option value="Tradecorp" {{ $record->cf_agent == 'Tradecorp' ? 'selected' : '' }}>Tradecorp
+                            </option>
+                            <option value="Trade Service" {{ $record->cf_agent == 'Trade Service' ? 'selected' : '' }}>
+                                Trade Service</option>
+                        </select>
                     </div>
+
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">CF Agent Contact</div>
                         <input type="text" name="cf_agent_contact" class="form-control"
@@ -397,7 +477,14 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">FOB Currency</div>
-                        <input type="text" name="fob_currency" class="form-control" value="{{ $record->fob_currency }}">
+                        <select class="form-select" name="fob_currency" required>
+                            <option value="" {{ !$record->fob_currency ? 'selected' : '' }}>-- select --</option>
+                            <option value="USD" {{ $record->fob_currency == 'USD' ? 'selected' : '' }}>USD</option>
+                            <option value="EUR" {{ $record->fob_currency == 'EUR' ? 'selected' : '' }}>EUR</option>
+                            <option value="TZS" {{ $record->fob_currency == 'TZS' ? 'selected' : '' }}>TZS</option>
+                            <option value="ZAR" {{ $record->fob_currency == 'ZAR' ? 'selected' : '' }}>ZAR</option>
+                            <option value="AOA" {{ $record->fob_currency == 'AOA' ? 'selected' : '' }}>AOA</option>
+                        </select>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">FOB Value</div>
@@ -405,12 +492,36 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Incoterm</div>
-                        <input type="text" name="incoterm" class="form-control" value="{{ $record->incoterm }}">
+                        <select class="form-select" name="incoterm" required>
+                            <option value="" {{ !$record->incoterm ? 'selected' : '' }}>-- select --</option>
+                            <option value="CFR" {{ $record->incoterm == 'CFR' ? 'selected' : '' }}>CFR</option>
+                            <option value="CIF" {{ $record->incoterm == 'CIF' ? 'selected' : '' }}>CIF</option>
+                            <option value="CIP" {{ $record->incoterm == 'CIP' ? 'selected' : '' }}>CIP</option>
+                            <option value="CPT" {{ $record->incoterm == 'CPT' ? 'selected' : '' }}>CPT</option>
+                            <option value="DAF" {{ $record->incoterm == 'DAF' ? 'selected' : '' }}>DAF</option>
+                            <option value="DAP" {{ $record->incoterm == 'DAP' ? 'selected' : '' }}>DAP</option>
+                            <option value="DAT" {{ $record->incoterm == 'DAT' ? 'selected' : '' }}>DAT</option>
+                            <option value="DDP" {{ $record->incoterm == 'DDP' ? 'selected' : '' }}>DDP</option>
+                            <option value="DDU" {{ $record->incoterm == 'DDU' ? 'selected' : '' }}>DDU</option>
+                            <option value="DEQ" {{ $record->incoterm == 'DEQ' ? 'selected' : '' }}>DEQ</option>
+                            <option value="DES" {{ $record->incoterm == 'DES' ? 'selected' : '' }}>DES</option>
+                            <option value="DPU" {{ $record->incoterm == 'DPU' ? 'selected' : '' }}>DPU</option>
+                            <option value="EXW" {{ $record->incoterm == 'EXW' ? 'selected' : '' }}>EXW</option>
+                            <option value="FAS" {{ $record->incoterm == 'FAS' ? 'selected' : '' }}>FAS</option>
+                            <option value="FCA" {{ $record->incoterm == 'FCA' ? 'selected' : '' }}>FCA</option>
+                            <option value="FOB" {{ $record->incoterm == 'FOB' ? 'selected' : '' }}>FOB</option>
+                        </select>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Freight Currency</div>
-                        <input type="text" name="freight_currency" class="form-control"
-                            value="{{ $record->freight_currency }}">
+                        <select class="form-select" name="fob_currency" required>
+                            <option value="" {{ !$record->freight_currency ? 'selected' : '' }}>-- select --</option>
+                            <option value="USD" {{ $record->freight_currency == 'USD' ? 'selected' : '' }}>USD</option>
+                            <option value="EUR" {{ $record->freight_currency == 'EUR' ? 'selected' : '' }}>EUR</option>
+                            <option value="TZS" {{ $record->freight_currency == 'TZS' ? 'selected' : '' }}>TZS</option>
+                            <option value="ZAR" {{ $record->freight_currency == 'ZAR' ? 'selected' : '' }}>ZAR</option>
+                            <option value="AOA" {{ $record->freight_currency == 'AOA' ? 'selected' : '' }}>AOA</option>
+                        </select>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Freight Value</div>
@@ -419,8 +530,19 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Insurance Currency</div>
-                        <input type="text" name="insurance_currency" class="form-control"
-                            value="{{ $record->insurance_currency }}">
+                        <select class="form-select" name="insurance_currency" required>
+                            <option value="" {{ !$record->insurance_currency ? 'selected' : '' }}>-- select --</option>
+                            <option value="USD" {{ $record->insurance_currency == 'USD' ? 'selected' : '' }}>USD
+                            </option>
+                            <option value="EUR" {{ $record->insurance_currency == 'EUR' ? 'selected' : '' }}>EUR
+                            </option>
+                            <option value="TZS" {{ $record->insurance_currency == 'TZS' ? 'selected' : '' }}>TZS
+                            </option>
+                            <option value="ZAR" {{ $record->insurance_currency == 'ZAR' ? 'selected' : '' }}>ZAR
+                            </option>
+                            <option value="AOA" {{ $record->insurance_currency == 'AOA' ? 'selected' : '' }}>AOA
+                            </option>
+                        </select>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Insurance Value</div>
@@ -429,8 +551,20 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Additional Fees Currency</div>
-                        <input type="text" name="additional_fees_currency" class="form-control"
-                            value="{{ $record->additional_fees_currency }}">
+                        <select class="form-select" name="additional_fees_currency" required>
+                            <option value="" {{ !$record->additional_fees_currency ? 'selected' : '' }}>-- select --
+                            </option>
+                            <option value="USD" {{ $record->additional_fees_currency == 'USD' ? 'selected' : '' }}>USD
+                            </option>
+                            <option value="EUR" {{ $record->additional_fees_currency == 'EUR' ? 'selected' : '' }}>EUR
+                            </option>
+                            <option value="TZS" {{ $record->additional_fees_currency == 'TZS' ? 'selected' : '' }}>TZS
+                            </option>
+                            <option value="ZAR" {{ $record->additional_fees_currency == 'ZAR' ? 'selected' : '' }}>ZAR
+                            </option>
+                            <option value="AOA" {{ $record->additional_fees_currency == 'AOA' ? 'selected' : '' }}>AOA
+                            </option>
+                        </select>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Additional Fees Value</div>
@@ -665,12 +799,19 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                             <input type="text" name="entry_border_drc" class="form-control"
                                 value="{{ $record->entry_border_drc }}">
                         </div>
-                        <div class="col-12 mb-3 col-lg-6">
+                        <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Final Destination</div>
                             <input type="text" name="final_destination" class="form-control"
                                 value="{{ $record->final_destination }}">
                         </div>
-                        <div class="col-12 mb-3 col-lg-6">
+
+                        <div class="col-12 col-lg-4 mb-3">
+                            <label class="form-label">Border ETA</label>
+                            <input type="date" class="form-control" name="arrival_date"
+                                value="{{ $record->arrival_date }}" autocomplete="on" required />
+                        </div>
+
+                        <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Customs Decl No</div>
                             <input type="text" name="customs_decl_no" class="form-control"
                                 value="{{ $record->customs_decl_no }}">

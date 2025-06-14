@@ -47,7 +47,7 @@
                                 value="{{ old('validate_feri_cert') }}" autocomplete="on" required />
                         </div>
 
-                        <div class="col-12 col-lg-6 mb-3">
+                        <div class="col-12 col-lg-4 mb-3">
                             <label class="form-label">Entry Boarder to DRC</label>
                             <select class="form-select" name="entry_border_drc">
                                 <option value="0" {{ old('entry_border_drc') == '0' ? 'selected' : '' }}>-- select
@@ -62,7 +62,7 @@
                             </select>
                         </div>
 
-                        <div class="col-12 col-lg-6 mb-3">
+                        <div class="col-12 col-lg-4 mb-3">
                             <label class="form-label">Final Destination</label>
                             <select class="form-select" name="final_destination">
                                 <option value="0" {{ old('final_destination') == '0' ? 'selected' : '' }}>-- select
@@ -83,6 +83,12 @@
                                     {{ old('final_destination') == "Kisanfu, DRC" ? 'selected' : '' }}>
                                     Kisanfu, DRC</option>
                             </select>
+                        </div>
+
+                        <div class="col-12 col-lg-4 mb-3">
+                            <label class="form-label">Border ETA</label>
+                            <input type="date" class="form-control" name="arrival_date"
+                                value="{{ old('arrival_date') }}" autocomplete="on" required />
                         </div>
 
                         <div class="col-12 col-lg-4 mb-3">
@@ -271,19 +277,25 @@
 
                         <div class="col-12 col-lg-3 mb-3">
                             <label class="form-label">Packing list</label>
-                            <input type="file" class="form-control" name="packing_list" autocomplete="on" required />
+                            <input type="file" class="form-control" name="packing_list" autocomplete="on" />
                         </div>
 
                         <div class="col-12 col-lg-3 mb-3">
                             <label class="form-label">Manifest</label>
-                            <input type="file" class="form-control" name="manifest" autocomplete="on" required />
+                            <input type="file" class="form-control" name="manifest" autocomplete="on" />
+                        </div>
+
+                        <div class="col-12 col-lg-3 mb-3">
+                            <label class="form-label">Custom Docs <span class="fs-6 text-danger">(Merged)</span>
+                            </label>
+                            <input type="file" class="form-control" name="customs" autocomplete="on" />
                         </div>
 
 
                     </div>
                 </div>
                 <div class="mt-3">
-                    <a href="./dashboard" class="btn btn-secondary">Previous</a>
+                    <a href="./dashboard" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn-next btn btn-primarys">Submit</button>
                 </div>
             </div>
@@ -300,11 +312,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper to update nav-link and input borders
     function updateValidationUI() {
         tabPanes.forEach(function(tabPane) {
-            const requiredInputs = tabPane.querySelectorAll('[required]');
+            const requiredInputs = tabPane.querySelectorAll('[required], select[required], select');
             let hasInvalid = false;
 
             requiredInputs.forEach(function(input) {
-                if (!input.value || (input.type === 'checkbox' && !input.checked)) {
+                let invalid = false;
+                if (input.tagName === 'SELECT') {
+                    // If the first option is "" or "0", treat as invalid if selected
+                    if (input.value === "" || input.value === "0") {
+                        invalid = true;
+                    }
+                } else if (!input.value || (input.type === 'checkbox' && !input.checked)) {
+                    invalid = true;
+                }
+                if (invalid) {
                     input.classList.add('is-invalid');
                     hasInvalid = true;
                 } else {
@@ -316,7 +337,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const tabId = tabPane.id;
             const navLink = document.querySelector('[data-bs-target="#' + tabId + '"]');
             if (navLink) {
-                // Remove any previous "!" from nav-link text
                 navLink.textContent = navLink.textContent.replace(/!$/, '');
                 if (hasInvalid) {
                     navLink.style.color = 'red';

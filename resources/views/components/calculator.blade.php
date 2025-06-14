@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
             finalAns2 = finalAns2 * window.tshRate;
             finalCurrency = 'TZS';
         }
-        document.querySelector('.ans2').textContent = finalAns2.toFixed(2) + ' ' + finalCurrency;
+        document.querySelector('.ans2').textContent = finalAns2.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ' + finalCurrency;
     }
 
 });

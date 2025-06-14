@@ -421,7 +421,7 @@ $lastId = null;
         <tr class="theonetable" style="height: 25pt">
             <td class="hrr">{{ \Carbon\Carbon::parse($record->invoice_date)->format('j/n/Y') }}</td>
             <td class="hrr">PRES-2025-{{ $record->id }}</td>
-            <td class="hrr">...</td>
+            <td class="hrr">{{ $record->certificate_no }}</td>
             <td class="hrr">{{ $record->customer_ref }}</td>
             <td class="hrr">{{ $record->customer_po }}</td>
             <td class="hrr">$ {{ $record->amount }}</td>
@@ -438,6 +438,16 @@ $lastId = null;
             <td style="margin-top: 20pt" class="hrh hrr">Total</td>
             <td style="margin-top: 20pt" class="hrh hrr">
                 $ {{ number_format($tatal, 2) }}
+            </td>
+        </tr>
+        <tr class="theonetable">
+            <td style="margin-top: 20pt" class=""></td>
+            <td style="margin-top: 20pt" class=""></td>
+            <td style="margin-top: 20pt" class=""></td>
+            <td style="margin-top: 20pt" class=""></td>
+            <td style="margin-top: 20pt" class="">Total (TZS)</td>
+            <td style="margin-top: 20pt" class="">
+                {{ number_format(($tatal*$record->tz_rate), 2) }} TZS
             </td>
         </tr>
     </table>
@@ -487,7 +497,7 @@ $lastId = null;
                 text-indent: 0pt;
                 text-align: left;
             ">
-        Account Number: <span class="p">0250828197600 - USD</span>
+        Account Number: <span class="p">0150828197600 - TZS</span> | <span class="p">0250828197600 - USD</span>
     </h3>
     <h3 style="
                 padding-top: 1pt;
@@ -495,7 +505,7 @@ $lastId = null;
                 text-indent: 0pt;
                 text-align: left;
             ">
-        Branch Code: <span class="p">003374</span>
+        Branch Code: <span class="p">003074 - TZS</span> | <span class="p">003374 - USD</span>
     </h3>
     <h3 style="
                 padding-top: 1pt;

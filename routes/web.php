@@ -185,6 +185,16 @@ Route::prefix('transporter')
         Route::get('calculator', [TransporterAuthController::class, 'sampcalculator'])
             ->name('sampcalculator')
             ->middleware('role');
+
+        Route::post('/feri/import', [TransporterAuthController::class, 'importFeriApps'])
+            ->name('feri.import')
+            ->middleware('role');
+
+        Route::get('import/apply', [TransporterAuthController::class, 'importapply'])
+            ->name('importapply')
+            ->middleware('role');
+
+        Route::get('/feri/template/download', [TransporterAuthController::class, 'downloadFeriExcelTemplate'])->name('feri.template.download');
     });
 
 // Vendor routes

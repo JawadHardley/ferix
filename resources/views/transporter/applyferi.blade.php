@@ -36,6 +36,7 @@
                         <div class="col-12 col-lg-6 mb-3">
                             <label class="form-label">Transport Mode</label>
                             <select class="form-select" name="transport_mode" autocomplete="on" required>
+                                <option value="">-- select --</option>
                                 <option value="Road" {{ old('transport_mode') == 'Road' ? 'selected' : '' }}>Road
                                 </option>
                                 <option value="Air" {{ old('transport_mode') == 'Air' ? 'selected' : '' }}>Air
@@ -60,8 +61,8 @@
                             </select>
                         </div>
 
-                        <div class="col-12 col-lg-12 mb-3">
-                            <label class="form-label">Entry Boarder to DRC</label>
+                        <div class="col-12 col-lg-6 mb-3">
+                            <label class="form-label">Entry Border to DRC</label>
                             <select class="form-select" name="entry_border_drc">
                                 <option value="0" {{ old('entry_border_drc') == '0' ? 'selected' : '' }}>-- select
                                     --</option>
@@ -73,6 +74,12 @@
                                 <option value="Sakania" {{ old('entry_border_drc') == 'Sakania' ? 'selected' : '' }}>
                                     Sakania</option>
                             </select>
+                        </div>
+
+                        <div class="col-12 col-lg-6 mb-3">
+                            <label class="form-label">Border ETA</label>
+                            <input type="date" class="form-control" name="arrival_date"
+                                value="{{ old('arrival_date') }}" autocomplete="on" required />
                         </div>
 
                         <div class="col-12 col-lg-4 mb-3">
@@ -124,22 +131,16 @@
                     tabindex="0">
                     <div class="row">
 
-                        <div class="col-12 col-lg-4 mb-3">
+                        <div class="col-12 col-lg-6 mb-3">
                             <label class="form-label">Importer Name</label>
                             <input type="text" class="form-control" name="importer_name"
                                 value="{{ old('importer_name') }}" autocomplete="on" required />
                         </div>
 
-                        <div class="col-12 col-lg-4 mb-3">
+                        <div class="col-12 col-lg-6 mb-3">
                             <label class="form-label">Importer Address</label>
                             <input type="text" class="form-control" name="importer_address"
                                 value="{{ old('importer_address') }}" autocomplete="on" required />
-                        </div>
-
-                        <div class="col-12 col-lg-4 mb-3">
-                            <label class="form-label">Importer Details</label>
-                            <input type="text" class="form-control" name="importer_details"
-                                value="{{ old('importer_details') }}" autocomplete="on" required />
                         </div>
 
                         <div class="col-12 col-lg-6 mb-3">
@@ -155,9 +156,9 @@
                         </div>
 
                         <div class="col-12 col-lg-12 mb-3">
-                            <label class="form-label">FIX Number</label>
+                            <label class="form-label">FXI Number</label>
                             <input type="text" class="form-control" name="fix_number" value="{{ old('fix_number') }}"
-                                autocomplete="on" required />
+                                autocomplete="on" />
                         </div>
                     </div>
                 </div>
@@ -353,9 +354,9 @@
                                 </option>
                                 <option value="EUR" {{ old('fob_currency') == "EUR" ? 'selected' : '' }}>EUR
                                 </option>
-                                <option value="ZAR" {{ old('fob_currency') == "ZAR" ? 'selected' : '' }}>ZAR
+                                <option value="TZS" {{ old('fob_currency') == "TZS" ? 'selected' : '' }}>TZS
                                 </option>
-                                <option value="EUR" {{ old('fob_currency') == "EUR" ? 'selected' : '' }}>EUR
+                                <option value="ZAR" {{ old('fob_currency') == "ZAR" ? 'selected' : '' }}>ZAR
                                 </option>
                                 <option value="AOA" {{ old('fob_currency') == "AOA" ? 'selected' : '' }}>AOA
                                 </option>
@@ -390,8 +391,6 @@
                                 </option>
                                 <option value="ZAR" {{ old('freight_currency') == "ZAR" ? 'selected' : '' }}>ZAR
                                 </option>
-                                <option value="EUR" {{ old('freight_currency') == "EUR" ? 'selected' : '' }}>EUR
-                                </option>
                                 <option value="AOA" {{ old('freight_currency') == "AOA" ? 'selected' : '' }}>AOA
                                 </option>
                             </select>
@@ -418,7 +417,7 @@
                                 </option>
                                 <option value="ZAR" {{ old('insurance_currency') == "ZAR" ? 'selected' : '' }}>ZAR
                                 </option>
-                                <option value="EUR" {{ old('insurance_currency') == "EUR" ? 'selected' : '' }}>EUR
+                                <option value="TZS" {{ old('insurance_currency') == "TZS" ? 'selected' : '' }}>TZS
                                 </option>
                                 <option value="AOA" {{ old('insurance_currency') == "AOA" ? 'selected' : '' }}>AOA
                                 </option>
@@ -446,7 +445,7 @@
                                 </option>
                                 <option value="ZAR" {{ old('additional_fees_currency') == "ZAR" ? 'selected' : '' }}>ZAR
                                 </option>
-                                <option value="EUR" {{ old('additional_fees_currency') == "EUR" ? 'selected' : '' }}>EUR
+                                <option value="TZS" {{ old('additional_fees_currency') == "TZS" ? 'selected' : '' }}>TZS
                                 </option>
                                 <option value="AOA" {{ old('additional_fees_currency') == "AOA" ? 'selected' : '' }}>AOA
                                 </option>
@@ -490,18 +489,24 @@
 
                         <div class="col-12 col-lg-3 mb-3">
                             <label class="form-label">Packing list</label>
-                            <input type="file" class="form-control" name="packing_list" autocomplete="on" required />
+                            <input type="file" class="form-control" name="packing_list" autocomplete="on" />
                         </div>
 
                         <div class="col-12 col-lg-3 mb-3">
                             <label class="form-label">Manifest</label>
-                            <input type="file" class="form-control" name="manifest" autocomplete="on" required />
+                            <input type="file" class="form-control" name="manifest" autocomplete="on" />
+                        </div>
+
+                        <div class="col-12 col-lg-3 mb-3">
+                            <label class="form-label">Custom Docs <span class="fs-6 text-danger">(Merged)</span>
+                            </label>
+                            <input type="file" class="form-control" name="customs" autocomplete="on" />
                         </div>
 
                     </div>
                 </div>
                 <div class="mt-3">
-                    <a href="./dashboard" class="btn btn-secondary">Previous</a>
+                    <a href="./dashboard" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn-next btn btn-primarys">Submit</button>
                 </div>
             </div>
@@ -518,11 +523,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper to update nav-link and input borders
     function updateValidationUI() {
         tabPanes.forEach(function(tabPane) {
-            const requiredInputs = tabPane.querySelectorAll('[required]');
+            const requiredInputs = tabPane.querySelectorAll('[required], select[required], select');
             let hasInvalid = false;
 
             requiredInputs.forEach(function(input) {
-                if (!input.value || (input.type === 'checkbox' && !input.checked)) {
+                let invalid = false;
+                if (input.tagName === 'SELECT') {
+                    // If the first option is "" or "0", treat as invalid if selected
+                    if (input.value === "" || input.value === "0") {
+                        invalid = true;
+                    }
+                } else if (!input.value || (input.type === 'checkbox' && !input.checked)) {
+                    invalid = true;
+                }
+                if (invalid) {
                     input.classList.add('is-invalid');
                     hasInvalid = true;
                 } else {
@@ -534,7 +548,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const tabId = tabPane.id;
             const navLink = document.querySelector('[data-bs-target="#' + tabId + '"]');
             if (navLink) {
-                // Remove any previous "!" from nav-link text
                 navLink.textContent = navLink.textContent.replace(/!$/, '');
                 if (hasInvalid) {
                     navLink.style.color = 'red';

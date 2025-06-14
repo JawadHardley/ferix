@@ -1,6 +1,8 @@
 @extends('layouts.admin.main')
 @section('content')
 
+<x-errorshow />
+
 <div class="row">
     @foreach ($records as $rate)
     <div class="col-12 col-md-6">

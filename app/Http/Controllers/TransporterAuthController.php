@@ -12,7 +12,9 @@ use App\Models\Company;
 use App\Models\Rate;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Mail;
@@ -20,6 +22,12 @@ use App\Mail\mainmail;
 use App\Mail\CustomVerifyEmail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TransporterAuthController extends Controller
 {
@@ -209,6 +217,11 @@ class TransporterAuthController extends Controller
     // Show feri application form
     public function applyferi()
     {
+        //if user has not verified email
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
         // Fetch all records from the Company table
         $records = Company::all();
 
@@ -219,6 +232,11 @@ class TransporterAuthController extends Controller
     // Show feri application form
     public function continueferi()
     {
+        //if user has not verified email
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
         // Fetch all records from the Company table
         $records = Company::all();
 
@@ -231,10 +249,10 @@ class TransporterAuthController extends Controller
     {
         // dd($request);
         // List of fields for continuance
-        $continuanceFields = ['company_ref', 'po', 'validate_feri_cert', 'entry_border_drc', 'final_destination', 'customs_decl_no', 'arrival_station', 'truck_details', 'transporter_company', 'weight', 'quantity', 'volume', 'importer_name', 'cf_agent', 'exporter_name', 'freight_currency', 'freight_value', 'fob_value', 'insurance_value', 'instructions'];
+        $continuanceFields = ['company_ref', 'po', 'validate_feri_cert', 'entry_border_drc', 'arrival_date', 'final_destination', 'customs_decl_no', 'arrival_station', 'truck_details', 'transporter_company', 'weight', 'quantity', 'volume', 'importer_name', 'cf_agent', 'exporter_name', 'freight_currency', 'freight_value', 'fob_value', 'insurance_value', 'instructions'];
 
         // File fields to handle
-        $fileFields = ['invoice', 'manifest', 'packing_list'];
+        $fileFields = ['invoice', 'manifest', 'packing_list', 'customs'];
         // dd($request->feri_type);
         if ($request->feri_type === 'continuance') {
             // Validate only the required fields for continuance
@@ -243,6 +261,7 @@ class TransporterAuthController extends Controller
                 'po' => 'nullable|string|max:100',
                 'validate_feri_cert' => 'nullable|string|max:255',
                 'entry_border_drc' => 'required|string|max:255',
+                'arrival_date' => 'required|date|after_or_equal:today',
                 'final_destination' => 'required|string|max:255',
                 'customs_decl_no' => 'nullable|string|max:255',
                 'arrival_station' => 'required|string|max:255',
@@ -283,6 +302,7 @@ class TransporterAuthController extends Controller
                 'entry_border_drc' => 'required|string|max:255',
                 'truck_details' => 'required|string|max:255',
                 'arrival_station' => 'required|string|max:255',
+                'arrival_date' => 'required|date|after_or_equal:today',
                 'final_destination' => 'required|string|max:255',
                 'importer_name' => 'required|string|max:255',
                 'importer_phone' => 'required|string|max:20',
@@ -506,6 +526,11 @@ class TransporterAuthController extends Controller
     // Show single application
     public function showApp($id)
     {
+        //if user has not verified email
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
         // $record = feriApp::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         // Join feriApp with companies to get the company name
         $record = feriApp::leftJoin('companies', 'feriapp.transporter_company', '=', 'companies.id')->where('feriapp.id', $id)->where('feriapp.user_id', Auth::id())->select('feriapp.*', 'companies.name as company_name')->firstOrFail();
@@ -591,7 +616,7 @@ class TransporterAuthController extends Controller
         }
 
         // File fields to handle
-        $fileFields = ['invoice', 'manifest', 'packing_list'];
+        $fileFields = ['invoice', 'manifest', 'packing_list', 'customs'];
 
         // Determine type and validate accordingly
         if ($feriApp->feri_type === 'continuance') {
@@ -600,6 +625,7 @@ class TransporterAuthController extends Controller
                 'po' => 'nullable|string|max:100',
                 'validate_feri_cert' => 'nullable|string|max:255',
                 'entry_border_drc' => 'required|string|max:255',
+                'arrival_date' => 'required|date|after_or_equal:today',
                 'final_destination' => 'required|string|max:255',
                 'customs_decl_no' => 'nullable|string|max:255',
                 'arrival_station' => 'required|string|max:255',
@@ -628,6 +654,7 @@ class TransporterAuthController extends Controller
                     $validatedData[$field] = 0;
                 }
             }
+            $validatedData['feri_type'] = 'continuance';
         } else {
             // Validation for regional
             $validatedData = $request->validate([
@@ -637,6 +664,7 @@ class TransporterAuthController extends Controller
                 'entry_border_drc' => 'required|string|max:255',
                 'truck_details' => 'required|string|max:255',
                 'arrival_station' => 'required|string|max:255',
+                'arrival_date' => 'required|date|after_or_equal:today',
                 'final_destination' => 'required|string|max:255',
                 'importer_name' => 'required|string|max:255',
                 'importer_phone' => 'required|string|max:20',
@@ -675,6 +703,7 @@ class TransporterAuthController extends Controller
                 'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
                 'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
             ]);
+            $validatedData['feri_type'] = 'regional';
         }
 
         // Handle file uploads and update JSON
@@ -885,5 +914,388 @@ class TransporterAuthController extends Controller
 
         // Pass both $records and $rates to the view
         return view('transporter.calculator', compact('records', 'rates'));
+    }
+
+    public function importFeriApps(Request $request)
+    {
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
+        // Validate all file fields
+        $validatedData = $request->validate([
+            'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:20480',
+            'invoice' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+            'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+            'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+            'customs' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+        ]);
+
+        $fileFields = ['invoice', 'manifest', 'packing_list', 'customs'];
+
+        // Handle file uploads (same for all imported rows)
+        $documentUploads = [];
+        foreach ($fileFields as $fileField) {
+            if ($request->hasFile($fileField)) {
+                $file = $request->file($fileField);
+                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('feri_documents', $filename, 'public');
+                $documentUploads[$fileField] = $path;
+            }
+        }
+
+        $excelFile = $request->file('excel_file');
+        $rows = Excel::toArray([], $excelFile)[0];
+
+        if (empty($rows) || count($rows) < 2) {
+            return back()->withErrors(['excel_file' => 'Excel file is empty or missing data.']);
+        }
+
+        $headers = array_map('trim', $rows[0]);
+        $imported = 0;
+        $errors = [];
+
+        foreach (array_slice($rows, 1) as $rowIndex => $row) {
+            // Stop if first column is empty
+            if (empty($row[0])) {
+                break;
+            }
+
+            $data = array_combine($headers, $row);
+
+            // --- Forgiving conversion for common fields ---
+            $intFields = ['weight', 'quantity', 'volume'];
+            $floatFields = ['freight_value', 'fob_value', 'insurance_value', 'additional_fees_value'];
+            $dateFields = ['arrival_date'];
+            $stringFields = ['company_ref', 'po', 'validate_feri_cert', 'entry_border_drc', 'final_destination', 'arrival_station', 'truck_details', 'importer_name', 'cf_agent', 'exporter_name', 'freight_currency', 'instructions', 'manifest_no', 'occ_bivac', 'fob_currency', 'incoterm', 'insurance_currency', 'additional_fees_currency', 'importer_phone', 'importer_email', 'importer_address', 'exporter_address', 'importer_details', 'exporter_phone', 'exporter_email', 'cf_agent_contact', 'hs_code', 'package_type', 'cargo_origin', 'cargo_description'];
+
+            foreach ($intFields as $field) {
+                if (isset($data[$field]) && $data[$field] !== '') {
+                    if (is_numeric($data[$field])) {
+                        $data[$field] = intval($data[$field]);
+                    }
+                }
+            }
+            foreach ($floatFields as $field) {
+                if (isset($data[$field]) && $data[$field] !== '') {
+                    if (is_numeric($data[$field])) {
+                        $data[$field] = floatval($data[$field]);
+                    }
+                }
+            }
+
+            foreach ($dateFields as $field) {
+                if (isset($data[$field]) && !empty($data[$field])) {
+                    // If it's a number, treat as Excel serial
+                    if (is_numeric($data[$field])) {
+                        $data[$field] = ExcelDate::excelToDateTimeObject($data[$field])->format('Y-m-d');
+                    } else {
+                        // Try strtotime first
+                        $timestamp = strtotime($data[$field]);
+                        if ($timestamp !== false) {
+                            $data[$field] = date('Y-m-d', $timestamp);
+                        } else {
+                            // Try Carbon with common formats
+                            $formats = [
+                                'd-m-Y', // 31-12-2025
+                                'd/m/Y', // 31/12/2025
+                                'm/d/Y', // 12/31/2025 (common in US)
+                                'Y-m-d', // 2025-12-31 (ISO format)
+                                'd.m.Y', // 31.12.2025 (used in parts of Europe)
+                                'Y/m/d', // 2025/12/31
+                                'n/j/Y', // 12/3/2025
+                                'j/n/Y', // 3/12/2025
+                                'm-d-Y', // 12-31-2025
+                                'd-m-y', // 31-12-25 (2-digit year)
+                            ];
+                            $parsed = false;
+                            foreach ($formats as $format) {
+                                try {
+                                    $carbon = Carbon::createFromFormat($format, $data[$field]);
+                                    $data[$field] = $carbon->format('Y-m-d');
+                                    $parsed = true;
+                                    break;
+                                } catch (\Exception $e) {
+                                    // Try next format
+                                }
+                            }
+                            if (!$parsed) {
+                                // Leave as is, validation will catch it
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach ($stringFields as $field) {
+                if (isset($data[$field])) {
+                    $data[$field] = trim((string) $data[$field]);
+                }
+            }
+
+            // Convert transporter_company name to ID
+            if (!empty($data['transporter_company'])) {
+                $company = Company::where('name', trim($data['transporter_company']))->first();
+                if ($company) {
+                    $data['transporter_company'] = $company->id;
+                } else {
+                    $errors[] = 'Row ' . ($rowIndex + 2) . ': Transporter company "' . $data['transporter_company'] . '" not in System companies list.';
+                    continue;
+                }
+            }
+
+            // Add user_id, status, and documents_upload
+            $data['user_id'] = Auth::id();
+            $data['status'] = 1;
+            $data['documents_upload'] = json_encode($documentUploads);
+
+            // Determine type and validation rules (same as feriApp)
+            $type = strtolower(trim($data['feri_type'] ?? ($data['type'] ?? '')));
+            if ($type === 'continuance') {
+                $rules = [
+                    'company_ref' => 'nullable|string|max:255',
+                    'po' => 'nullable|string|max:100',
+                    'validate_feri_cert' => 'nullable|string|max:255',
+                    'entry_border_drc' => 'required|string|max:255',
+                    'arrival_date' => 'required|date|after_or_equal:today',
+                    'final_destination' => 'required|string|max:255',
+                    'customs_decl_no' => 'nullable|string|max:255',
+                    'arrival_station' => 'required|string|max:255',
+                    'truck_details' => 'required|string|max:255',
+                    'transporter_company' => 'required|integer|exists:companies,id',
+                    'weight' => 'required|integer|min:1',
+                    'quantity' => 'required|integer|max:9999999999',
+                    'volume' => 'required|integer|max:9999999999',
+                    'importer_name' => 'required|string|max:255',
+                    'cf_agent' => 'required|string|max:255',
+                    'exporter_name' => 'required|string|max:255',
+                    'freight_currency' => 'nullable|string|max:50',
+                    'freight_value' => 'nullable|numeric|max:9999999999',
+                    'fob_value' => 'nullable|numeric|max:9999999999',
+                    'insurance_value' => 'nullable|numeric|max:9999999999',
+                    'instructions' => 'nullable|string',
+                ];
+                // Set all other fields to 0
+                $allFields = ['transport_mode', 'importer_phone', 'importer_email', 'importer_address', 'exporter_address', 'importer_details', 'exporter_phone', 'exporter_email', 'cf_agent_contact', 'hs_code', 'package_type', 'cargo_origin', 'cargo_description', 'manifest_no', 'occ_bivac', 'fob_currency', 'incoterm', 'insurance_currency', 'additional_fees_currency', 'additional_fees_value'];
+                foreach ($allFields as $field) {
+                    if (!isset($data[$field])) {
+                        $data[$field] = 0;
+                    }
+                }
+                $data['feri_type'] = 'continuance';
+            } elseif ($type === 'regional') {
+                $rules = [
+                    'transport_mode' => 'required|string|max:255',
+                    'transporter_company' => 'required|integer|exists:companies,id',
+                    'feri_type' => 'required|string|max:255',
+                    'entry_border_drc' => 'required|string|max:255',
+                    'truck_details' => 'required|string|max:255',
+                    'arrival_station' => 'required|string|max:255',
+                    'arrival_date' => 'required|date|after_or_equal:today',
+                    'final_destination' => 'required|string|max:255',
+                    'importer_name' => 'required|string|max:255',
+                    'importer_phone' => 'required|string|max:20',
+                    'importer_email' => 'nullable|email|max:255',
+                    'importer_address' => 'nullable|string|max:255',
+                    'exporter_address' => 'nullable|string|max:255',
+                    'importer_details' => 'nullable|string|max:255',
+                    'fix_number' => 'nullable|string|max:255',
+                    'exporter_name' => 'required|string|max:255',
+                    'exporter_phone' => 'required|string|max:20',
+                    'exporter_email' => 'nullable|email|max:255',
+                    'cf_agent' => 'required|string|max:255',
+                    'cf_agent_contact' => 'required|string|max:255',
+                    'cargo_description' => 'required|string|max:255',
+                    'hs_code' => 'required|string|max:100',
+                    'package_type' => 'required|string|max:255',
+                    'quantity' => 'required|integer|min:1',
+                    'company_ref' => 'nullable|string|max:255',
+                    'cargo_origin' => 'nullable|string|max:255',
+                    'customs_decl_no' => 'nullable|string|max:255',
+                    'manifest_no' => 'nullable|string|max:255',
+                    'occ_bivac' => 'nullable|string|max:255',
+                    'instructions' => 'nullable|string',
+                    'fob_currency' => 'nullable|string|max:50',
+                    'fob_value' => 'nullable|numeric|max:9999999999',
+                    'po' => 'nullable|string|max:100',
+                    'incoterm' => 'nullable|string|max:50',
+                    'freight_currency' => 'nullable|string|max:50',
+                    'freight_value' => 'nullable|numeric|max:9999999999',
+                    'insurance_currency' => 'nullable|string|max:50',
+                    'insurance_value' => 'nullable|numeric|max:9999999999',
+                    'additional_fees_currency' => 'nullable|string|max:50',
+                    'additional_fees_value' => 'nullable|numeric|max:9999999999',
+                ];
+                $data['feri_type'] = 'regional';
+            } else {
+                $errors[] = 'Row ' . ($rowIndex + 2) . ": Invalid or missing feri_type (must be 'continuance' or 'regional').";
+                continue;
+            }
+
+            // Validate row
+            $validator = Validator::make($data, $rules);
+            if ($validator->fails()) {
+                $errors[] = 'Row ' . ($rowIndex + 2) . ': ' . implode(', ', $validator->errors()->all());
+                continue;
+            }
+
+            // Insert into DB
+            try {
+                feriApp::create($data);
+                $imported++;
+            } catch (\Exception $e) {
+                $errors[] = 'Row ' . ($rowIndex + 2) . ': Failed to insert. ' . $e->getMessage();
+            }
+        }
+
+        if ($imported > 0) {
+            $msg = "$imported FERI application(s) imported successfully.";
+            if ($errors) {
+                $msg .= ' Some rows had errors.';
+            }
+            return back()->with(['status' => 'success', 'message' => $msg, 'errors' => $errors]);
+        } else {
+            return back()->withErrors(['excel_file' => 'No valid rows imported. Errors: ' . implode(' | ', $errors)]);
+        }
+    }
+
+    public function importapply()
+    {
+        //if user has not verified email
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
+        // Fetch all records from the Company table
+        $records = Company::all();
+
+        // Pass the records to the view
+        return view('transporter.importapply', compact('records'));
+    }
+
+    public function downloadFeriExcelTemplate()
+    {
+        // Fetch dropdown options from DB
+        $apptyper = ['regional', 'continuance'];
+        $transportModes = ['Road', 'Air', 'Maritime', 'Rail'];
+        $companies = Company::where('type', 'transporter')->pluck('name')->toArray();
+        $entryBorders = ['Kasumbalesa', 'Mokambo', 'Sakania'];
+        $finalDestinations = ['Likasi DRC', 'Lubumbashi DRC', 'Kolwezi DRC', 'Tenke DRC', 'Kisanfu DRC'];
+        $cfAgents = ['AGL', 'CARGO CONGO', 'CONNEX', 'African Logistics', 'Afritac', 'Amicongo', 'Aristote', 'Bollore', 'Brasimba', 'Brasimba S.A', 'Chemaf', 'Comexas Afrique', 'Comexas', 'DCG', 'Evele & Co', 'Gecotrans', 'Global Logistics', 'Malabar', 'Polytra', 'Spedag', 'Tradecorp', 'Trade Service'];
+        $currencies = ['USD', 'EUR', 'TZS', 'ZAR', 'AOA'];
+        $incoterms = ['CFR', 'CIF', 'CIP', 'CPT', 'DAF', 'DAP', 'DAT', 'DDP', 'DDU', 'DEQ', 'DES', 'DPU', 'EXW', 'FAS', 'FCA', 'FOB'];
+
+        // Define headers (must match your import logic)
+        $headers = ['feri_type', 'transport_mode', 'transporter_company', 'entry_border_drc', 'truck_details', 'quantity', 'weight', 'volume', 'final_destination', 'validate_feri_cert', 'arrival_station', 'arrival_date', 'importer_name', 'importer_phone', 'importer_email', 'importer_address', 'importer_details', 'fix_number', 'exporter_name', 'exporter_phone', 'exporter_email', 'exporter_address', 'cf_agent', 'cf_agent_contact', 'cargo_description', 'hs_code', 'package_type', 'company_ref', 'po', 'cargo_origin', 'customs_decl_no', 'manifest_no', 'occ_bivac', 'instructions', 'fob_currency', 'fob_value', 'incoterm', 'freight_currency', 'freight_value', 'insurance_currency', 'insurance_value', 'additional_fees_currency', 'additional_fees_value'];
+
+        // Sample row (edit as needed)
+        $sampleRow = [
+            $apptyper[0], // feri_type
+            $transportModes[0], // transport_mode
+            $companies[0] ?? '', // transporter_company
+            $entryBorders[0], // entry_border_drc
+            'XXX XXX', // truck_details
+            30, // quantity
+            30000, // weight
+            30, // volume
+            $finalDestinations[0], // final_destination
+            'XXXX', // validate_feri_cert
+            'Lubumbashi', // arrival_station
+            now()->addDays(7)->format('m-d-Y'),
+            // arrival_date,
+            'Importer Name', // importer_name
+            '0650000000', // importer_phone
+            'importer@email.com', // importer_email
+            'Importer Address', // importer_address
+            'Importer Details', // importer_details
+            'N/A', // fix_number
+            'Exporter Name', // exporter_name
+            '0650000000', // exporter_phone
+            'exporter@email.com', // exporter_email
+            'Exporter Address', // exporter_address
+            $cfAgents[0], // cf_agent
+            '0650000000', // cf_agent_contact
+            'Sulphur', // cargo_description
+            '23500000', // hs_code
+            'Bags', // package_type
+            'XXXXX', // company_ref
+            'TBS', // po
+            'KUWAIT', // cargo_origin
+            'XXXXX', // customs_decl_no
+            'XXXXX', // manifest_no
+            'OCC123', // occ_bivac
+            'No Additional Comments', // instructions
+            $currencies[0], // fob_currency
+            0, // fob_value
+            $incoterms[0], // incoterm
+            $currencies[0], // freight_currency
+            0, // freight_value
+            $currencies[0], // insurance_currency
+            0, // insurance_value
+            $currencies[0], // additional_fees_currency
+            0, // additional_fees_value
+        ];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set headers
+        foreach ($headers as $col => $header) {
+            $sheet->setCellValueByColumnAndRow($col + 1, 1, $header);
+        }
+
+        // Set sample data
+        foreach ($sampleRow as $col => $value) {
+            $sheet->setCellValueByColumnAndRow($col + 1, 2, $value);
+        }
+
+        // Add dropdowns for select columns
+        $dropdowns = [
+            'A' => $apptyper, // feri_type
+            'B' => $transportModes, // transport_mode
+            'C' => $companies, // transporter_company
+            'D' => $entryBorders, // entry_border_drc
+            'I' => $finalDestinations, // final_destination
+            'W' => $cfAgents, // cf_agent
+            'AI' => $currencies, // fob_currency
+            'AK' => $incoterms, // incoterm
+            'AL' => $currencies, // freight_currency
+            'AN' => $currencies, // insurance_currency
+            'AP' => $currencies, // additional_fees_currency
+        ];
+
+        foreach ($dropdowns as $colLetter => $options) {
+            if (empty($options)) {
+                continue;
+            }
+            $validation = $sheet->getCell($colLetter . '2')->getDataValidation();
+            $validation->setType(DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowInputMessage(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setFormula1('"' . implode(',', $options) . '"');
+            // Optionally, apply to more rows if you want
+        }
+
+        // Set arrival_date column to date format
+        // $sheet->getStyle('G2')->getNumberFormat()->setFormatCode('yyyy-mm-dd');
+
+        // Download as response
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'feri_import_template.xlsx';
+
+        return new StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            },
+            200,
+            [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'attachment;filename="feri_import_template.xlsx"',
+                'Cache-Control' => 'max-age=0',
+            ],
+        );
     }
 }

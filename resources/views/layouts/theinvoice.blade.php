@@ -899,7 +899,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
         text-indent: 0pt;
         text-align: left;
       ">
-        Account Number: <span class="p">0250828197600 - USD</span>
+        Account Number: <span class="p">0150828197600 - TZS</span> | <span class="p">0250828197600 - USD</span>
     </h3>
     <h3 style="
         padding-top: 1pt;
@@ -907,7 +907,7 @@ $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - 
         text-indent: 0pt;
         text-align: left;
       ">
-        Branch Code: <span class="p">003374</span>
+        Branch Code: <span class="p">003074 - TZS</span> | <span class="p">003374 - USD</span>
     </h3>
     <h3 style="
         padding-top: 1pt;

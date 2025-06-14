@@ -61,6 +61,9 @@
                                 <a class="dropdown-item" href="{{ route('transporter.continueferi') }}">
                                     Continuance
                                 </a>
+                                <a class="dropdown-item" href="{{ route('transporter.importapply') }}">
+                                    Easy Apply
+                                </a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">

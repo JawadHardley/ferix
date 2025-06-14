@@ -24,6 +24,7 @@ use App\Mail\CustomVerifyEmail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class VendorAuthController extends Controller
 {
@@ -402,6 +403,11 @@ class VendorAuthController extends Controller
     // Show single application
     public function showApp($id)
     {
+        //if user has not verified email
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
         // Fetch the specific feriApp record
         $record = feriApp::where('id', $id)->firstOrFail();
 
@@ -541,7 +547,6 @@ class VendorAuthController extends Controller
             'customer_trip_no' => 'required|string',
             // 'application_invoice_no' => 'required|string',
             'tz_rate' => 'required|numeric',
-            'certificate_no' => 'required|string',
         ]);
 
         // Find the specific feriApp record
@@ -589,7 +594,6 @@ class VendorAuthController extends Controller
             'customer_po' => $validatedData['customer_po'],
             'customer_trip_no' => $validatedData['customer_trip_no'],
             // 'application_invoice_no' => $validatedData['application_invoice_no'],
-            'certificate_no' => $validatedData['certificate_no'],
         ]);
 
         // Find the recipient (transporter)
@@ -641,6 +645,7 @@ class VendorAuthController extends Controller
         // Validate the file (limit to PDF and max size 5MB)
         $request->validate([
             'file' => 'required|mimes:pdf|max:20480', // max:20480 KB = 20 MB
+            'certificate_no' => 'required|string|max:255',
         ]);
 
         // Find the specific feriApp record
@@ -685,6 +690,12 @@ class VendorAuthController extends Controller
         // Get the invoice just created (if you want to pass it)
         $draft1 = Certificate::where('application_id', $feriApp->id)->where('type', 'draft')->first();
         $invoice = Invoice::where('cert_id', $draft1->id)->first();
+
+        // Update certificate_no if present in request
+        if ($invoice && $request->has('certificate_no')) {
+            $invoice->certificate_no = $request->certificate_no;
+            $invoice->save();
+        }
 
         // dd($invoice);
 
@@ -855,7 +866,6 @@ class VendorAuthController extends Controller
             'del' => 0, // Default to not deleted
         ]);
 
-
         // Find the recipient (transporter) - assuming transporter_company is user_id
         $recipient = User::find($feriApp->user_id);
 
@@ -958,6 +968,11 @@ class VendorAuthController extends Controller
 
     public function rates()
     {
+        //if user has not verified email
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
         // Fetch all records from the Company table
         $records = Rate::all();
 
@@ -968,9 +983,20 @@ class VendorAuthController extends Controller
     public function rateupdate(Request $request, $id)
     {
         // Validate the request data
-        $validatedData = $request->validate([
-            'amount' => 'required|numeric',
-        ]);
+        $validatedData = $request->validate(
+            [
+                'amount' => [
+                    'required',
+                    'numeric',
+                    'regex:/^\d{1,6}(\.\d{1,4})?$/', // up to 6 digits before and 4 after decimal
+                    'between:0,999999.9999', // match DECIMAL(10,4) max
+                ],
+            ],
+            [
+                'amount.regex' => 'Rate must not have more than 4 decimal places and must be less than 1,000,000.',
+                'amount.between' => 'Rate must be between 0 and 999999.9999.',
+            ],
+        );
 
         // Find the specific rate record
         $rate = Rate::findOrFail($id);
@@ -1005,10 +1031,35 @@ class VendorAuthController extends Controller
 
     public function showinvoices()
     {
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
+        // Get all invoices
         $records = Invoice::all();
 
+        // Get all certificates referenced by invoices
+        $certIds = $records->pluck('cert_id')->unique()->filter();
+        $certificates = Certificate::whereIn('id', $certIds)->get()->keyBy('id');
+
+        // Get all application_ids from those certificates
+        $applicationIds = $certificates->pluck('application_id')->unique()->filter();
+        $applications = feriApp::whereIn('id', $applicationIds)->get()->keyBy('id');
+
+        // Filter invoices: only those whose certificate's application has status = 5
+        $approvedRecords = $records
+            ->filter(function ($invoice) use ($certificates, $applications) {
+                $cert = $certificates->get($invoice->cert_id);
+                if (!$cert) {
+                    return false;
+                }
+                $app = $applications->get($cert->application_id);
+                return $app && $app->status == 5;
+            })
+            ->values();
+
         // Add grandTotal to each record
-        $records->transform(function ($invoice) {
+        $approvedRecords->transform(function ($invoice) {
             $feriQty = (float) ($invoice->feri_quantity ?? 0);
             $feriUnits = (float) ($invoice->feri_units ?? 0);
             $codQty = (float) ($invoice->cod_quantities ?? 0);
@@ -1016,7 +1067,6 @@ class VendorAuthController extends Controller
             $euroRate = (float) ($invoice->euro_rate ?? 1);
             $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
 
-            // Calculating the amounts
             $feriAmount = $feriQty * $feriUnits;
             $codAmount = $codQty * $codUnits;
             $upTotal = $feriAmount + $codAmount;
@@ -1027,7 +1077,7 @@ class VendorAuthController extends Controller
             return $invoice;
         });
 
-        return view('vendor.invoices', compact('records'));
+        return view('vendor.invoices', ['records' => $approvedRecords]);
     }
 
     public function showstatementgen()
