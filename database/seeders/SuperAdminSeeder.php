@@ -33,7 +33,7 @@ class SuperAdminSeeder extends Seeder
                 'role' => 'admin',
                 'user_auth' => 1,
                 'company' => $company->id,
-                'password' => Hash::make('11111111'), // Change this!
+                'password' => Hash::make(env('SUPERADMIN_PASSWORD')), // Change this!
                 'email_verified_at' => now(),
             ]
         );
