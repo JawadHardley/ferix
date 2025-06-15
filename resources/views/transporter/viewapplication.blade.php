@@ -205,11 +205,12 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Transport Mode</div>
                             <input type="text" name="transport_mode" class="form-control"
-                                value="{{ $record->transport_mode }}">
+                                value="{{ $record->transport_mode }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                         </div>
                         <div class="col-12 col-lg-4 mb-3">
                             <label class="form-label">Transporter Company</label>
-                            @if($record->status < 2) <select class="form-select" name="transporter_company">
+                            <select class="form-select" name="transporter_company"
+                                {{ $record->status > 1 ? 'disabled' : '' }}>
                                 <option value="">-- select --</option>
                                 @foreach($companies as $company)
                                 <option value="{{ $company->id }}"
@@ -217,19 +218,14 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                     {{ $company->name }}
                                 </option>
                                 @endforeach
-                                </select>
-                                @else
-                                <input type="text" class="form-control"
-                                    value="{{ $companies->where('id', $record->transporter_company)->first()->name ?? 'N/A' }}"
-                                    disabled>
-                                <input type="hidden" name="transporter_company"
-                                    value="{{ $record->transporter_company }}">
-                                @endif
+                            </select>
+                            <input type="hidden" name="transporter_company" value="{{ $record->transporter_company }}">
                         </div>
 
                         <div class="col-12 col-lg-6 mb-3">
                             <label class="form-label">Entry Border to DRC</label>
-                            <select class="form-select" name="entry_border_drc" required>
+                            <select class="form-select" name="entry_border_drc"
+                                {{ $record->status > 1 ? 'disabled' : '' }} required>
                                 <option value="0"
                                     {{ ($record->entry_border_drc == '0' || !$record->entry_border_drc) ? 'selected' : '' }}>
                                     -- select --</option>
@@ -246,23 +242,25 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <div class="col-12 col-lg-6 mb-3">
                             <label class="form-label">Border ETA</label>
                             <input type="date" class="form-control" name="arrival_date"
-                                value="{{$record->arrival_date }}" autocomplete="on" required />
+                                value="{{$record->arrival_date }}" autocomplete="on"
+                                {{ $record->status > 1 ? 'disabled' : '' }} required />
                         </div>
 
                         <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Truck Details</div>
                             <input type="text" name="truck_details" class="form-control"
-                                value="{{ $record->truck_details }}">
+                                value="{{ $record->truck_details }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                         </div>
                         <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Arrival Station</div>
                             <input type="text" name="arrival_station" class="form-control"
-                                value="{{ $record->arrival_station }}">
+                                value="{{ $record->arrival_station }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                         </div>
 
                         <div class="col-12 mb-3 col-lg-4">
                             <label class="form-label">Final Destination</label>
-                            <select class="form-select" name="final_destination" required>
+                            <select class="form-select" name="final_destination"
+                                {{ $record->status > 1 ? 'disabled' : '' }} required>
                                 <option value="" {{ !$record->final_destination ? 'selected' : '' }}>-- select --
                                 </option>
                                 <option value="Likasi DRC"
@@ -295,21 +293,22 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Importer Name</div>
                         <input type="text" name="importer_name" class="form-control"
-                            value="{{ $record->importer_name }}">
+                            value="{{ $record->importer_name }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Importer Phone</div>
                         <input type="text" name="importer_phone" class="form-control"
-                            value="{{ $record->importer_phone }}">
+                            value="{{ $record->importer_phone }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Importer Email</div>
                         <input type="text" name="importer_email" class="form-control"
-                            value="{{ $record->importer_email }}">
+                            value="{{ $record->importer_email }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Fix Number</div>
-                        <input type="text" name="fix_number" class="form-control" value="{{ $record->fix_number }}">
+                        <input type="text" name="fix_number" class="form-control" value="{{ $record->fix_number }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                 </div>
@@ -326,22 +325,23 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Exporter Name</div>
                         <input type="text" name="exporter_name" class="form-control"
-                            value="{{ $record->exporter_name }}">
+                            value="{{ $record->exporter_name }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Exporter Phone</div>
                         <input type="text" name="exporter_phone" class="form-control"
-                            value="{{ $record->exporter_phone }}">
+                            value="{{ $record->exporter_phone }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Exporter Email</div>
                         <input type="text" name="exporter_email" class="form-control"
-                            value="{{ $record->exporter_email }}">
+                            value="{{ $record->exporter_email }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-12">
                         <label class="form-label">CF Agent</label>
-                        <select class="form-select" name="cf_agent" required>
+                        <select class="form-select" name="cf_agent" {{ $record->status > 1 ? 'disabled' : '' }}
+                            required>
                             <option value="" {{ !$record->cf_agent ? 'selected' : '' }}>-- select --</option>
                             <option value="AGL" {{ $record->cf_agent == 'AGL' ? 'selected' : '' }}>AGL</option>
                             <option value="CARGO CONGO" {{ $record->cf_agent == 'CARGO CONGO' ? 'selected' : '' }}>CARGO
@@ -390,7 +390,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">CF Agent Contact</div>
                         <input type="text" name="cf_agent_contact" class="form-control"
-                            value="{{ $record->cf_agent_contact }}">
+                            value="{{ $record->cf_agent_contact }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                 </div>
@@ -407,19 +407,22 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Cargo Description</div>
                         <input type="text" name="cargo_description" class="form-control"
-                            value="{{ $record->cargo_description }}">
+                            value="{{ $record->cargo_description }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">HS Code</div>
-                        <input type="text" name="hs_code" class="form-control" value="{{ $record->hs_code }}">
+                        <input type="text" name="hs_code" class="form-control" value="{{ $record->hs_code }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Package Type</div>
-                        <input type="text" name="package_type" class="form-control" value="{{ $record->package_type }}">
+                        <input type="text" name="package_type" class="form-control" value="{{ $record->package_type }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Quantity</div>
-                        <input type="text" name="quantity" class="form-control" value="{{ $record->quantity }}">
+                        <input type="text" name="quantity" class="form-control" value="{{ $record->quantity }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                 </div>
@@ -435,33 +438,39 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                     <div class="col-12 mb-3 col-lg-2">
                         <div class="form-label">PO Number</div>
-                        <input type="text" name="po" class="form-control" value="{{ $record->po }}">
+                        <input type="text" name="po" class="form-control" value="{{ $record->po }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-2">
                         <div class="form-label">Company Ref</div>
-                        <input type="text" name="company_ref" class="form-control" value="{{ $record->company_ref }}">
+                        <input type="text" name="company_ref" class="form-control" value="{{ $record->company_ref }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Cargo Origin</div>
-                        <input type="text" name="cargo_origin" class="form-control" value="{{ $record->cargo_origin }}">
+                        <input type="text" name="cargo_origin" class="form-control" value="{{ $record->cargo_origin }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-4">
                         <div class="form-label">Customs Decl No</div>
                         <input type="text" name="customs_decl_no" class="form-control"
-                            value="{{ $record->customs_decl_no }}">
+                            value="{{ $record->customs_decl_no }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Manifest No</div>
-                        <input type="text" name="manifest_no" class="form-control" value="{{ $record->manifest_no }}">
+                        <input type="text" name="manifest_no" class="form-control" value="{{ $record->manifest_no }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">OCC Bivac</div>
-                        <input type="text" name="occ_bivac" class="form-control" value="{{ $record->occ_bivac }}">
+                        <input type="text" name="occ_bivac" class="form-control" value="{{ $record->occ_bivac }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Instructions</div>
-                        <input type="text" name="instructions" class="form-control" value="{{ $record->instructions }}">
+                        <input type="text" name="instructions" class="form-control" value="{{ $record->instructions }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                 </div>
@@ -477,7 +486,8 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">FOB Currency</div>
-                        <select class="form-select" name="fob_currency" required>
+                        <select class="form-select" name="fob_currency" {{ $record->status > 1 ? 'disabled' : '' }}
+                            required>
                             <option value="" {{ !$record->fob_currency ? 'selected' : '' }}>-- select --</option>
                             <option value="USD" {{ $record->fob_currency == 'USD' ? 'selected' : '' }}>USD</option>
                             <option value="EUR" {{ $record->fob_currency == 'EUR' ? 'selected' : '' }}>EUR</option>
@@ -488,11 +498,13 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">FOB Value</div>
-                        <input type="text" name="fob_value" class="form-control" value="{{ $record->fob_value }}">
+                        <input type="text" name="fob_value" class="form-control" value="{{ $record->fob_value }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Incoterm</div>
-                        <select class="form-select" name="incoterm" required>
+                        <select class="form-select" name="incoterm" {{ $record->status > 1 ? 'disabled' : '' }}
+                            required>
                             <option value="" {{ !$record->incoterm ? 'selected' : '' }}>-- select --</option>
                             <option value="CFR" {{ $record->incoterm == 'CFR' ? 'selected' : '' }}>CFR</option>
                             <option value="CIF" {{ $record->incoterm == 'CIF' ? 'selected' : '' }}>CIF</option>
@@ -514,7 +526,8 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Freight Currency</div>
-                        <select class="form-select" name="fob_currency" required>
+                        <select class="form-select" name="freight_currency" {{ $record->status > 1 ? 'disabled' : '' }}
+                            required>
                             <option value="" {{ !$record->freight_currency ? 'selected' : '' }}>-- select --</option>
                             <option value="USD" {{ $record->freight_currency == 'USD' ? 'selected' : '' }}>USD</option>
                             <option value="EUR" {{ $record->freight_currency == 'EUR' ? 'selected' : '' }}>EUR</option>
@@ -526,11 +539,12 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Freight Value</div>
                         <input type="text" name="freight_value" class="form-control"
-                            value="{{ $record->freight_value }}">
+                            value="{{ $record->freight_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Insurance Currency</div>
-                        <select class="form-select" name="insurance_currency" required>
+                        <select class="form-select" name="insurance_currency"
+                            {{ $record->status > 1 ? 'disabled' : '' }} required>
                             <option value="" {{ !$record->insurance_currency ? 'selected' : '' }}>-- select --</option>
                             <option value="USD" {{ $record->insurance_currency == 'USD' ? 'selected' : '' }}>USD
                             </option>
@@ -547,11 +561,12 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Insurance Value</div>
                         <input type="text" name="insurance_value" class="form-control"
-                            value="{{ $record->insurance_value }}">
+                            value="{{ $record->insurance_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Additional Fees Currency</div>
-                        <select class="form-select" name="additional_fees_currency" required>
+                        <select class="form-select" name="additional_fees_currency"
+                            {{ $record->status > 1 ? 'disabled' : '' }} required>
                             <option value="" {{ !$record->additional_fees_currency ? 'selected' : '' }}>-- select --
                             </option>
                             <option value="USD" {{ $record->additional_fees_currency == 'USD' ? 'selected' : '' }}>USD
@@ -569,7 +584,7 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Additional Fees Value</div>
                         <input type="text" name="additional_fees_value" class="form-control"
-                            value="{{ $record->additional_fees_value }}">
+                            value="{{ $record->additional_fees_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     @if($documents)
                     @foreach($documents as $type => $path)
@@ -786,45 +801,76 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                         <div class="col-12 mb-3 col-lg-3">
                             <div class="form-label">Company Ref</div>
                             <input type="text" name="company_ref" class="form-control"
-                                value="{{ $record->company_ref }}">
+                                value="{{ $record->company_ref }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                         </div>
 
                         <div class="col-12 mb-3 col-lg-3">
                             <div class="form-label">PO Number</div>
-                            <input type="text" name="po" class="form-control" value="{{ $record->po }}">
+                            <input type="text" name="po" class="form-control" value="{{ $record->po }}"
+                                {{ $record->status > 1 ? 'disabled' : '' }}>
                         </div>
 
                         <div class="col-12 mb-3 col-lg-3">
                             <div class="form-label">Entry Border DRC</div>
-                            <input type="text" name="entry_border_drc" class="form-control"
-                                value="{{ $record->entry_border_drc }}">
+
+                            <select class="form-select" name="entry_border_drc"
+                                {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                <option value="0"
+                                    {{ ($record->entry_border_drc == '0' || !$record->entry_border_drc) ? 'selected' : '' }}>
+                                    -- select --</option>
+                                <option value="Kasumbalesa"
+                                    {{ $record->entry_border_drc == 'Kasumbalesa' ? 'selected' : '' }}>Kasumbalesa
+                                </option>
+                                <option value="Mokambo" {{ $record->entry_border_drc == 'Mokambo' ? 'selected' : '' }}>
+                                    Mokambo</option>
+                                <option value="Sakania" {{ $record->entry_border_drc == 'Sakania' ? 'selected' : '' }}>
+                                    Sakania</option>
+                            </select>
                         </div>
                         <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Final Destination</div>
-                            <input type="text" name="final_destination" class="form-control"
-                                value="{{ $record->final_destination }}">
+                            <select class="form-select" name="final_destination"
+                                {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                <option value="" {{ !$record->final_destination ? 'selected' : '' }}>-- select --
+                                </option>
+                                <option value="Likasi DRC"
+                                    {{ $record->final_destination == 'Likasi DRC' ? 'selected' : '' }}>Likasi DRC
+                                </option>
+                                <option value="Lubumbashi DRC"
+                                    {{ $record->final_destination == 'Lubumbashi DRC' ? 'selected' : '' }}>Lubumbashi
+                                    DRC</option>
+                                <option value="Kolwezi DRC"
+                                    {{ $record->final_destination == 'Kolwezi DRC' ? 'selected' : '' }}>Kolwezi DRC
+                                </option>
+                                <option value="Tenke DRC"
+                                    {{ $record->final_destination == 'Tenke DRC' ? 'selected' : '' }}>Tenke DRC</option>
+                                <option value="Kisanfu DRC"
+                                    {{ $record->final_destination == 'Kisanfu DRC' ? 'selected' : '' }}>Kisanfu DRC
+                                </option>
+                            </select>
                         </div>
 
                         <div class="col-12 col-lg-4 mb-3">
                             <label class="form-label">Border ETA</label>
                             <input type="date" class="form-control" name="arrival_date"
-                                value="{{ $record->arrival_date }}" autocomplete="on" required />
+                                value="{{ $record->arrival_date }}" autocomplete="on"
+                                {{ $record->status > 1 ? 'disabled' : '' }} required />
                         </div>
 
                         <div class="col-12 mb-3 col-lg-4">
                             <div class="form-label">Customs Decl No</div>
                             <input type="text" name="customs_decl_no" class="form-control"
-                                value="{{ $record->customs_decl_no }}">
+                                value="{{ $record->customs_decl_no }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                         </div>
                         <div class="col-12 mb-3 col-lg-6">
                             <div class="form-label">Arrival Station</div>
                             <input type="text" name="arrival_station" class="form-control"
-                                value="{{ $record->arrival_station }}">
+                                value="{{ $record->arrival_station }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                         </div>
                         <div class="col-12 mb-3 col-lg-6">
                             <div class="form-label">Truck Details</div>
                             <input type="text" name="truck_details" class="form-control"
-                                value="{{ $record->truck_details }}">
+                                value="{{ $record->truck_details }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                         </div>
 
                     </div>
@@ -840,7 +886,8 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
                     <div class="col-12 col-lg-3 mb-3">
                         <label class="form-label">Transporter Company</label>
-                        @if($record->status < 2) <select class="form-select" name="transporter_company">
+                        <select class="form-select" name="transporter_company"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                             <option value="">-- select --</option>
                             @foreach($companies as $company)
                             <option value="{{ $company->id }}"
@@ -848,38 +895,80 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                                 {{ $company->name }}
                             </option>
                             @endforeach
-                            </select>
-                            @else
-                            <input type="text" class="form-control"
-                                value="{{ $companies->where('id', $record->transporter_company)->first()->name ?? 'N/A' }}"
-                                disabled>
-                            <input type="hidden" name="transporter_company" value="{{ $record->transporter_company }}">
-                            @endif
+                        </select>
+                        <input type="hidden" name="transporter_company" value="{{ $record->transporter_company }}">
                     </div>
 
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Quantity</div>
-                        <input type="text" name="quantity" class="form-control" value="{{ $record->quantity }}">
+                        <input type="text" name="quantity" class="form-control" value="{{ $record->quantity }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Weight</div>
-                        <input type="text" name="weight" class="form-control" value="{{ $record->weight }}">
+                        <input type="text" name="weight" class="form-control" value="{{ $record->weight }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Volume</div>
-                        <input type="text" name="volume" class="form-control" value="{{ $record->volume }}">
+                        <input type="text" name="volume" class="form-control" value="{{ $record->volume }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Importer Name</div>
                         <input type="text" name="importer_name" class="form-control"
-                            value="{{ $record->importer_name }}">
+                            value="{{ $record->importer_name }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
                     <div class="col-12 mb-3 col-lg-12">
-                        <div class="form-label">CF Agent</div>
-                        <input type="text" name="cf_agent" class="form-control" value="{{ $record->cf_agent }}">
+                        <label class="form-label">CF Agent</label>
+                        <select class="form-select" name="cf_agent" {{ $record->status > 1 ? 'disabled' : '' }}
+                            required>
+                            <option value="" {{ !$record->cf_agent ? 'selected' : '' }}>-- select --</option>
+                            <option value="AGL" {{ $record->cf_agent == 'AGL' ? 'selected' : '' }}>AGL</option>
+                            <option value="CARGO CONGO" {{ $record->cf_agent == 'CARGO CONGO' ? 'selected' : '' }}>CARGO
+                                CONGO</option>
+                            <option value="CONNEX" {{ $record->cf_agent == 'CONNEX' ? 'selected' : '' }}>CONNEX</option>
+                            <option value="African Logistics"
+                                {{ $record->cf_agent == 'African Logistics' ? 'selected' : '' }}>African Logistics
+                            </option>
+                            <option value="Afritac" {{ $record->cf_agent == 'Afritac' ? 'selected' : '' }}>Afritac
+                            </option>
+                            <option value="Amicongo" {{ $record->cf_agent == 'Amicongo' ? 'selected' : '' }}>Amicongo
+                            </option>
+                            <option value="Aristote" {{ $record->cf_agent == 'Aristote' ? 'selected' : '' }}>Aristote
+                            </option>
+                            <option value="Bollore" {{ $record->cf_agent == 'Bollore' ? 'selected' : '' }}>Bollore
+                            </option>
+                            <option value="Brasimba" {{ $record->cf_agent == 'Brasimba' ? 'selected' : '' }}>Brasimba
+                            </option>
+                            <option value="Brasimba S.A" {{ $record->cf_agent == 'Brasimba S.A' ? 'selected' : '' }}>
+                                Brasimba S.A</option>
+                            <option value="Chemaf" {{ $record->cf_agent == 'Chemaf' ? 'selected' : '' }}>Chemaf</option>
+                            <option value="Comexas Afrique"
+                                {{ $record->cf_agent == 'Comexas Afrique' ? 'selected' : '' }}>Comexas Afrique</option>
+                            <option value="Comexas" {{ $record->cf_agent == 'Comexas' ? 'selected' : '' }}>Comexas
+                            </option>
+                            <option value="DCG" {{ $record->cf_agent == 'DCG' ? 'selected' : '' }}>DCG</option>
+                            <option value="Evele & Co" {{ $record->cf_agent == 'Evele & Co' ? 'selected' : '' }}>Evele &
+                                Co</option>
+                            <option value="Gecotrans" {{ $record->cf_agent == 'Gecotrans' ? 'selected' : '' }}>Gecotrans
+                            </option>
+                            <option value="Global Logistics"
+                                {{ $record->cf_agent == 'Global Logistics' ? 'selected' : '' }}>Global Logistics
+                            </option>
+                            <option value="Malabar" {{ $record->cf_agent == 'Malabar' ? 'selected' : '' }}>Malabar
+                            </option>
+                            <option value="Polytra" {{ $record->cf_agent == 'Polytra' ? 'selected' : '' }}>Polytra
+                            </option>
+                            <option value="Spedag" {{ $record->cf_agent == 'Spedag' ? 'selected' : '' }}>Spedag</option>
+                            <option value="Tradecorp" {{ $record->cf_agent == 'Tradecorp' ? 'selected' : '' }}>Tradecorp
+                            </option>
+                            <option value="Trade Service" {{ $record->cf_agent == 'Trade Service' ? 'selected' : '' }}>
+                                Trade Service</option>
+                        </select>
                     </div>
 
                 </div>
@@ -896,35 +985,44 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Exporter Name</div>
                         <input type="text" name="exporter_name" class="form-control"
-                            value="{{ $record->exporter_name }}">
+                            value="{{ $record->exporter_name }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Freight Currency</div>
-                        <input type="text" name="freight_currency" class="form-control"
-                            value="{{ $record->freight_currency }}">
+                        <select class="form-select" name="freight_currency" {{ $record->status > 1 ? 'disabled' : '' }}
+                            required>
+                            <option value="" {{ !$record->freight_currency ? 'selected' : '' }}>-- select --</option>
+                            <option value="USD" {{ $record->freight_currency == 'USD' ? 'selected' : '' }}>USD</option>
+                            <option value="EUR" {{ $record->freight_currency == 'EUR' ? 'selected' : '' }}>EUR</option>
+                            <option value="TZS" {{ $record->freight_currency == 'TZS' ? 'selected' : '' }}>TZS</option>
+                            <option value="ZAR" {{ $record->freight_currency == 'ZAR' ? 'selected' : '' }}>ZAR</option>
+                            <option value="AOA" {{ $record->freight_currency == 'AOA' ? 'selected' : '' }}>AOA</option>
+                        </select>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-3">
                         <div class="form-label">Freight Value</div>
                         <input type="text" name="freight_value" class="form-control"
-                            value="{{ $record->freight_value }}">
+                            value="{{ $record->freight_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">FOB Value</div>
-                        <input type="text" name="fob_value" class="form-control" value="{{ $record->fob_value }}">
+                        <input type="text" name="fob_value" class="form-control" value="{{ $record->fob_value }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-6">
                         <div class="form-label">Insurance Value</div>
                         <input type="text" name="insurance_value" class="form-control"
-                            value="{{ $record->insurance_value }}">
+                            value="{{ $record->insurance_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
                     <div class="col-12 mb-3 col-lg-12">
                         <div class="form-label">Instructions</div>
-                        <input type="text" name="instructions" class="form-control" value="{{ $record->instructions }}">
+                        <input type="text" name="instructions" class="form-control" value="{{ $record->instructions }}"
+                            {{ $record->status > 1 ? 'disabled' : '' }}>
                     </div>
 
 

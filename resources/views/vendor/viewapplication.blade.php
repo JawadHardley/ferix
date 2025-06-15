@@ -1042,12 +1042,6 @@ return $chat->user_id !== Auth::id() && $chat->read === 0;
 
 
 
-                                            <div class="col-12 col-md-12 mb-3">
-                                                <label class="form-label">FERI / COD Certificate Number</label>
-                                                <input type="text" class="form-control" name="certificate_no"
-                                                    value="{{ $invoice->certificate_no ?? '' }}" autocomplete="on"
-                                                    required />
-                                            </div>
                                         </div>
 
                                         <div class="mb-3">

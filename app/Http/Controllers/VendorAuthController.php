@@ -731,26 +731,21 @@ class VendorAuthController extends Controller
                 'message' => 'You are not authorized to perform this action.',
             ]);
         }
-        // dd($request->file);
+
         // Validate the uploaded file
         $validatedData = $request->validate([
             'file' => 'mimes:pdf|max:25600', // max:25600 KB = 25 MB
             'feri_quantity' => 'required|integer',
             'feri_units' => 'required|string',
-
             'cod_quantities' => 'required|integer',
             'cod_units' => 'required|string',
-
             'euro_rate' => 'required|numeric',
-
             'transporter_quantity' => 'required|integer',
-
             'customer_ref' => 'required|string',
             'customer_po' => 'required|string',
             'customer_trip_no' => 'required|string',
-            // 'application_invoice_no' => 'required|string',
             'tz_rate' => 'required|numeric',
-            'certificate_no' => 'required|string',
+            'certificate_no' => 'nullable|string',
         ]);
 
         // Find the specific feriApp record
@@ -761,17 +756,14 @@ class VendorAuthController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('certificates', $fileName, 'public'); // Save in 'public/drafts' directory
+            $filePath = $file->storeAs('certificates', $fileName, 'public'); // Save in 'public/certificates' directory
 
             // Update the draft file in the Certificates table
             $certificate = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
 
             if ($certificate) {
-                // Update the existing draft
-                $filePath2 = $certificate->update(['file' => $filePath]);
-                // dd($filePath2);
+                $certificate->update(['file' => $filePath]);
             } else {
-                // Create a new draft entry if it doesn't exist
                 $certificate = Certificate::create([
                     'user_id' => Auth::id(),
                     'application_id' => $id,
@@ -782,31 +774,29 @@ class VendorAuthController extends Controller
         } else {
             // Fetch the existing certificate if no file is uploaded
             $certificate = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
+            $filePath = $certificate ? $certificate->file : null;
         }
 
         if ($certificate) {
-            // Update the invoice data
+            // Update or create the invoice data
             $invoice = Invoice::where('cert_id', $certificate->id)->first();
 
             if ($invoice) {
-                // Update the existing invoice
                 $invoice->update([
-                    // 'feri_quantity' => $validatedData['feri_quantity'],
+                    'feri_quantity' => $validatedData['feri_quantity'],
                     'feri_units' => $validatedData['feri_units'],
                     'cod_quantities' => $validatedData['cod_quantities'],
                     'cod_units' => $validatedData['cod_units'],
                     'euro_rate' => $validatedData['euro_rate'],
-                    // 'transporter_quantity' => $validatedData['transporter_quantity'],
+                    'transporter_quantity' => $validatedData['transporter_quantity'],
                     'customer_ref' => $validatedData['customer_ref'],
                     'customer_po' => $validatedData['customer_po'],
-                    // 'customer_trip_no' => $validatedData['customer_trip_no'],
-                    // 'application_invoice_no' => $validatedData['application_invoice_no'],
+                    'customer_trip_no' => $validatedData['customer_trip_no'],
                     'tz_rate' => $validatedData['tz_rate'],
-                    'certificate_no' => $validatedData['certificate_no'],
+                    'certificate_no' => $validatedData['certificate_no'] ?? null,
                 ]);
             } else {
-                // Create a new invoice entry if it doesn't exist
-                Invoice::create([
+                $invoice = Invoice::create([
                     'cert_id' => $certificate->id,
                     'invoice_date' => today(),
                     'feri_quantity' => $validatedData['feri_quantity'],
@@ -818,16 +808,32 @@ class VendorAuthController extends Controller
                     'customer_ref' => $validatedData['customer_ref'],
                     'customer_po' => $validatedData['customer_po'],
                     'customer_trip_no' => $validatedData['customer_trip_no'],
-                    // 'application_invoice_no' => $validatedData['application_invoice_no'],
                     'tz_rate' => $validatedData['tz_rate'],
-                    'certificate_no' => $validatedData['certificate_no'],
+                    'certificate_no' => $validatedData['certificate_no'] ?? null,
                 ]);
+            }
+
+            // Prepare for email
+            $recipient = User::find($feriApp->user_id);
+            $sender = $user;
+            $applicantName = $recipient ? $recipient->name : 'Applicant';
+
+            // Generate PDF for the invoice
+            $pdf = Pdf::loadView('layouts.theinvoice', [
+                'invoice' => $invoice,
+                'feriapp' => $feriApp,
+                'applicantName' => Str::title($applicantName),
+            ])->output();
+
+            // Send email if recipient and file exist
+            if ($recipient && $recipient->email && $filePath) {
+                Mail::to($recipient->email)->send(new DraftInvoiceMail($invoice, $feriApp, $recipient, $filePath, $sender, $pdf));
             }
         }
 
         return back()->with([
             'status' => 'success',
-            'message' => 'Draft and invoice updated successfully.',
+            'message' => 'Draft and invoice updated successfully, and email sent.',
         ]);
     }
 

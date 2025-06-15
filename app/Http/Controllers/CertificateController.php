@@ -173,6 +173,26 @@ class CertificateController extends Controller
         // Fetch the invoices within the specified date range
         $records = Invoice::whereBetween('invoice_date', [$validatedData['start'], $validatedData['end']])->get();
 
+        // Get all certificates referenced by invoices
+        $certIds = $records->pluck('cert_id')->unique()->filter();
+        $certificates = Certificate::whereIn('id', $certIds)->get()->keyBy('id');
+
+        // Get all application_ids from those certificates
+        $applicationIds = $certificates->pluck('application_id')->unique()->filter();
+        $applications = feriApp::whereIn('id', $applicationIds)->get()->keyBy('id');
+
+        // Filter invoices: only those whose certificate's application has status = 5
+        $records = $records
+            ->filter(function ($invoice) use ($certificates, $applications) {
+                $cert = $certificates->get($invoice->cert_id);
+                if (!$cert) {
+                    return false;
+                }
+                $app = $applications->get($cert->application_id);
+                return $app && $app->status == 5;
+            })
+            ->values();
+
         // Add grandTotal to each record
         $records->transform(function ($invoice) {
             $feriQty = (float) ($invoice->feri_quantity ?? 0);
@@ -200,6 +220,6 @@ class CertificateController extends Controller
 
         // dd($records);
 
-        return $pdf->download('ALM_STATEMENT.pdf');
+        return $pdf->download('STATEMENT.pdf');
     }
 }

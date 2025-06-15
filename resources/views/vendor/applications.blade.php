@@ -201,7 +201,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="chat-bubble-body">
-                                                                                        <p>{{ $chat->message }}</p>
+                                                                                        <p class="mb-0 text-break"
+                                                                                            style="word-break:break-word;white-space:pre-line;overflow-wrap:anywhere;">
+                                                                                            {{ $chat->message }}</p>
                                                                                     </div>
                                                                                     @if($chat->user->id ==
                                                                                     Auth::user()->id)
@@ -259,7 +261,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="chat-bubble-body">
-                                                                                        <p>{{ $chat->message }}</p>
+                                                                                        <p class="mb-0 text-break"
+                                                                                            style="word-break:break-word;white-space:pre-line;overflow-wrap:anywhere;">
+                                                                                            {{ $chat->message }}</p>
                                                                                     </div>
                                                                                     @else
                                                                                     <div class="row">
