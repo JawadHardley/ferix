@@ -18,7 +18,8 @@
 <body>
 
     <!-- Loading Spinner Overlay -->
-    <div id="pageLoader" style="
+    <div id="pageLoader"
+        style="
     position: fixed;
     z-index: 9999;
     background: rgba(255,255,255,0.85);
@@ -44,7 +45,7 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav pt-lg-3">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route(Auth::user()->role . '' .  '.dashboard') }}">
+                            <a class="nav-link" href="{{ route(Auth::user()->role . '' . '.dashboard') }}">
                                 <i class="fa fa-house pe-3"></i>
                                 <span class="nav-link-title"> Home </span>
                             </a>
@@ -134,7 +135,8 @@
                         <!-- // -->
                     </div>
                     <div class="pe-0 pe-md-3">
-                        <a href="#" class="badge bg-azure-lt ms-2 px-3 py-2 fs-3 text-decoration-none" id="themeToggle">
+                        <a href="#" class="badge bg-azure-lt ms-2 px-3 py-2 fs-3 text-decoration-none"
+                            id="themeToggle">
                             <i class="fa fa-moon" id="themeIcon"></i>
                         </a>
                     </div>
@@ -152,13 +154,15 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end flex-row order-md-last">
                                 <a href="{{ route('transporter.showProfile') }}" class="dropdown-item">Profile</a>
+                                <a href="{{ route('transporter.dashboard') }}" class="dropdown-item">Dashboard</a>
                                 <!-- <a href="#" class="dropdown-item">Feedback</a> -->
                                 <div class="dropdown-divider"></div>
                                 <!-- <a href="./settings.html" class="dropdown-item">Settings</a> -->
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
 
-                                    <a href="route('logout')" class="dropdown-item" onclick="event.preventDefault();
+                                    <a href="route('logout')" class="dropdown-item"
+                                        onclick="event.preventDefault();
                                         this.closest('form').submit();">
                                         Logout
                                     </a>
@@ -179,24 +183,24 @@
     </div>
 
     <script>
-    window.addEventListener('load', function() {
-        var loader = document.getElementById('pageLoader');
-        if (loader) loader.style.display = 'none';
-    });
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('pageLoader');
+            if (loader) loader.style.display = 'none';
+        });
 
-    // Show loader on any form submit, but only if valid
-    document.addEventListener('DOMContentLoaded', function() {
-        var loader = document.getElementById('pageLoader');
-        document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                if (form.checkValidity()) {
-                    if (loader) loader.style.display = 'flex';
-                } else {
-                    if (loader) loader.style.display = 'none';
-                }
+        // Show loader on any form submit, but only if valid
+        document.addEventListener('DOMContentLoaded', function() {
+            var loader = document.getElementById('pageLoader');
+            document.querySelectorAll('form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    if (form.checkValidity()) {
+                        if (loader) loader.style.display = 'flex';
+                    } else {
+                        if (loader) loader.style.display = 'none';
+                    }
+                });
             });
         });
-    });
     </script>
     <!-- <script src="{{ asset('js/ferixstyle.js') }}"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/js/tabler.min.js"></script>
