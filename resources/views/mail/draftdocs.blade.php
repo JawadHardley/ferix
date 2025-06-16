@@ -283,14 +283,12 @@
     }
 
     .heading-section-white h2 {
-        font-family:
-            line-height: 1;
+        line-height: 1;
         padding-bottom: 0;
-    }
-
-    .heading-section-white h2 {
         color: #ffffff;
     }
+
+    .heading-section-white h2 {}
 
     .heading-section-white .subheading {
         margin-bottom: 0;

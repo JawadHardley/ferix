@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\AdminAuthController;

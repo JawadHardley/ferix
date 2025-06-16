@@ -17,7 +17,8 @@
 
 <body>
     <!-- Loading Spinner Overlay -->
-    <div id="pageLoader" style="
+    <div id="pageLoader"
+        style="
     position: fixed;
     z-index: 9999;
     background: rgba(255,255,255,0.85);
@@ -43,97 +44,94 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav pt-lg-3">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route(Auth::user()->role . '' .  '.dashboard') }}">
+                            <a class="nav-link" href="{{ route(Auth::user()->role . '' . '.dashboard') }}">
                                 <i class="fa fa-house pe-3"></i>
                                 <span class="nav-link-title"> Home </span>
                             </a>
                         </li>
 
                         @if (Auth::user()->role == 'admin')
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                                data-bs-auto-close="false" role="button" aria-expanded="false">
-                                <i class="fa fa-user pe-3"></i>
-                                <span class="nav-link-title"> User Management </span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('admin.showAdmins') }}">
-                                    Admins
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                    data-bs-auto-close="false" role="button" aria-expanded="false">
+                                    <i class="fa fa-user pe-3"></i>
+                                    <span class="nav-link-title"> User Management </span>
                                 </a>
-                                <a class="dropdown-item" href="{{ route('admin.showUsers') }}">
-                                    Others
-                                </a>
-                            </div>
-                        </li>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ route('admin.showAdmins') }}">
+                                        Admins
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.showUsers') }}">
+                                        Others
+                                    </a>
+                                </div>
+                            </li>
 
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                                data-bs-auto-close="false" role="button" aria-expanded="false">
-                                <i class="fa fa-briefcase pe-3"></i>
-                                <span class="nav-link-title"> Company Management </span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('admin.addCompany') }}">
-                                    Add Company
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                    data-bs-auto-close="false" role="button" aria-expanded="false">
+                                    <i class="fa fa-briefcase pe-3"></i>
+                                    <span class="nav-link-title"> Company Management </span>
                                 </a>
-                                <a class="dropdown-item" href="{{ route('admin.showCompanies') }}">
-                                    List Companies
-                                </a>
-                            </div>
-                        </li>
-
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ route('admin.addCompany') }}">
+                                        Add Company
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.showCompanies') }}">
+                                        List Companies
+                                    </a>
+                                </div>
+                            </li>
                         @elseif (Auth::user()->role == 'vendor')
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                                data-bs-auto-close="false" role="button" aria-expanded="false">
-                                <i class="fa fa-ferry pe-3"></i>
-                                <span class="nav-link-title"> Feri Applications </span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('vendor.showApps') }}">
-                                    All Applications
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                    data-bs-auto-close="false" role="button" aria-expanded="false">
+                                    <i class="fa fa-ferry pe-3"></i>
+                                    <span class="nav-link-title"> Feri Applications </span>
                                 </a>
-                                <a class="dropdown-item" href="{{ route('vendor.rejectedapps') }}">
-                                    Rejected
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ route('vendor.showApps') }}">
+                                        All Applications
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('vendor.rejectedapps') }}">
+                                        Rejected
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('vendor.completedapps') }}">
+                                        Completed
+                                    </a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                    data-bs-auto-close="false" role="button" aria-expanded="false">
+                                    <i class="fa fa-comment-dollar pe-3"></i>
+                                    <span class="nav-link-title"> Finances </span>
                                 </a>
-                                <a class="dropdown-item" href="{{ route('vendor.completedapps') }}">
-                                    Completed
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ route('vendor.showinvoices') }}">
+                                        Invoices
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('vendor.showstatementgen') }}">
+                                        Statement Generator
+                                    </a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                    data-bs-auto-close="false" role="button" aria-expanded="false">
+                                    <i class="fa fa-screwdriver-wrench pe-3"></i>
+                                    <span class="nav-link-title"> Tools </span>
                                 </a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                                data-bs-auto-close="false" role="button" aria-expanded="false">
-                                <i class="fa fa-comment-dollar pe-3"></i>
-                                <span class="nav-link-title"> Finances </span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('vendor.showinvoices') }}">
-                                    Invoices
-                                </a>
-                                <a class="dropdown-item" href="{{ route('vendor.showstatementgen') }}">
-                                    Statement Generator
-                                </a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                                data-bs-auto-close="false" role="button" aria-expanded="false">
-                                <i class="fa fa-screwdriver-wrench pe-3"></i>
-                                <span class="nav-link-title"> Tools </span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('vendor.sampcalculator') }}">
-                                    Calculator
-                                </a>
-                                <a class="dropdown-item" href="{{ route('vendor.rates') }}">
-                                    Rates
-                                </a>
-                            </div>
-                        </li>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ route('vendor.sampcalculator') }}">
+                                        Calculator
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('vendor.rates') }}">
+                                        Rates
+                                    </a>
+                                </div>
+                            </li>
                         @endif
 
                     </ul>
@@ -176,7 +174,8 @@
                         <!-- // -->
                     </div>
                     <div class="pe-0 pe-md-3">
-                        <a href="#" class="badge bg-azure-lt ms-2 px-3 py-2 fs-3 text-decoration-none" id="themeToggle">
+                        <a href="#" class="badge bg-azure-lt ms-2 px-3 py-2 fs-3 text-decoration-none"
+                            id="themeToggle">
                             <i class="fa fa-moon" id="themeIcon"></i>
                         </a>
                     </div>
@@ -201,7 +200,8 @@
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
 
-                                    <a href="route('logout')" class="dropdown-item" onclick="event.preventDefault();
+                                    <a href="route('logout')" class="dropdown-item"
+                                        onclick="event.preventDefault();
                                         this.closest('form').submit();">
                                         Logout
                                     </a>
@@ -223,24 +223,24 @@
 
 
     <script>
-    window.addEventListener('load', function() {
-        var loader = document.getElementById('pageLoader');
-        if (loader) loader.style.display = 'none';
-    });
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('pageLoader');
+            if (loader) loader.style.display = 'none';
+        });
 
-    // Show loader on any form submit, but only if valid
-    document.addEventListener('DOMContentLoaded', function() {
-        var loader = document.getElementById('pageLoader');
-        document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                if (form.checkValidity()) {
-                    if (loader) loader.style.display = 'flex';
-                } else {
-                    if (loader) loader.style.display = 'none';
-                }
+        // Show loader on any form submit, but only if valid
+        document.addEventListener('DOMContentLoaded', function() {
+            var loader = document.getElementById('pageLoader');
+            document.querySelectorAll('form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    if (form.checkValidity()) {
+                        if (loader) loader.style.display = 'flex';
+                    } else {
+                        if (loader) loader.style.display = 'none';
+                    }
+                });
             });
         });
-    });
     </script>
     <!-- <script src="{{ asset('js/ferixstyle.js') }}"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/js/tabler.min.js"></script>

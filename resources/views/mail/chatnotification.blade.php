@@ -283,12 +283,8 @@
         }
 
         .heading-section-white h2 {
-            font-family:
-                line-height: 1;
+            line-height: 1;
             padding-bottom: 0;
-        }
-
-        .heading-section-white h2 {
             color: #ffffff;
         }
 
@@ -300,7 +296,6 @@
             letter-spacing: 2px;
             color: rgba(255, 255, 255, .4);
         }
-
 
         ul.social {
             padding: 0;

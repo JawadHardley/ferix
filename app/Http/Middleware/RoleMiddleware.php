@@ -20,7 +20,7 @@ class RoleMiddleware
 
         // Check role matches route prefix
         if (Auth::user()->role !== $prefix) {
-            abort(403, 'Unauthorized');
+            return response()->view('errors.403', [], 403);
         }
 
         return $next($request);

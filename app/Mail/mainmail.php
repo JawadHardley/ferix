@@ -19,6 +19,7 @@ class mainmail extends Mailable
 {
     use Queueable, SerializesModels;
     public $user;
+    public $resetUrl;
 
     /**
      * Create a new message instance.
