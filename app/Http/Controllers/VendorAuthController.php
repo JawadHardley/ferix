@@ -565,7 +565,7 @@ class VendorAuthController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('certificates', $fileName, 'public');
+            $filePath = $file->storeAs('certificates', $fileName, 'private');
         }
 
         // Update the status to 3
@@ -664,7 +664,7 @@ class VendorAuthController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('certificates', $fileName, 'public');
+            $filePath = $file->storeAs('certificates', $fileName, 'private');
         }
 
         // Update the status to 3
@@ -756,7 +756,7 @@ class VendorAuthController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('certificates', $fileName, 'public'); // Save in 'public/certificates' directory
+            $filePath = $file->storeAs('certificates', $fileName, 'private'); // Save in 'private/certificates' directory
 
             // Update the draft file in the Certificates table
             $certificate = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
@@ -1065,7 +1065,7 @@ class VendorAuthController extends Controller
             ->values();
 
         // Add grandTotal to each record
-        $approvedRecords->transform(function ($invoice) {
+        $approvedRecords->transform(function ($invoice) use ($certificates) {
             $feriQty = (float) ($invoice->feri_quantity ?? 0);
             $feriUnits = (float) ($invoice->feri_units ?? 0);
             $codQty = (float) ($invoice->cod_quantities ?? 0);
@@ -1080,6 +1080,11 @@ class VendorAuthController extends Controller
             $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
 
             $invoice->grandTotal = $grandTotal;
+
+            // Attach application id as 'appid'
+            $cert = $certificates->get($invoice->cert_id);
+            $invoice->appid = $cert ? $cert->application_id : null;
+
             return $invoice;
         });
 

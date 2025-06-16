@@ -68,8 +68,8 @@ class CertificateMail extends Mailable
     public function attachments(): array
     {
         $attachments = [];
-        if ($this->certificatePath && file_exists(storage_path('app/public/' . $this->certificatePath))) {
-            $attachments[] = Attachment::fromPath(storage_path('app/public/' . $this->certificatePath))
+        if ($this->certificatePath && file_exists(storage_path('app/private/' . $this->certificatePath))) {
+            $attachments[] = Attachment::fromPath(storage_path('app/private/' . $this->certificatePath))
                 ->as('Feri_Certificate.pdf')
                 ->withMime('application/pdf');
         }

@@ -223,7 +223,7 @@ class TransporterAuthController extends Controller
         }
 
         // Fetch all records from the Company table
-        $records = Company::all();
+        $records = Company::where('type', 'transporter')->get();
 
         // Pass the records to the view
         return view('transporter.applyferi', compact('records'));
@@ -238,7 +238,7 @@ class TransporterAuthController extends Controller
         }
 
         // Fetch all records from the Company table
-        $records = Company::all();
+        $records = Company::where('type', 'transporter')->get();
 
         // Pass the records to the view
         return view('transporter.continueferi', compact('records'));
@@ -354,7 +354,7 @@ class TransporterAuthController extends Controller
             if ($request->hasFile($fileField)) {
                 $file = $request->file($fileField);
                 $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('feri_documents', $filename, 'public');
+                $path = $file->storeAs('feri_documents', $filename, 'private');
                 $documentUploads[$fileField] = $path;
             }
         }
@@ -712,12 +712,12 @@ class TransporterAuthController extends Controller
         foreach ($fileFields as $fileField) {
             if ($request->hasFile($fileField)) {
                 // Delete previous file if exists
-                if (!empty($documentUploads[$fileField]) && Storage::disk('public')->exists($documentUploads[$fileField])) {
-                    Storage::disk('public')->delete($documentUploads[$fileField]);
+                if (!empty($documentUploads[$fileField]) && Storage::disk('private')->exists($documentUploads[$fileField])) {
+                    Storage::disk('private')->delete($documentUploads[$fileField]);
                 }
                 $file = $request->file($fileField);
                 $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('feri_documents', $filename, 'public');
+                $path = $file->storeAs('feri_documents', $filename, 'private');
                 $documentUploads[$fileField] = $path;
             }
         }
@@ -939,7 +939,7 @@ class TransporterAuthController extends Controller
             if ($request->hasFile($fileField)) {
                 $file = $request->file($fileField);
                 $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('feri_documents', $filename, 'public');
+                $path = $file->storeAs('feri_documents', $filename, 'private');
                 $documentUploads[$fileField] = $path;
             }
         }
@@ -1220,10 +1220,10 @@ class TransporterAuthController extends Controller
             'Bags', // package_type
             'XXXXX', // company_ref
             'TBS', // po
-            'KUWAIT', // cargo_origin
+            'USA', // cargo_origin
             'XXXXX', // customs_decl_no
             'XXXXX', // manifest_no
-            'OCC123', // occ_bivac
+            'XXXXXX', // occ_bivac
             'No Additional Comments', // instructions
             $currencies[0], // fob_currency
             0, // fob_value

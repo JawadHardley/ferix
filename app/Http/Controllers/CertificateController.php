@@ -29,7 +29,9 @@ class CertificateController extends Controller
 
         // Check if the logged-in user is the owner of the feriApp or has the role of 'vendor' or 'admin'
         $feriApp = feriApp::findOrFail($id);
-        if ($feriApp->user_id !== auth()->id() && !in_array(auth()->user()->role, ['vendor', 'admin'])) {
+        $user = auth()->user();
+
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
             abort(403, 'Unauthorized access.');
         }
         // dd($certificate);
@@ -39,13 +41,13 @@ class CertificateController extends Controller
         $filePath = $certificate->file;
 
         // Check if the file exists in storage
-        if (!Storage::disk('public')->exists($filePath)) {
+        if (!Storage::disk('private')->exists($filePath)) {
             abort(404, 'File not found.');
         }
 
         // Download the file
-        // return Storage::disk('public')->download($filePath);
-        return response()->download(storage_path('app/public/' . $filePath));
+        // return Storage::disk('private')->download($filePath);
+        return response()->download(storage_path('app/private/' . $filePath));
     }
 
     public function downloaddraft($id)
@@ -55,7 +57,9 @@ class CertificateController extends Controller
 
         // Check if the logged-in user is the owner of the feriApp or has the role of 'vendor' or 'admin'
         $feriApp = feriApp::findOrFail($id);
-        if ($feriApp->user_id !== auth()->id() && !in_array(auth()->user()->role, ['vendor', 'admin'])) {
+        $user = auth()->user();
+
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
             abort(403, 'Unauthorized access.');
         }
         // dd($certificate);
@@ -65,13 +69,13 @@ class CertificateController extends Controller
         $filePath = $certificate->file;
 
         // Check if the file exists in storage
-        if (!Storage::disk('public')->exists($filePath)) {
+        if (!Storage::disk('private')->exists($filePath)) {
             abort(404, 'File not found.');
         }
 
         // Download the file
-        // return Storage::disk('public')->download($filePath);
-        return response()->download(storage_path('app/public/' . $filePath));
+        // return Storage::disk('private')->download($filePath);
+        return response()->download(storage_path('app/private/' . $filePath));
     }
 
     public function downloadfile($id, $type)
@@ -80,7 +84,9 @@ class CertificateController extends Controller
         $feriApp = feriApp::findOrFail($id);
 
         // Check if the logged-in user is the owner of the feriApp or has the role of 'vendor' or 'admin'
-        if ($feriApp->user_id !== auth()->id() && !in_array(auth()->user()->role, ['vendor', 'admin'])) {
+        $user = auth()->user();
+
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -95,25 +101,13 @@ class CertificateController extends Controller
         $filePath = $documents[$type];
 
         // Check if the file exists in storage
-        if (!Storage::disk('public')->exists($filePath)) {
+        if (!Storage::disk('private')->exists($filePath)) {
             abort(404, 'File not found.');
         }
 
         // Download the file
-        return response()->download(storage_path('app/public/' . $filePath));
+        return response()->download(storage_path('app/private/' . $filePath));
     }
-
-    // public function downloadinvoice($id)
-    // {
-    //      // Fetch the feriApp record by ID
-    //     //  $feriApp = Invoice::findOrFail($id);
-    //      $cert = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->firstOrFail();
-    //      $invoice = Invoice::where('cert_id', $cert->id)->latest()->firstOrFail();
-    //     // dd($invoice);
-    //     $pdf = Pdf::loadView('layouts.theinvoice', ['invoice' => $invoice]);
-    //     // dd($invoice->id);
-    //     return $pdf->download("{$invoice->customer_trip_no}.pdf");
-    // }
 
     public function downloadinvoice($id)
     {
@@ -125,6 +119,11 @@ class CertificateController extends Controller
 
         // Fetch the related feriApp record
         $feriApp = feriApp::findOrFail($id);
+        $user = auth()->user();
+
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
+            abort(403, 'Unauthorized access.');
+        }
 
         // Fetch the applicant's name
         $applicantName = User::find($feriApp->user_id)?->name ?? 'N/A';
@@ -149,6 +148,11 @@ class CertificateController extends Controller
 
         // Fetch the related feriApp record
         $feriApp = feriApp::where('id', $cert->application_id)->firstOrFail();
+        $user = auth()->user();
+
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
+            abort(403, 'Unauthorized access.');
+        }
         // Fetch the applicant's name
         $applicantName = User::find($feriApp->user_id)?->name ?? 'N/A';
 
@@ -172,6 +176,13 @@ class CertificateController extends Controller
 
         // Fetch the invoices within the specified date range
         $records = Invoice::whereBetween('invoice_date', [$validatedData['start'], $validatedData['end']])->get();
+
+        if ($records->isEmpty()) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'no invoice to work with for at that date range',
+            ]);
+        }
 
         // Get all certificates referenced by invoices
         $certIds = $records->pluck('cert_id')->unique()->filter();
