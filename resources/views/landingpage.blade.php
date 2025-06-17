@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 
 @php
-$profile_pic = asset('images/profile.jpg');
-$front = asset('images/img-1.jpg');
+    $profile_pic = asset('images/profile.jpg');
+    $front = asset('images/img-1.jpg');
 @endphp
 <html lang="en" data-bs-theme="light">
 
@@ -56,35 +56,37 @@ $front = asset('images/img-1.jpg');
                     <li><a href="#contact">Contact</a></li>
 
                     @if (Route::has('transporter.login'))
-                    @auth
-                    <li class="dropdown text-start">
-                        <a href="#">
-                            <span class="text-teal px-2">
-                                <i class="fa fa-user fs-4"></i>
-                            </span>
-                            <span>{{ Auth::user()->name}}</span>
-                            <i class="bi bi-chevron-down toggle-dropdown"></i>
-                        </a>
-                        <ul>
-                            <li><a href="{{ route(Auth::user()->role . '.dashboard') }}">Dashboard</a></li>
-                            <li><a href="{{ route(Auth::user()->role . '.showProfile') }}">Profile</a></li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <li><a href="route('logout')" onclick="event.preventDefault();
-                                        this.closest('form').submit();">Log Out</a></li>
-                            </form>
-                            <!-- <li><a href="#">Deep Dropdown 4</a></li> -->
-                        </ul>
-                    </li>
-                    @else
-                    <li class="dropdown"><a href="#"><span>Login/Register</span> <i
-                                class="bi bi-chevron-down toggle-dropdown"></i></a>
-                        <ul>
-                            <li><a href="{{ route('transporter.login') }}">Login</a></li>
-                            <li><a href="{{ route('transporter.register') }}">Register</a></li>
-                        </ul>
-                    </li>
-                    @endauth
+                        @auth
+                            <li class="dropdown text-start">
+                                <a href="#">
+                                    <span class="text-teal px-2">
+                                        <i class="fa fa-user fs-4"></i>
+                                    </span>
+                                    <span>{{ Auth::user()->name }}</span>
+                                    <i class="bi bi-chevron-down toggle-dropdown"></i>
+                                </a>
+                                <ul>
+                                    <li><a href="{{ route(Auth::user()->role . '.dashboard') }}">Dashboard</a></li>
+                                    <li><a href="{{ route(Auth::user()->role . '.showProfile') }}">Profile</a></li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <li><a href="route('logout')"
+                                                onclick="event.preventDefault();
+                                        this.closest('form').submit();">Log
+                                                Out</a></li>
+                                    </form>
+                                    <!-- <li><a href="#">Deep Dropdown 4</a></li> -->
+                                </ul>
+                            </li>
+                        @else
+                            <li class="dropdown"><a href="#"><span>Login/Register</span> <i
+                                        class="bi bi-chevron-down toggle-dropdown"></i></a>
+                                <ul>
+                                    <li><a href="{{ route('transporter.login') }}">Login</a></li>
+                                    <li><a href="{{ route('transporter.register') }}">Register</a></li>
+                                </ul>
+                            </li>
+                        @endauth
                     @endif
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none fa fa-bars"></i>
@@ -380,7 +382,10 @@ $front = asset('images/img-1.jpg');
                 <!-- You can delete the links only if you've purchased the pro version. -->
                 <!-- Licensing information: https://bootstrapmade.com/license/ -->
                 <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+                <a href="{{ route('vendor.login') }}" class="text-decoration-none bg-transparent border-0 p-0 m-0"
+                    style="color: inherit; cursor: default; outline: none;">
+                    Designed
+                </a> by <a href="https://bootstrapmade.com/">BootstrapMade</a>
             </div>
         </div>
 
