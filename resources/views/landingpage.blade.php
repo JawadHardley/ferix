@@ -111,7 +111,7 @@
                             <div class="icon-circle me-2">
                                 <i class="fa fa-bell"></i>
                             </div>
-                            <span class="badge-text me-3">Digital Trade Facilitations</span>
+                            <span class="badge-text me-3">Digital Trade Facilitation</span>
                         </div>
                     </div>
 
