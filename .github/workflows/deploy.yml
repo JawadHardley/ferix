@@ -19,6 +19,7 @@ jobs:
         host: 199.188.200.154
         username: ferixonecpanel
         key: ${{ secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+        port: 21098
         script: |
           cd /home/ferixonecpanel/ferix
           git pull origin main
