@@ -564,7 +564,7 @@ class TransporterAuthController extends Controller
             $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
         }
 
-        $companies = Company::all(); // Fetch all companies for the dropdown
+        $companies = Company::where('type', 'transporter')->get(); // Fetch only transporter companies for the dropdown
 
         // Fetch all chats related to the application
         $chats = chats::where('application_id', $id)
