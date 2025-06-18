@@ -146,185 +146,15 @@
                                             @endif
                                         </a>
 
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="chat{{ $record->id }}" tabindex="-1"
-                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h1 class="modal-title fs-3" id="exampleModalLabel">Queries -
-                                                            {{ ucfirst($record->company_ref) }}</h1>
-                                                        <span class="fs-5 ms-auto">
-                                                            <a
-                                                                href="{{ route('transporter.readchat', ['id' => $record->id]) }}">mark
-                                                                as read</a>
-                                                        </span>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="card">
-                                                            <div class="card-body scrollable"
-                                                                style="height: 300px; overflow-y: auto;">
-                                                                <div class="chat">
-                                                                    <div class="chat-bubbles">
-                                                                        <form
-                                                                            action="{{ route('transporter.sendchat', ['id' => $record->id]) }}"
-                                                                            method="POST">
-                                                                            @csrf
-
-                                                                            @foreach ($chats as $chat)
-                                                                                @if ($chat->user_id == Auth::user()->id && $chat->application_id == $record->id)
-                                                                                    <div class="chat-item mb-3">
-                                                                                        <div
-                                                                                            class="row align-items-end justify-content-end">
-                                                                                            <div class="col col-lg-10">
-                                                                                                <div
-                                                                                                    class="chat-bubble chat-bubble-me">
-                                                                                                    @if ($chat->del == 0)
-                                                                                                        <div
-                                                                                                            class="chat-bubble-title">
-                                                                                                            <div
-                                                                                                                class="row">
-                                                                                                                <div
-                                                                                                                    class="col chat-bubble-author">
-                                                                                                                    {{ Auth::user()->name }}
-                                                                                                                </div>
-                                                                                                                <div
-                                                                                                                    class="col-auto chat-bubble-date fs-4">
-                                                                                                                    {{ $chat->formatted_date }}
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div
-                                                                                                            class="chat-bubble-body">
-                                                                                                            <p class="mb-0 text-break"
-                                                                                                                style="word-break:break-word;white-space:pre-line;overflow-wrap:anywhere;">
-                                                                                                                {{ $chat->message }}
-                                                                                                            </p>
-                                                                                                        </div>
-                                                                                                        <span
-                                                                                                            class="fs-5">
-                                                                                                            <a
-                                                                                                                href="{{ route('transporter.deletechat', ['id' => $chat->id]) }}">delete</a>
-                                                                                                        </span>
-                                                                                                    @else
-                                                                                                        <div
-                                                                                                            class="row">
-                                                                                                            <div
-                                                                                                                class="col">
-                                                                                                                <p>
-                                                                                                                    <i
-                                                                                                                        class="fa fa-ban"></i>
-                                                                                                                    Deleted
-                                                                                                                    message
-                                                                                                                </p>
-                                                                                                                <span
-                                                                                                                    class="fs-5">{{ $chat->formatted_date }}</span>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    @endif
-                                                                                                </div>
-                                                                                            </div>
-
-                                                                                            <div class="col-auto">
-                                                                                                <span
-                                                                                                    class="avatar avatar-1">
-                                                                                                    <i
-                                                                                                        class="fa fa-user p-auto"></i>
-                                                                                                </span>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                @elseif($chat->application_id == $record->id)
-                                                                                    <div class="chat-item mb-3">
-                                                                                        <div class="row align-items-end">
-                                                                                            <div class="col-auto">
-                                                                                                <span
-                                                                                                    class="avatar avatar-1">
-                                                                                                    <i
-                                                                                                        class="fa fa-user-shield  p-auto"></i>
-                                                                                                </span>
-                                                                                            </div>
-                                                                                            <div class="col col-lg-10">
-                                                                                                <div class="chat-bubble">
-                                                                                                    @if ($chat->del == 0)
-                                                                                                        <div
-                                                                                                            class="chat-bubble-title">
-                                                                                                            <div
-                                                                                                                class="row">
-                                                                                                                <div
-                                                                                                                    class="col chat-bubble-author">
-                                                                                                                    Vendor
-                                                                                                                </div>
-                                                                                                                <div
-                                                                                                                    class="col-auto chat-bubble-date">
-                                                                                                                    {{ $chat->formatted_date }}
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div
-                                                                                                            class="chat-bubble-body">
-                                                                                                            <p class="mb-0 text-break"
-                                                                                                                style="word-break:break-word;white-space:pre-line;overflow-wrap:anywhere;">
-                                                                                                                {{ $chat->message }}
-                                                                                                            </p>
-                                                                                                        </div>
-                                                                                                    @else
-                                                                                                        <div
-                                                                                                            class="row">
-                                                                                                            <div
-                                                                                                                class="col">
-                                                                                                                <p>
-                                                                                                                    <i
-                                                                                                                        class="fa fa-ban"></i>
-                                                                                                                    Deleted
-                                                                                                                    message
-                                                                                                                </p>
-                                                                                                                <span
-                                                                                                                    class="fs-5">{{ $chat->formatted_date }}</span>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    @endif
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                @endif
-                                                                            @endforeach
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-footer px-4 pb-4">
-                                                        <div class="input-group input-group-flat">
-                                                            <input type="text" name="message" class="form-control"
-                                                                autocomplete="off" placeholder="Type message">
-                                                            <span class="input-group-text">
-                                                                <button type="submit" class="btn border-0">
-                                                                    <i class="fa fa-paper-plane"></i>
-                                                                </button>
-                                                            </span>
-                                                        </div>
-                                                        </form>
-                                                    </div>
-                                                    <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">
-                        send <i class="fa fa-paper-plane ms-2"></i>
-                    </button>
-                </div> -->
-                                                </div>
-                                            </div>
-                                        </div>
 
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-start">
                                         <span class="dropdown">
                                             <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport"
-                                                data-bs-toggle="dropdown">Actions</button>
-                                            <div class="dropdown-menu dropdown-menu-end">
+                                                data-bs-toggle="dropdown" data-bs-offset="0,0" data-bs-display="static">
+                                                Actions
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-start">
                                                 <a class="dropdown-item" href="#" data-bs-toggle="modal"
                                                     data-bs-target="#mXX">
                                                     <i class="fa fa-comment-dots pe-2"></i>Query
@@ -345,48 +175,6 @@
                                         </span>
                                     </td>
                                 </tr>
-
-                                <!-- delete modal -->
-                                <form action="{{ route('transporter.destroyApp', $record->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <div class="modal fade" id="m{{ $record->id }}" tabindex="-1"
-                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                                <div class="modal-status bg-danger"></div>
-                                                <div class="modal-body text-center py-4">
-                                                    <i class="mb-2 p-2 display-2 text-danger fa fa-warning" width="24"
-                                                        height="24"></i>
-                                                    <h3>Caution!</h3>
-                                                    <div class="text-secondary">
-                                                        Are you sure you want to delete application
-                                                        {{ $record->company_ref }}
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <div class="w-100">
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <a href="#" class="btn w-100"
-                                                                    data-bs-dismiss="modal"> Cancel
-                                                                </a>
-                                                            </div>
-                                                            <div class="col">
-                                                                <button type="submit" class="btn btn-danger w-100"
-                                                                    data-bs-dismiss="modal">
-                                                                    <i class="fa fa-trash me-2"></i> Delete</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
                             @endforeach
                         </tbody>
                         <tfoot>
@@ -417,6 +205,189 @@
             </div>
         </div>
     </div>
+
+    @foreach ($records as $record)
+        <!-- Modal -->
+        <div class="modal fade" id="chat{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-3" id="exampleModalLabel">Queries -
+                            {{ ucfirst($record->company_ref) }}</h1>
+                        <span class="fs-5 ms-auto">
+                            <a href="{{ route('transporter.readchat', ['id' => $record->id]) }}">mark
+                                as read</a>
+                        </span>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <div class="card-body scrollable" style="height: 300px; overflow-y: auto;">
+                                <div class="chat">
+                                    <div class="chat-bubbles">
+                                        <form action="{{ route('transporter.sendchat', ['id' => $record->id]) }}"
+                                            method="POST">
+                                            @csrf
+
+                                            @foreach ($chats as $chat)
+                                                @if ($chat->user_id == Auth::user()->id && $chat->application_id == $record->id)
+                                                    <div class="chat-item mb-3">
+                                                        <div class="row align-items-end justify-content-end">
+                                                            <div class="col col-lg-10">
+                                                                <div class="chat-bubble chat-bubble-me">
+                                                                    @if ($chat->del == 0)
+                                                                        <div class="chat-bubble-title">
+                                                                            <div class="row">
+                                                                                <div class="col chat-bubble-author">
+                                                                                    {{ Auth::user()->name }}
+                                                                                </div>
+                                                                                <div
+                                                                                    class="col-auto chat-bubble-date fs-4">
+                                                                                    {{ $chat->formatted_date }}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="chat-bubble-body">
+                                                                            <p class="mb-0 text-break"
+                                                                                style="word-break:break-word;white-space:pre-line;overflow-wrap:anywhere;">
+                                                                                {{ $chat->message }}
+                                                                            </p>
+                                                                        </div>
+                                                                        <span class="fs-5">
+                                                                            <a
+                                                                                href="{{ route('transporter.deletechat', ['id' => $chat->id]) }}">delete</a>
+                                                                        </span>
+                                                                    @else
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                <p>
+                                                                                    <i class="fa fa-ban"></i>
+                                                                                    Deleted
+                                                                                    message
+                                                                                </p>
+                                                                                <span
+                                                                                    class="fs-5">{{ $chat->formatted_date }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-auto">
+                                                                <span class="avatar avatar-1">
+                                                                    <i class="fa fa-user p-auto"></i>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @elseif($chat->application_id == $record->id)
+                                                    <div class="chat-item mb-3">
+                                                        <div class="row align-items-end">
+                                                            <div class="col-auto">
+                                                                <span class="avatar avatar-1">
+                                                                    <i class="fa fa-user-shield  p-auto"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col col-lg-10">
+                                                                <div class="chat-bubble">
+                                                                    @if ($chat->del == 0)
+                                                                        <div class="chat-bubble-title">
+                                                                            <div class="row">
+                                                                                <div class="col chat-bubble-author">
+                                                                                    Vendor
+                                                                                </div>
+                                                                                <div class="col-auto chat-bubble-date">
+                                                                                    {{ $chat->formatted_date }}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="chat-bubble-body">
+                                                                            <p class="mb-0 text-break"
+                                                                                style="word-break:break-word;white-space:pre-line;overflow-wrap:anywhere;">
+                                                                                {{ $chat->message }}
+                                                                            </p>
+                                                                        </div>
+                                                                    @else
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                <p>
+                                                                                    <i class="fa fa-ban"></i>
+                                                                                    Deleted
+                                                                                    message
+                                                                                </p>
+                                                                                <span
+                                                                                    class="fs-5">{{ $chat->formatted_date }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer px-4 pb-4">
+                        <div class="input-group input-group-flat">
+                            <input type="text" name="message" class="form-control" autocomplete="off"
+                                placeholder="Type message">
+                            <span class="input-group-text">
+                                <button type="submit" class="btn border-0">
+                                    <i class="fa fa-paper-plane"></i>
+                                </button>
+                            </span>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    @foreach ($records as $record)
+        <!-- delete modal -->
+        <form action="{{ route('transporter.destroyApp', $record->id) }}" method="POST">
+            @csrf
+            @method('DELETE')
+
+            <div class="modal fade" id="m{{ $record->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="modal-status bg-danger"></div>
+                        <div class="modal-body text-center py-4">
+                            <i class="mb-2 p-2 display-2 text-danger fa fa-warning" width="24" height="24"></i>
+                            <h3>Caution!</h3>
+                            <div class="text-secondary">
+                                Are you sure you want to delete application
+                                {{ $record->company_ref }}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="w-100">
+                                <div class="row">
+                                    <div class="col">
+                                        <a href="#" class="btn w-100" data-bs-dismiss="modal"> Cancel
+                                        </a>
+                                    </div>
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-danger w-100" data-bs-dismiss="modal">
+                                            <i class="fa fa-trash me-2"></i> Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    @endforeach
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

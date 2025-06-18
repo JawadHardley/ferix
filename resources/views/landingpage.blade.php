@@ -409,10 +409,10 @@
     <script src="{{ asset('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
 
     <!-- Main JS File -->
-    <script src="{{ asset('assets/js/main.js') }}?v={{ filemtime(public_path('assets/js/main.js')) }}"></script>
+    <script src="{{ asset('assets/js/main.js') }}"></script>
 
 
-    <script src="{{ asset('js/ferixstyle.js') }}?v={{ filemtime(public_path('js/ferixstyle.js')) }}"></script>
+    <script src="{{ asset('js/ferixstyle.js') }}"></script>
 </body>
 
 </html>
