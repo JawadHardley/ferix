@@ -66,7 +66,7 @@ class AdminAuthController extends Controller
             }
 
             // Check if user is authorized
-            if (Auth::user()->user_auth !== 1) {
+            if (Auth::user()->user_auth != 1) {
                 Auth::logout();
                 return redirect()
                     ->back()

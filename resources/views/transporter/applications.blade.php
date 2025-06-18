@@ -131,8 +131,8 @@
                                     <td class="">
                                         @php
                                             $unreadChats = $chats->filter(function ($chat) use ($record) {
-                                                return $chat->user_id !== Auth::id() &&
-                                                    $chat->read === 0 &&
+                                                return $chat->user_id != Auth::id() &&
+                                                    $chat->read == 0 &&
                                                     $chat->application_id == $record->id;
                                             });
                                         @endphp

@@ -67,7 +67,7 @@ class TransporterAuthController extends Controller
             }
 
             // Check if user is authorized
-            if (Auth::user()->user_auth !== 1) {
+            if (Auth::user()->user_auth != 1) {
                 Auth::logout();
                 return redirect()->back()->with('status', 'error')->with('message', 'Your account is not authorized yet.');
             }
@@ -807,7 +807,7 @@ class TransporterAuthController extends Controller
         $feriApp = feriApp::findOrFail($id);
 
         // Ensure the authenticated user owns the application or has the proper role
-        if ($feriApp->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+        if ($feriApp->user_id != Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
             abort(403, 'Unauthorized action.');
         }
         // Fetch chats where:
@@ -841,12 +841,12 @@ class TransporterAuthController extends Controller
 
         // Ensure the authenticated user owns the application or has the proper role
         $feriApp = feriApp::findOrFail($chat->application_id);
-        if ($feriApp->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+        if ($feriApp->user_id != Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
             abort(403, 'Unauthorized action.');
         }
 
         // Ensure the chat belongs to the authenticated user or is authorized
-        if ($chat->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+        if ($chat->user_id != Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -871,7 +871,7 @@ class TransporterAuthController extends Controller
         // Find the feriApp record and check ownership
         $feriApp = feriApp::findOrFail($id);
 
-        if ($feriApp->user_id !== $user->id) {
+        if ($feriApp->user_id != $user->id) {
             abort(403, 'Unauthoriszed action.');
         }
 

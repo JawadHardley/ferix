@@ -31,7 +31,7 @@ class CertificateController extends Controller
         $feriApp = feriApp::findOrFail($id);
         $user = auth()->user();
 
-        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id == $user->id))) {
             abort(403, 'Unauthorized access.');
         }
         // dd($certificate);
@@ -59,7 +59,7 @@ class CertificateController extends Controller
         $feriApp = feriApp::findOrFail($id);
         $user = auth()->user();
 
-        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id == $user->id))) {
             abort(403, 'Unauthorized access.');
         }
         // dd($certificate);
@@ -86,7 +86,7 @@ class CertificateController extends Controller
         // Check if the logged-in user is the owner of the feriApp or has the role of 'vendor' or 'admin'
         $user = auth()->user();
 
-        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id == $user->id))) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -121,7 +121,7 @@ class CertificateController extends Controller
         $feriApp = feriApp::findOrFail($id);
         $user = auth()->user();
 
-        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id == $user->id))) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -150,7 +150,7 @@ class CertificateController extends Controller
         $feriApp = feriApp::where('id', $cert->application_id)->firstOrFail();
         $user = auth()->user();
 
-        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id === $user->id))) {
+        if (!$user || (!in_array($user->role, ['admin', 'vendor']) && !($user->role === 'transporter' && $feriApp->user_id == $user->id))) {
             abort(403, 'Unauthorized access.');
         }
         // Fetch the applicant's name

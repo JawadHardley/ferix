@@ -74,7 +74,7 @@ class VendorAuthController extends Controller
             }
 
             // Check if user is authorized
-            if (Auth::user()->user_auth !== 1) {
+            if (Auth::user()->user_auth != 1) {
                 Auth::logout();
                 return redirect()->back()->with('status', 'error')->with('message', 'Your account is not authorized yet.');
             }
@@ -927,7 +927,7 @@ class VendorAuthController extends Controller
 
         // Ensure the authenticated user owns the application or has the proper role
         $feriApp = feriApp::findOrFail($chat->application_id);
-        if ($chat->user_id !== Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
+        if ($chat->user_id != Auth::id() && !in_array(Auth::user()->role, ['admin'])) {
             abort(403, 'Unauthorized action.');
         }
 
