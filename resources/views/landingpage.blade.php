@@ -44,7 +44,7 @@
                 <!-- Uncomment the line below if you also wish to use an image logo -->
                 <h1 class="sitename">
                     <i class="fa fa-earth-asia"></i>
-                    <b>Ferix io</b>
+                    <b>Ferix io.</b>
                 </h1>
             </a>
 
