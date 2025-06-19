@@ -63,7 +63,7 @@
                                     Continuance
                                 </a>
                                 <a class="dropdown-item" href="{{ route('transporter.importapply') }}">
-                                    Easy Apply
+                                    Template
                                 </a>
                             </div>
                         </li>

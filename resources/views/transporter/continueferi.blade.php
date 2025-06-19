@@ -113,10 +113,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                        <label class="form-label">Final Destination</label>
-                                        <input type="text" class="form-control" name="final_destination"
-                                            value="{{ old('final_destination') }}" autocomplete="on" required />
-                                    </div> -->
+                                                <label class="form-label">Final Destination</label>
+                                                <input type="text" class="form-control" name="final_destination"
+                                                    value="{{ old('final_destination') }}" autocomplete="on" required />
+                                            </div> -->
 
 
                         </div>
@@ -273,7 +273,7 @@
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Commercial Invoice</label>
-                                <input type="file" class="form-control" name="invoice" autocomplete="on" required />
+                                <input type="file" class="form-control" name="invoice" autocomplete="on" />
                             </div>
 
                             <div class="col-12 col-lg-3 mb-3">
@@ -289,7 +289,7 @@
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Custom Docs <span class="fs-6 text-danger">(Merged)</span>
                                 </label>
-                                <input type="file" class="form-control" name="customs" autocomplete="on" />
+                                <input type="file" class="form-control" name="customs" autocomplete="on" required />
                             </div>
 
 
