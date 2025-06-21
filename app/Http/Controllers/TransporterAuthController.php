@@ -19,6 +19,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\mainmail;
+use App\Mail\NewAppMail;
 use App\Mail\CustomVerifyEmail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -365,6 +366,17 @@ class TransporterAuthController extends Controller
 
         try {
             $r = feriApp::create($validatedData);
+            $transporter = Auth::user();
+            $company = Company::where('type', 'vendor')->first();
+            $vendors = User::where('company', $company->id)->where('role', 'vendor')->get();
+
+            if ($vendors->count() > 0) {
+                $mainVendor = $vendors->first(); // Primary recipient
+                $ccEmails = $vendors->skip(1)->pluck('email')->filter()->all(); // Remove nulls
+
+                Mail::to($mainVendor->email)->cc($ccEmails)->send(new NewAppMail($r, $mainVendor, $transporter));
+            }
+
             return redirect()
                 ->back()
                 ->with([
@@ -925,10 +937,10 @@ class TransporterAuthController extends Controller
         // Validate all file fields
         $validatedData = $request->validate([
             'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:20480',
-            'invoice' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
-            'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
-            'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
-            'customs' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+            'invoice' => 'nullable|file|mimes:pdf|max:20480',
+            'manifest' => 'nullable|file|mimes:pdf|max:20480',
+            'packing_list' => 'nullable|file|mimes:pdf|max:20480',
+            'customs' => 'nullable|file|mimes:pdf|max:20480',
         ]);
 
         $fileFields = ['invoice', 'manifest', 'packing_list', 'customs'];
@@ -1141,8 +1153,19 @@ class TransporterAuthController extends Controller
 
             // Insert into DB
             try {
-                feriApp::create($data);
+                $r = feriApp::create($data);
                 $imported++;
+                $transporter = Auth::user();
+                $company = Company::where('type', 'vendor')->first();
+
+                $vendors = User::where('company', $company->id)->where('role', 'vendor')->get();
+
+                if ($vendors->count() > 0) {
+                    $mainVendor = $vendors->first(); // Primary recipient
+                    $ccEmails = $vendors->skip(1)->pluck('email')->filter()->all(); // Remove nulls
+
+                    Mail::to($mainVendor->email)->cc($ccEmails)->send(new NewAppMail($r, $mainVendor, $transporter));
+                }
             } catch (\Exception $e) {
                 $errors[] = 'Row ' . ($rowIndex + 2) . ': Failed to insert. ' . $e->getMessage();
             }
@@ -1153,7 +1176,11 @@ class TransporterAuthController extends Controller
             if ($errors) {
                 $msg .= ' Some rows had errors.';
             }
-            return back()->with(['status' => 'success', 'message' => $msg, 'errors' => $errors]);
+            return back()->with([
+                'status' => 'success',
+                'message' => $msg,
+                'errors' => $errors,
+            ]);
         } else {
             return back()->withErrors(['excel_file' => 'No valid rows imported. Errors: ' . implode(' | ', $errors)]);
         }

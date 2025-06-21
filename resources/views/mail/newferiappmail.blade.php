@@ -365,25 +365,28 @@
                             <tr>
                                 <td style="padding: 0 2.5em; text-align: center;">
                                     <div style="color: #3a3a3a; text-align: justify; padding-top: 15px;">
-                                        Dear {{ $recipient->name }}, <br><br>
+                                        Dear {{ $vendor->name }}, <br><br>
 
 
 
                                         This is to notify you that a new application has been submitted to the system.
 
-                                        Please log in to the system to review the details and take the necessary actions.
+                                        Please log in to the system to review the details and take the necessary
+                                        actions.
                                         <br><br>
                                         - Application Info<br>
                                         <p style="padding: 30px; color: #666666; background-color: #f1f1f1;">
-                                            Application Reference: {{ $feriApp->company_ref }}
+                                            Application Reference: {{ $feriApp->company_ref }} <br />
+                                            Type: {{ $feriApp->feri_type }}
                                         </p>
 
 
-                                        If you have any questions or encounter any issues accessing the system, feel free to contact our system admin team.
+                                        If you have any questions or encounter any issues accessing the system, feel
+                                        free to contact our system admin team.
 
                                         <br><br>
-                                        Best regards, <br/>
-                                        ~ {{ $sender->name }} <br>
+                                        Best regards, <br />
+                                        Applicant: {{ $transporter->name }} <br>
                                     </div>
                                 </td>
                             </tr>

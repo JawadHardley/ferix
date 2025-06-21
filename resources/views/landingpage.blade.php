@@ -37,6 +37,17 @@
 
 <body class="index-page">
 
+    <!-- Loading Spinner Overlay -->
+    <div id="pageLoader"
+        style="
+    position: fixed;
+    z-index: 9999;
+    background: rgba(255,255,255,0.85);
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;">
+        <div class="spinner-grow text-primary" style="width: 4rem; height: 4rem;" role="status"></div>
+    </div>
+
     <header id="header" class="header d-flex align-items-center fixed-top">
         <div class="container position-relative d-flex align-items-center justify-content-between">
 
@@ -117,8 +128,10 @@
 
                     <h1 class="hero-title mb-4">Accelerating Cross-Border Trade with FERI Solutions </h1>
 
-                    <p class="hero-description mb-4">Ferix streamlines the application, management, and tracking of FERI
-                        certificates for transporters, vendors, and logistics companies moving goods into and within the
+                    <p class="hero-description mb-4">Ferix streamlines the application, management, and tracking of
+                        FERI
+                        certificates for transporters, vendors, and logistics companies moving goods into and within
+                        the
                         DRC. Our platform ensures compliance, transparency, and efficiency for all your freight
                         documentation needs.</p>
 
@@ -144,7 +157,8 @@
                         <div class="feature-content">
                             <h3 class="feature-title">Easy Process</h3>
                             <p class="feature-text">Set up your FERI applications and documentation in minutes. Our
-                                intuitive platform lets you upload, manage, and track all required documents with ease.
+                                intuitive platform lets you upload, manage, and track all required documents with
+                                ease.
                             </p>
                         </div>
                     </div>
@@ -200,9 +214,11 @@
                     <ul>
                         <li><i class="fa fa-check-circle"></i> <span>Automated FERI application and approval
                                 workflow.</span></li>
-                        <li><i class="fa fa-check-circle"></i> <span>Real-time tracking and status updates for all your
+                        <li><i class="fa fa-check-circle"></i> <span>Real-time tracking and status updates for all
+                                your
                                 applications.</span></li>
-                        <li><i class="fa fa-check-circle"></i> <span>Integrated document management for invoices and
+                        <li><i class="fa fa-check-circle"></i> <span>Integrated document management for invoices
+                                and
                                 certificates.</span></li>
                     </ul>
                     <a href="#" class="read-more"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
@@ -271,7 +287,8 @@
                         </div>
                         <div class="service-content">
                             <h3>Maritime Freight</h3>
-                            <p>Coming soon: Full support for maritime FERI applications, including vessel documentation
+                            <p>Coming soon: Full support for maritime FERI applications, including vessel
+                                documentation
                                 and port clearance integration.</p>
                             <a href="#" class="service-link">
                                 <span>Coming Soon ...</span>
@@ -288,7 +305,8 @@
                         </div>
                         <div class="service-content">
                             <h3>Rail Freight</h3>
-                            <p>Coming soon: Streamlined FERI processing for rail cargo, with integration to major rail
+                            <p>Coming soon: Streamlined FERI processing for rail cargo, with integration to major
+                                rail
                                 operators in the region.</p>
                             <a href="#" class="service-link">
                                 <span>Coming Soon ...</span>
@@ -398,6 +416,27 @@
 
     <!-- Preloader -->
     <!-- <div id="preloader"></div> -->
+
+    <script>
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('pageLoader');
+            if (loader) loader.style.display = 'none';
+        });
+
+        // Show loader on any form submit, but only if valid
+        document.addEventListener('DOMContentLoaded', function() {
+            var loader = document.getElementById('pageLoader');
+            document.querySelectorAll('form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    if (form.checkValidity()) {
+                        if (loader) loader.style.display = 'flex';
+                    } else {
+                        if (loader) loader.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 
     <!-- Vendor JS Files -->
     <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
