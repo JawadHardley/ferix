@@ -309,7 +309,7 @@
             </td>
             <td style="width: 274pt" bgcolor="#FFF">
                 <p class="s6" style="padding-left: 17pt; text-indent: 0pt; text-align: left">
-                    PRES-2025-{{ $invoice->id }}
+                    PRES-2025-P{{ $invoice->id }}
                 </p>
             </td>
         </tr>
@@ -894,7 +894,7 @@
         text-indent: 0pt;
         text-align: left;
       ">
-                    Application Invoice No: <span class="p">PRES-2025-{{ $invoice->id }}</span>
+                    Application Invoice No: <span class="p">PRES-2025-P{{ $invoice->id }}</span>
                 </h3>
                 <h3
                     style="
