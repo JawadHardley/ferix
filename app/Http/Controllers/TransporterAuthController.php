@@ -415,6 +415,20 @@ class TransporterAuthController extends Controller
             // Attach draft data to the record if it exists
             $record->draftFile = $latestDraft->file ?? null;
 
+            // --- NEW LOGIC: Fetch feri_cert_no from Invoice via latest draft certificate ---
+            $record->feri_cert_no = null; // Initialize to null
+
+            if ($latestDraft) {
+                // Find the invoice associated with this draft certificate
+                // This assumes 'cert_id' in the 'invoices' table refers to the 'id' of the 'certificates' table.
+                $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
+
+                if ($invoice) {
+                    $record->feri_cert_no = $invoice->certificate_no;
+                }
+            }
+            // --- END NEW LOGIC ---
+
             return $record;
         });
 

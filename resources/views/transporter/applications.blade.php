@@ -52,6 +52,7 @@
                                 <th>PO</th>
                                 <th>Type</th>
                                 <th>Customs No</th>
+                                <th>Feri Cert NO</th>
                                 <th>Document</th>
                                 <th>Status</th>
                                 <th>Query</th>
@@ -86,6 +87,9 @@
                                     </td>
                                     <td>
                                         {{ ucfirst($record->customs_decl_no) }}
+                                    </td>
+                                    <td>
+                                        {{ ucfirst($record->feri_cert_no) }}
                                     </td>
                                     <td class="text-start">
                                         @if ($record->status == 1 || $record->status == 2)
