@@ -31,7 +31,7 @@
                         </div>
                         <div class="col-md-auto col-sm-12 d-flex">
                             <div class="input-group mb-3">
-                                <a href="{{ route('transporter.exportapplications') }}" class="btn btn-outline-success">
+                                <a href="{{ route('transporter.exportapps') }}" class="btn btn-outline-success">
                                     <i class="fa fa-circle-down me-2"></i> Export
                                 </a>
                             </div>

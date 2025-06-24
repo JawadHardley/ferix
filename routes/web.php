@@ -195,7 +195,7 @@ Route::prefix('transporter')
             ->middleware('role');
 
         Route::get('export/applications', [CertificateController::class, 'exportApplications'])
-            ->name('exportapplications')
+            ->name('exportapps')
             ->middleware('role');
 
         Route::get('/feri/template/download', [TransporterAuthController::class, 'downloadFeriExcelTemplate'])->name('feri.template.download');
