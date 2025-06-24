@@ -89,7 +89,7 @@
                                         {{ ucfirst($record->customs_decl_no) }}
                                     </td>
                                     <td>
-                                        {{ ucfirst($record->feri_cert_no) }}
+                                        {{ $record->feri_cert_no ? ucfirst($record->feri_cert_no) : '...' }}
                                     </td>
                                     <td class="text-start">
                                         @if ($record->status == 1 || $record->status == 2)
