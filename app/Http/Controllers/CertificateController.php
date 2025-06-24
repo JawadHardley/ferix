@@ -19,6 +19,10 @@ use App\Mail\CustomVerifyEmail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CertificateController extends Controller
 {
@@ -232,5 +236,95 @@ class CertificateController extends Controller
         // dd($records);
 
         return $pdf->download('STATEMENT.pdf');
+    }
+
+    private function getStatusText($statusCode)
+    {
+        switch ($statusCode) {
+            case 1:
+                return 'Pending';
+            case 2:
+                return 'Pending'; // Assuming status 2 is also 'Pending' based on your blade
+            case 3:
+                return 'Draft Approval';
+            case 4:
+                return 'In progress';
+            case 5:
+                return 'Complete';
+            case 6:
+                return 'Rejected';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    // public function exportApplications() {}
+
+    public function exportApplications()
+    {
+        // 1. Fetch the data
+        // Eager load the 'user' relationship to get the applicant's name efficiently.
+        $applications = feriApp::with('user')->get();
+
+        // 2. Create a new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // 3. Define and set headers
+        $headers = ['ID', 'Reference', 'Applicant', 'Date', 'PO', 'Type', 'Customs No', 'Status'];
+        $sheet->fromArray($headers, null, 'A1'); // Write headers starting from A1
+
+        // Optional: Apply some basic styling to headers
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['argb' => 'FF000000'], // Black color
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FFDDDDDD'], // Light grey background
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ],
+            ],
+        ];
+        $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray($headerStyle);
+
+        // 4. Populate the spreadsheet with data
+        $row = 2; // Start data from row 2, after headers
+        foreach ($applications as $app) {
+            $sheet->setCellValue('A' . $row, $app->id);
+            $sheet->setCellValue('B' . $row, $app->company_ref);
+            $sheet->setCellValue('C' . $row, $app->user->name ?? 'N/A'); // Applicant name
+            $sheet->setCellValue('D' . $row, $app->created_at->format('j F Y'));
+            $sheet->setCellValue('E' . $row, is_numeric($app->po) ? $app->po : 'TBS');
+            $sheet->setCellValue('F' . $row, ucfirst($app->feri_type));
+            $sheet->setCellValue('G' . $row, ucfirst($app->customs_decl_no));
+            $sheet->setCellValue('H' . $row, $this->getStatusText($app->status)); // Using the helper function
+            $row++;
+        }
+
+        // Optional: Auto-size columns for better readability
+        foreach (range('A', $sheet->getHighestColumn()) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // 5. Prepare the response for download
+        $fileName = 'Feri_Status_' . now()->format('Ymd_His') . '.xlsx';
+
+        $writer = new Xlsx($spreadsheet);
+
+        // Use StreamedResponse for large files to prevent memory issues
+        $response = new StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
     }
 }

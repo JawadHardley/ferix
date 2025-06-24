@@ -1,6 +1,10 @@
 <div class="container general mb-3 card">
     <div class="row p-5">
-        <h1 class="mb-5">Freight Certificate Cost Calculator || Presis Consultancy Ltd</h1> 
+
+        <h1 class="mb-2 text-center display-6">Certificate Cost Calculator</h1>
+        <h2 class="mb-5 text-center ">Presis Consultancy Ltd</h2>
+        <hr>
+
         <div class="col-12 col-md-4 mb-3">
             From:
         </div>

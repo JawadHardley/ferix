@@ -132,7 +132,7 @@
                                 <a href="#tabs-home-2"
                                     class="list-group-item list-group-item-action d-flex align-items-center nav-link"
                                     data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                                    Importer Details
+                                    Import Details
                                 </a>
                             </div>
 
@@ -140,7 +140,7 @@
                                 <a href="#tabs-home-3"
                                     class="list-group-item list-group-item-action d-flex align-items-center nav-link"
                                     data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                                    Exporter Details
+                                    Export Details
                                 </a>
                             </div>
 
@@ -178,9 +178,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                <div class="list-group list-group-transparent">
-                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                </div> -->
+                                                            <div class="list-group list-group-transparent">
+                                                                <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                            </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -261,7 +261,7 @@
 
                         <div class="row g-3">
 
-                            <div class="col-12 mb-3 col-lg-12">
+                            <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Importer Name</div>
                                 <input type="text" name="importer_name" class="form-control"
                                     value="{{ $record->importer_name }}" disabled>
@@ -276,10 +276,15 @@
                                 <input type="text" name="importer_email" class="form-control"
                                     value="{{ $record->importer_email }}" disabled>
                             </div>
-                            <div class="col-12 mb-3 col-lg-12">
+                            <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Fix Number</div>
                                 <input type="text" name="fix_number" class="form-control"
                                     value="{{ $record->fix_number }}" disabled>
+                            </div>
+                            <div class="col-12 mb-3 col-lg-12">
+                                <div class="form-label">Importer Address</div>
+                                <input type="text" name="importer_address" class="form-control"
+                                    value="{{ $record->importer_address }}" disabled>
                             </div>
 
                         </div>
@@ -307,15 +312,20 @@
                                 <input type="text" name="exporter_email" class="form-control"
                                     value="{{ $record->exporter_email }}" disabled>
                             </div>
-                            <div class="col-12 mb-3 col-lg-12">
+                            <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">CF Agent</div>
                                 <input type="text" name="cf_agent" class="form-control"
                                     value="{{ $record->cf_agent }}" disabled>
                             </div>
-                            <div class="col-12 mb-3 col-lg-12">
+                            <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">CF Agent Contact</div>
                                 <input type="text" name="cf_agent_contact" class="form-control"
                                     value="{{ $record->cf_agent_contact }}" disabled>
+                            </div>
+                            <div class="col-12 mb-3 col-lg-12">
+                                <div class="form-label">Exporter Address</div>
+                                <input type="text" name="exporter_address" class="form-control"
+                                    value="{{ $record->exporter_address }}" disabled>
                             </div>
 
                         </div>
@@ -744,15 +754,15 @@
                                 <a href="#tabs-home-3"
                                     class="list-group-item list-group-item-action d-flex align-items-center nav-link"
                                     data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                                    Export + Value Details
+                                    Consignment Details
                                 </a>
                             </div>
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                <div class="list-group list-group-transparent">
-                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                </div> -->
+                                                            <div class="list-group list-group-transparent">
+                                                                <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                            </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -875,7 +885,7 @@
                     <div class="card-body tab-pane fade" id="tabs-home-3" role="tabpanel">
 
                         <!-- <h2 class="mb-4">#</h2> -->
-                        <h3 class="card-title mb-5">Export + Value Details</h3>
+                        <h3 class="card-title mb-5">Consignment Details</h3>
 
                         <div class="row g-3">
 
@@ -1056,10 +1066,10 @@
                                                                 autocomplete="on" required />
 
                                                             <!-- <div class="col-12 col-md-6 mb-3">
-                                                <label class="form-label">Customer Reference No</label>
-                                                <input type="text" class="form-control" name="customer_ref"
-                                                    value="{{ $invoice->customer_ref ?? '' }}" autocomplete="on" required />
-                                            </div> -->
+                                                                            <label class="form-label">Customer Reference No</label>
+                                                                            <input type="text" class="form-control" name="customer_ref"
+                                                                                value="{{ $invoice->customer_ref ?? '' }}" autocomplete="on" required />
+                                                                        </div> -->
 
                                                             <!-- <label class="form-label">Customer Reference No</label> -->
                                                             <input type="hidden" class="form-control"
@@ -1222,7 +1232,8 @@
                 aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                         <div class="modal-status bg-primary"></div>
                         <div class="modal-body py-4">
                             <h2 class="text-center mb-3">
@@ -1307,8 +1318,8 @@
                             </div>
 
                             <!-- <div class="text-secondary">
-                            Do you want to proceed with the application ?
-                        </div> -->
+                                                        Do you want to proceed with the application ?
+                                                    </div> -->
                         </div>
                         <div class="modal-footer">
                             <div class="w-100">
@@ -1364,8 +1375,8 @@
                                 <input type="file" class="form-control" name="file" required />
                             </div>
                             <!-- <div class="text-secondary">
-                            Do you want to proceed with the application ?
-                        </div> -->
+                                                        Do you want to proceed with the application ?
+                                                    </div> -->
                         </div>
                         <div class="modal-footer">
                             <div class="w-100">
@@ -1514,11 +1525,11 @@
                     </form>
                 </div>
                 <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">
-                        send <i class="fa fa-paper-plane ms-2"></i>
-                    </button>
-                </div> -->
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary">
+                                                    send <i class="fa fa-paper-plane ms-2"></i>
+                                                </button>
+                                            </div> -->
             </div>
         </div>
     </div>

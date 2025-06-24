@@ -83,8 +83,8 @@
                         <!-- 4 -->
                     @elseif ($record->status == 5)
                         <!-- <button class="btn btn-outline-primary">
-                        <i class="fa fa-award fs-3"></i>
-                    </button> -->
+                                <i class="fa fa-award fs-3"></i>
+                            </button> -->
                         <div class="ms-5 d-inline"></div>
                     @endif
 
@@ -175,9 +175,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                <div class="list-group list-group-transparent">
-                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                </div> -->
+                                        <div class="list-group list-group-transparent">
+                                            <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                        </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -830,15 +830,15 @@
                                 <a href="#tabs-home-3"
                                     class="list-group-item list-group-item-action d-flex align-items-center nav-link"
                                     data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">
-                                    Export + Value Details
+                                    Consignment Details
                                 </a>
                             </div>
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                <div class="list-group list-group-transparent">
-                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                </div> -->
+                                        <div class="list-group list-group-transparent">
+                                            <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                        </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -1070,7 +1070,7 @@
                     <div class="card-body tab-pane fade" id="tabs-home-3" role="tabpanel">
 
                         <!-- <h2 class="mb-4">#</h2> -->
-                        <h3 class="card-title mb-5">Export + Value Details</h3>
+                        <h3 class="card-title mb-5">Consignment Details</h3>
 
                         <div class="row g-3">
 
@@ -1464,11 +1464,11 @@
                     </form>
                 </div>
                 <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">
-                        send <i class="fa fa-paper-plane ms-2"></i>
-                    </button>
-                </div> -->
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">
+                                send <i class="fa fa-paper-plane ms-2"></i>
+                            </button>
+                        </div> -->
             </div>
         </div>
     </div>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
+
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
@@ -191,6 +192,10 @@ Route::prefix('transporter')
 
         Route::get('import/apply', [TransporterAuthController::class, 'importapply'])
             ->name('importapply')
+            ->middleware('role');
+
+        Route::get('export/applications', [CertificateController::class, 'exportApplications'])
+            ->name('exportApplications')
             ->middleware('role');
 
         Route::get('/feri/template/download', [TransporterAuthController::class, 'downloadFeriExcelTemplate'])->name('feri.template.download');

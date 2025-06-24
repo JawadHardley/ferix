@@ -29,6 +29,13 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-auto col-sm-12 d-flex">
+                            <div class="input-group mb-3">
+                                <a href="{{ route('transporter.exportApplications') }}" class="btn btn-outline-success">
+                                    <i class="fa fa-circle-down me-2"></i> Export
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="table-respnsive">

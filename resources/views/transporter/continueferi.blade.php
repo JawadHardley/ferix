@@ -19,7 +19,7 @@
                         aria-selected="false">Transport & Cargo Details</button>
                     <button class="nav-link" id="v-pills-disabled-tab" data-bs-toggle="pill"
                         data-bs-target="#v-pills-disabled" type="button" role="tab" aria-controls="v-pills-disabled"
-                        aria-selected="false">Export + Values Details</button>
+                        aria-selected="false">Consignment Details</button>
                 </div>
                 <div class="col-12 col-md-10 tab-content px-5" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
@@ -48,7 +48,7 @@
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
-                                <label class="form-label">Entry Boarder to DRC</label>
+                                <label class="form-label">Entry Border to DRC</label>
                                 <select class="form-select" name="entry_border_drc">
                                     <option value="0" {{ old('entry_border_drc') == '0' ? 'selected' : '' }}>-- select
                                         --</option>
@@ -113,10 +113,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                                <label class="form-label">Final Destination</label>
-                                                <input type="text" class="form-control" name="final_destination"
-                                                    value="{{ old('final_destination') }}" autocomplete="on" required />
-                                            </div> -->
+                                                        <label class="form-label">Final Destination</label>
+                                                        <input type="text" class="form-control" name="final_destination"
+                                                            value="{{ old('final_destination') }}" autocomplete="on" required />
+                                                    </div> -->
 
 
                         </div>
