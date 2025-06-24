@@ -238,7 +238,7 @@ class CertificateController extends Controller
         return $pdf->download('STATEMENT.pdf');
     }
 
-    private function getStatusText($statusCode)
+    public function getStatusText($statusCode)
     {
         switch ($statusCode) {
             case 1:
