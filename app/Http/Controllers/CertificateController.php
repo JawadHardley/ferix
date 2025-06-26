@@ -49,9 +49,15 @@ class CertificateController extends Controller
             abort(404, 'File not found.');
         }
 
+        $sanitizedCompanyRef = Str::slug($feriApp->company_ref); // Converts spaces and special chars to hyphens
+        $customWords = 'Feri_Certificate';
+        $extension = 'pdf';
+        $newFileName = "{$customWords}_{$sanitizedCompanyRef}.{$extension}";
+        // dd($newFileName);
+
         // Download the file
         // return Storage::disk('private')->download($filePath);
-        return response()->download(storage_path('app/private/' . $filePath));
+        return response()->download(storage_path('app/private/' . $filePath), $newFileName);
     }
 
     public function downloaddraft($id)
