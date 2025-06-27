@@ -16,6 +16,7 @@
     $upTotal = $feriAmount + $codAmount;
     $transporterAmount = $transporterQty * 0.018;
     $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
+    $grandTotal_r = number_format($grandTotal, 2, '.', ',');
 
     $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - Y');
 @endphp
@@ -833,7 +834,7 @@
         text-align: right;
       ">
             GRAND TOTAL (TZ) <span class="h2">:
-                {{ number_format($grandTotal * $invoice->tz_rate, 2, '.', ',') }}</span>
+                {{ number_format($grandTotal_r * $invoice->tz_rate, 2, '.', ',') }}</span>
         </p>
         <p class="s11"
             style="
