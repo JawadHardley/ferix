@@ -67,19 +67,19 @@
                                 <select class="form-select" name="final_destination">
                                     <option value="0" {{ old('final_destination') == '0' ? 'selected' : '' }}>-- select
                                         --</option>
-                                    <option value="Likasi, DRC"
+                                    <option value="Likasi DRC"
                                         {{ old('final_destination') == 'Likasi DRC' ? 'selected' : '' }}>Likasi DRC
                                     </option>
-                                    <option value="Kolwezi, DRC"
+                                    <option value="Kolwezi DRC"
                                         {{ old('final_destination') == 'Kolwezi DRC' ? 'selected' : '' }}>Kolwezi DRC
                                     </option>
-                                    <option value="Lubumbashi, DRC"
+                                    <option value="Lubumbashi DRC"
                                         {{ old('final_destination') == 'Lubumbashi DRC' ? 'selected' : '' }}>
                                         Lubumbashi DRC</option>
-                                    <option value="Tenke, DRC"
+                                    <option value="Tenke DRC"
                                         {{ old('final_destination') == 'Tenke DRC' ? 'selected' : '' }}>
                                         Tenke DRC</option>
-                                    <option value="Kisanfu, DRC"
+                                    <option value="Kisanfu DRC"
                                         {{ old('final_destination') == 'Kisanfu DRC' ? 'selected' : '' }}>
                                         Kisanfu DRC</option>
                                 </select>
@@ -113,10 +113,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                                        <label class="form-label">Final Destination</label>
-                                                        <input type="text" class="form-control" name="final_destination"
-                                                            value="{{ old('final_destination') }}" autocomplete="on" required />
-                                                    </div> -->
+                                                            <label class="form-label">Final Destination</label>
+                                                            <input type="text" class="form-control" name="final_destination"
+                                                                value="{{ old('final_destination') }}" autocomplete="on" required />
+                                                        </div> -->
 
 
                         </div>
