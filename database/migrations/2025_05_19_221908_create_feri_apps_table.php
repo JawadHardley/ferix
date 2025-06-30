@@ -46,7 +46,7 @@ return new class extends Migration {
             $table->text('cargo_description');
             $table->string('hs_code');
             $table->string('package_type');
-            $table->integer('quantity');
+            $table->decimal('quantity', 10, 3);
 
             $table->string('po')->nullable();
             $table->string('company_ref')->nullable();
