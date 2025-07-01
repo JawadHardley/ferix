@@ -198,7 +198,9 @@
                                                                                                         </div>
                                                                                                         <div
                                                                                                             class="chat-bubble-body">
-                                                                                                            <p>{{ $chat->message }}
+                                                                                                            <p class="mb-0 text-break"
+                                                                                                                style="word-break:break-word;white-space:pre-line;overflow-wrap:anywhere;">
+                                                                                                                {{ $chat->message }}
                                                                                                             </p>
                                                                                                         </div>
                                                                                                         <span
@@ -306,11 +308,11 @@
                                                         </form>
                                                     </div>
                                                     <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">
-                        send <i class="fa fa-paper-plane ms-2"></i>
-                    </button>
-                </div> -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">
+                            send <i class="fa fa-paper-plane ms-2"></i>
+                        </button>
+                    </div> -->
                                                 </div>
                                             </div>
                                         </div>

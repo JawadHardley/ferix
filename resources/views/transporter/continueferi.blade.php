@@ -82,6 +82,12 @@
                                     <option value="Kisanfu DRC"
                                         {{ old('final_destination') == 'Kisanfu DRC' ? 'selected' : '' }}>
                                         Kisanfu DRC</option>
+                                    <option value="Lualaba DRC"
+                                        {{ old('final_destination') == 'Lualaba DRC' ? 'selected' : '' }}>
+                                        Lualaba DRC</option>
+                                    <option value="Pumpi DRC"
+                                        {{ old('final_destination') == 'Pumpi DRC' ? 'selected' : '' }}>
+                                        Pumpi DRC</option>
                                 </select>
                             </div>
 
@@ -113,10 +119,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                                            <label class="form-label">Final Destination</label>
-                                                            <input type="text" class="form-control" name="final_destination"
-                                                                value="{{ old('final_destination') }}" autocomplete="on" required />
-                                                        </div> -->
+                                                                <label class="form-label">Final Destination</label>
+                                                                <input type="text" class="form-control" name="final_destination"
+                                                                    value="{{ old('final_destination') }}" autocomplete="on" required />
+                                                            </div> -->
 
 
                         </div>

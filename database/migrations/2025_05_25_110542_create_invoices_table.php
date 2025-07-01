@@ -21,13 +21,13 @@ return new class extends Migration
             $table->string('feri_units');
             // $table->decimal('feri_amount', 12, 2);
 
-            $table->integer('cod_quantities');
+            $table->decimal('cod_quantities', 10, 3);
             $table->string('cod_units');
             // $table->decimal('cod_amount', 12, 2);
 
             $table->decimal('euro_rate', 10, 4);
             $table->decimal('tz_rate', 10, 4);
-            $table->integer('transporter_quantity');
+            $table->decimal('transporter_quantity', 10, 3);
 
             $table->string('customer_ref');
             $table->string('customer_po');
