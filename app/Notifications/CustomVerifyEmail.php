@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Config;
 use App\Models\User;
 
-class CustomVerifyEmail extends Notification
+class CustomVerifyEmail extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -68,7 +68,7 @@ class CustomVerifyEmail extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 }

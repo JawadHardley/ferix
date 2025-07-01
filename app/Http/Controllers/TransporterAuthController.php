@@ -112,6 +112,7 @@ class TransporterAuthController extends Controller
 
         // Send email verification notification
         event(new Registered($user));
+        Notification::route('mail', $user->email)->queue(new WelcomeNotification());
 
         // Auth::login($user);
 
@@ -374,7 +375,8 @@ class TransporterAuthController extends Controller
                 $mainVendor = $vendors->first(); // Primary recipient
                 $ccEmails = $vendors->skip(1)->pluck('email')->filter()->all(); // Remove nulls
 
-                Mail::to($mainVendor->email)->cc($ccEmails)->send(new NewAppMail($r, $mainVendor, $transporter));
+                // Mail::to($mainVendor->email)->cc($ccEmails)->send(new NewAppMail($r, $mainVendor, $transporter));
+                Mail::to($mainVendor->email)->cc($ccEmails)->queue(new NewAppMail($r, $mainVendor, $transporter));
             }
 
             return redirect()

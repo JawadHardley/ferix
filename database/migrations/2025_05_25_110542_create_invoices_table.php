@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('cert_id'); // Foreign key 
             $table->date('invoice_date');
 
-            $table->integer('feri_quantity');
+            $table->decimal('feri_quantity', 10, 3);
             $table->string('feri_units');
             // $table->decimal('feri_amount', 12, 2);
 

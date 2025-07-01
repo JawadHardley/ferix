@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Attachment;
 
-class DraftInvoiceMail extends Mailable
+class DraftInvoiceMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -76,7 +76,7 @@ class DraftInvoiceMail extends Mailable
 
         // Attach the invoice from raw data
         if ($this->pdfInvoiceData) {
-            $attachments[] = Attachment::fromData(fn() => $this->pdfInvoiceData, 'DraftInvoice.pdf')->withMime('application/pdf');
+            $attachments[] = Attachment::fromData(fn() => base64_decode($this->pdfInvoiceData), 'DraftInvoice.pdf')->withMime('application/pdf');
         }
 
         return $attachments;

@@ -334,7 +334,7 @@ class AdminAuthController extends Controller
         $resetUrl = url('/reset-password/' . $token . '?email=' . urlencode($user->email));
 
         // Send Email
-        Mail::to($user->email)->send(new mainmail($user, $resetUrl));
+        Mail::to($user->email)->queue(new mainmail($user, $resetUrl));
 
         // return back()->with('status', 'We have emailed your password reset link!');
         return back()->with([

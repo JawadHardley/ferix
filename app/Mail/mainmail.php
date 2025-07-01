@@ -15,7 +15,7 @@ use App\Models\User;
 // this is only for password reset emails
 // this is only for password reset emails
 
-class mainmail extends Mailable
+class mainmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
     public $user;

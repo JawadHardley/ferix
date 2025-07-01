@@ -532,15 +532,15 @@ class VendorAuthController extends Controller
         $validatedData = $request->validate([
             'file' => 'required|mimes:pdf|max:20480', // max:20480 KB = 20 MB
 
-            'feri_quantity' => 'required|integer',
+            'feri_quantity' => 'required|numeric',
             'feri_units' => 'required|string',
 
-            'cod_quantities' => 'required|integer',
+            'cod_quantities' => 'required|numeric',
             'cod_units' => 'required|string',
 
             'euro_rate' => 'required|numeric',
 
-            'transporter_quantity' => 'required|integer',
+            'transporter_quantity' => 'required|numeric',
 
             'customer_ref' => 'required|string',
             'customer_po' => 'required|string',
@@ -621,8 +621,10 @@ class VendorAuthController extends Controller
             'applicantName' => Str::title($applicantName),
         ])->output();
 
+        $pdf = base64_encode($pdf);
+
         if ($recipient && $recipient->email && $certificatePath) {
-            Mail::to($recipient->email)->send(new DraftInvoiceMail($invoice, $feriApp, $recipient, $certificatePath, $sender, $pdf));
+            Mail::to($recipient->email)->queue(new DraftInvoiceMail($invoice, $feriApp, $recipient, $certificatePath, $sender, $pdf));
         }
 
         return back()->with([
@@ -710,9 +712,10 @@ class VendorAuthController extends Controller
         ])->output();
 
         // dd($recipient, $recipient->email, $certificatePath);
+        $pdf = base64_encode($pdf);
 
         if ($recipient && $recipient->email && $certificatePath) {
-            Mail::to($recipient->email)->send(new CertificateMail($invoice, $feriApp, $recipient, $certificatePath, $sender, $pdf));
+            Mail::to($recipient->email)->queue(new CertificateMail($invoice, $feriApp, $recipient, $certificatePath, $sender, $pdf));
         }
 
         return back()->with([
@@ -735,12 +738,12 @@ class VendorAuthController extends Controller
         // Validate the uploaded file
         $validatedData = $request->validate([
             'file' => 'mimes:pdf|max:25600', // max:25600 KB = 25 MB
-            'feri_quantity' => 'required|integer',
+            'feri_quantity' => 'required|numeric',
             'feri_units' => 'required|string',
-            'cod_quantities' => 'required|integer',
+            'cod_quantities' => 'required|numeric',
             'cod_units' => 'required|string',
             'euro_rate' => 'required|numeric',
-            'transporter_quantity' => 'required|integer',
+            'transporter_quantity' => 'required|numeric',
             'customer_ref' => 'required|string',
             'customer_po' => 'required|string',
             'customer_trip_no' => 'required|string',
@@ -825,10 +828,16 @@ class VendorAuthController extends Controller
                 'applicantName' => Str::title($applicantName),
             ])->output();
 
-            // Send email if recipient and file exist
+            $pdf = base64_encode($pdf);
+
             if ($recipient && $recipient->email && $filePath) {
-                Mail::to($recipient->email)->send(new DraftInvoiceMail($invoice, $feriApp, $recipient, $filePath, $sender, $pdf));
+                Mail::to($recipient->email)->queue(new DraftInvoiceMail($invoice, $feriApp, $recipient, $filePath, $sender, $pdf));
             }
+
+            // Send email if recipient and file exist
+            // if ($recipient && $recipient->email && $filePath) {
+            //     Mail::to($recipient->email)->send(new DraftInvoiceMail($invoice, $feriApp, $recipient, $filePath, $sender, $pdf));
+            // }
         }
 
         return back()->with([
@@ -877,7 +886,7 @@ class VendorAuthController extends Controller
 
         // Send the email if recipient exists and has an email
         if ($recipient && $recipient->email) {
-            Mail::to($recipient->email)->send(new ChatNotificationMail($chat, $feriApp, $user, $recipient));
+            Mail::to($recipient->email)->queue(new ChatNotificationMail($chat, $feriApp, $user, $recipient));
         }
 
         $this->readchat($id);
