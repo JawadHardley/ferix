@@ -27,14 +27,14 @@
                     </div>
 
                     <!-- <div class="col-12 mb-3">
-                        <label class="form-label">Feri Type</label>
-                        <select class="form-select" aria-label="Default select example">
-                            <option value="regional" selected>Regional</option>
-                            <option value="continuance">Continuance</option>
-                        </select>
-                    </div> -->
+                                            <label class="form-label">Feri Type</label>
+                                            <select class="form-select" aria-label="Default select example">
+                                                <option value="regional" selected>Regional</option>
+                                                <option value="continuance">Continuance</option>
+                                            </select>
+                                        </div> -->
 
-                    <div class="col-12 col-lg-3 mb-3">
+                    {{-- <div class="col-12 col-lg-3 mb-3">
                         <label class="form-label">Commercial Invoice</label>
                         <input type="file" class="form-control" name="invoice" autocomplete="on" />
                     </div>
@@ -53,7 +53,18 @@
                         <label class="form-label">Custom Docs <span class="fs-6 text-danger">(Merged)</span>
                         </label>
                         <input type="file" class="form-control" name="customs" autocomplete="on" required />
+                    </div> --}}
+
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Document for each Excel Row</label>
+                        <div id="row-files-wrapper">
+                            <div class="input-group mb-2">
+                                <input type="file" name="attachments[]" class="form-control" />
+                                <button type="button" class="btn btn-success add-file-btn">+</button>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
 
 
@@ -61,4 +72,27 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wrapper = document.getElementById('row-files-wrapper');
+
+            wrapper.addEventListener('click', function(e) {
+                if (e.target.classList.contains('add-file-btn')) {
+                    const newInputGroup = document.createElement('div');
+                    newInputGroup.classList.add('input-group', 'mb-2');
+
+                    newInputGroup.innerHTML = `
+                    <input type="file" name="attachments[]" class="form-control" />
+                    <button type="button" class="btn btn-danger remove-file-btn">-</button>
+                `;
+                    wrapper.appendChild(newInputGroup);
+                }
+
+                if (e.target.classList.contains('remove-file-btn')) {
+                    e.target.closest('.input-group').remove();
+                }
+            });
+        });
+    </script>
 @endsection

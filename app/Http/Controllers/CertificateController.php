@@ -277,7 +277,7 @@ class CertificateController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // 3. Define and set headers
-        $headers = ['ID', 'Reference', 'Applicant', 'Date', 'PO', 'Type', 'Customs No', 'Status'];
+        $headers = ['ID', 'Reference', 'Applicant', 'Date', 'PO', 'Type', 'Customs No', 'Feri Cert No', 'Status'];
         $sheet->fromArray($headers, null, 'A1'); // Write headers starting from A1
 
         // Optional: Apply some basic styling to headers
@@ -301,6 +301,21 @@ class CertificateController extends Controller
         // 4. Populate the spreadsheet with data
         $row = 2; // Start data from row 2, after headers
         foreach ($applications as $app) {
+            // Fetch the latest draft for the application
+            $latestDraft = Certificate::where('application_id', $app->id)->where('type', 'draft')->latest()->first();
+            $cert_no = null;
+
+            if ($latestDraft) {
+                // Find the invoice associated with this draft certificate
+                // This assumes 'cert_id' in the 'invoices' table refers to the 'id' of the 'certificates' table.
+                $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
+
+                if ($invoice) {
+                    $cert_no = $invoice->certificate_no;
+                }
+            }
+            // --- END NEW LOGIC ---
+
             $sheet->setCellValue('A' . $row, $app->id);
             $sheet->setCellValue('B' . $row, $app->company_ref);
             $sheet->setCellValue('C' . $row, $app->user->name ?? 'N/A'); // Applicant name
@@ -308,7 +323,8 @@ class CertificateController extends Controller
             $sheet->setCellValue('E' . $row, is_numeric($app->po) ? $app->po : 'TBS');
             $sheet->setCellValue('F' . $row, ucfirst($app->feri_type));
             $sheet->setCellValue('G' . $row, ucfirst($app->customs_decl_no));
-            $sheet->setCellValue('H' . $row, $this->getStatusText($app->status)); // Using the helper function
+            $sheet->setCellValue('H' . $row, $cert_no);
+            $sheet->setCellValue('I' . $row, $this->getStatusText($app->status)); // Using the helper function
             $row++;
         }
 

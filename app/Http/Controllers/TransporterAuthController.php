@@ -308,14 +308,14 @@ class TransporterAuthController extends Controller
                 'final_destination' => 'required|string|max:255',
                 'importer_name' => 'required|string|max:255',
                 'importer_phone' => 'required|string|max:20',
-                'importer_email' => 'nullable|email|max:255',
+                'importer_email' => 'nullable|string|max:255',
                 'importer_address' => 'nullable|string|max:255',
                 'exporter_address' => 'nullable|string|max:255',
                 'importer_details' => 'nullable|string|max:255',
                 'fix_number' => 'nullable|string|max:255',
                 'exporter_name' => 'required|string|max:255',
                 'exporter_phone' => 'required|string|max:20',
-                'exporter_email' => 'nullable|email|max:255',
+                'exporter_email' => 'nullable|string|max:255',
                 'cf_agent' => 'required|string|max:255',
                 'cf_agent_contact' => 'required|string|max:255',
                 'cargo_description' => 'required|string|max:255',
@@ -696,14 +696,14 @@ class TransporterAuthController extends Controller
                 'final_destination' => 'required|string|max:255',
                 'importer_name' => 'required|string|max:255',
                 'importer_phone' => 'required|string|max:20',
-                'importer_email' => 'nullable|email|max:255',
+                'importer_email' => 'nullable|string|max:255',
                 'importer_address' => 'nullable|string|max:255',
                 'exporter_address' => 'nullable|string|max:255',
                 'importer_details' => 'nullable|string|max:255',
                 'fix_number' => 'nullable|string|max:255',
                 'exporter_name' => 'required|string|max:255',
                 'exporter_phone' => 'required|string|max:20',
-                'exporter_email' => 'nullable|email|max:255',
+                'exporter_email' => 'nullable|string|max:255',
                 'cf_agent' => 'required|string|max:255',
                 'cf_agent_contact' => 'required|string|max:255',
                 'cargo_description' => 'required|string|max:255',
@@ -953,24 +953,60 @@ class TransporterAuthController extends Controller
         // Validate all file fields
         $validatedData = $request->validate([
             'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:20480',
-            'invoice' => 'nullable|file|mimes:pdf|max:20480',
-            'manifest' => 'nullable|file|mimes:pdf|max:20480',
-            'packing_list' => 'nullable|file|mimes:pdf|max:20480',
-            'customs' => 'nullable|file|mimes:pdf|max:20480',
+            'attachments.*' => 'nullable|file|max:20480',
         ]);
 
-        $fileFields = ['invoice', 'manifest', 'packing_list', 'customs'];
+        // $rows = Excel::toArray([], $request->file('excel_file'))[0];
+        // // Skip the header row
+        // $rows = array_slice($rows, 1);
+
+        // $attachments = $request->file('attachments', []);
+        // dd($rows);
+
+        // if (count($attachments) !== count($rows)) {
+        //     return back()->withErrors(['attachments' => 'Each Excel row must have a matching file.']);
+        // }
+
+        $rows = Excel::toArray([], $request->file('excel_file'))[0];
+
+        // Skip the header row
+        $rows = array_slice($rows, 1);
+
+        // Filter out completely empty rows
+        $rows = array_filter($rows, function ($row) {
+            // Remove the row if all values are null, empty strings, or whitespace
+            return array_filter($row, function ($value) {
+                return trim($value) !== '';
+            });
+        });
+
+        // Re-index the array to maintain consistent indexing
+        $rows = array_values($rows);
+
+        $attachments = $request->file('attachments', []);
+
+        if (count($attachments) !== count($rows)) {
+            return back()->withErrors(['attachments' => 'Each Excel row must have a matching file.']);
+        }
+
+        $documentUploads = [];
+
+        foreach ($attachments as $index => $file) {
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('feri_documents', $filename, 'private');
+            $documentUploads[$index] = $path;
+        }
 
         // Handle file uploads (same for all imported rows)
-        $documentUploads = [];
-        foreach ($fileFields as $fileField) {
-            if ($request->hasFile($fileField)) {
-                $file = $request->file($fileField);
-                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('feri_documents', $filename, 'private');
-                $documentUploads[$fileField] = $path;
-            }
-        }
+        // $documentUploads = [];
+        // foreach ($fileFields as $fileField) {
+        //     if ($request->hasFile($fileField)) {
+        //         $file = $request->file($fileField);
+        //         $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        //         $path = $file->storeAs('feri_documents', $filename, 'private');
+        //         $documentUploads[$fileField] = $path;
+        //     }
+        // }
 
         $excelFile = $request->file('excel_file');
         $rows = Excel::toArray([], $excelFile)[0];
@@ -988,6 +1024,9 @@ class TransporterAuthController extends Controller
             if (empty($row[0])) {
                 break;
             }
+
+            //each row separate file
+            $rowSpecificFile = $documentUploads[$rowIndex];
 
             $data = array_combine($headers, $row);
 
@@ -1075,7 +1114,8 @@ class TransporterAuthController extends Controller
             // Add user_id, status, and documents_upload
             $data['user_id'] = Auth::id();
             $data['status'] = 1;
-            $data['documents_upload'] = json_encode($documentUploads);
+            // $data['documents_upload'] = json_encode($rowSpecificFile);
+            $data['documents_upload'] = json_encode(['customs' => $rowSpecificFile]);
 
             // Determine type and validation rules (same as feriApp)
             $type = strtolower(trim($data['feri_type'] ?? ($data['type'] ?? '')));
@@ -1123,14 +1163,14 @@ class TransporterAuthController extends Controller
                     'final_destination' => 'required|string|max:255',
                     'importer_name' => 'required|string|max:255',
                     'importer_phone' => 'required|string|max:20',
-                    'importer_email' => 'nullable|email|max:255',
+                    'importer_email' => 'nullable|string|max:255',
                     'importer_address' => 'nullable|string|max:255',
                     'exporter_address' => 'nullable|string|max:255',
                     'importer_details' => 'nullable|string|max:255',
                     'fix_number' => 'nullable|string|max:255',
                     'exporter_name' => 'required|string|max:255',
                     'exporter_phone' => 'required|string|max:20',
-                    'exporter_email' => 'nullable|email|max:255',
+                    'exporter_email' => 'nullable|string|max:255',
                     'cf_agent' => 'required|string|max:255',
                     'cf_agent_contact' => 'required|string|max:255',
                     'cargo_description' => 'required|string|max:255',
@@ -1180,7 +1220,7 @@ class TransporterAuthController extends Controller
                     $mainVendor = $vendors->first(); // Primary recipient
                     $ccEmails = $vendors->skip(1)->pluck('email')->filter()->all(); // Remove nulls
 
-                    Mail::to($mainVendor->email)->cc($ccEmails)->send(new NewAppMail($r, $mainVendor, $transporter));
+                    Mail::to($mainVendor->email)->cc($ccEmails)->queue(new NewAppMail($r, $mainVendor, $transporter));
                 }
             } catch (\Exception $e) {
                 $errors[] = 'Row ' . ($rowIndex + 2) . ': Failed to insert. ' . $e->getMessage();
@@ -1223,7 +1263,7 @@ class TransporterAuthController extends Controller
         $transportModes = ['Road', 'Air', 'Maritime', 'Rail'];
         $companies = Company::where('type', 'transporter')->pluck('name')->toArray();
         $entryBorders = ['Kasumbalesa', 'Mokambo', 'Sakania'];
-        $finalDestinations = ['Likasi DRC', 'Lubumbashi DRC', 'Kolwezi DRC', 'Tenke DRC', 'Kisanfu DRC'];
+        $finalDestinations = ['Likasi DRC', 'Lubumbashi DRC', 'Kolwezi DRC', 'Tenke DRC', 'Kisanfu DRC', 'Lualaba DRC', 'Pumpi DRC'];
         $cfAgents = ['AGL', 'CARGO CONGO', 'CONNEX', 'African Logistics', 'Afritac', 'Amicongo', 'Aristote', 'Bollore', 'Brasimba', 'Brasimba S.A', 'Chemaf', 'Comexas Afrique', 'Comexas', 'DCG', 'Evele & Co', 'Gecotrans', 'Global Logistics', 'Malabar', 'Polytra', 'Spedag', 'Tradecorp', 'Trade Service'];
         $currencies = ['USD', 'EUR', 'TZS', 'ZAR', 'AOA'];
         $incoterms = ['CFR', 'CIF', 'CIP', 'CPT', 'DAF', 'DAP', 'DAT', 'DDP', 'DDU', 'DEQ', 'DES', 'DPU', 'EXW', 'FAS', 'FCA', 'FOB'];

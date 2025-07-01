@@ -286,6 +286,10 @@ Route::prefix('vendor')
             ->name('statement_download')
             ->middleware('role');
 
+        Route::get('export/applications', [CertificateController::class, 'exportApplications'])
+            ->name('exportapps')
+            ->middleware('role');
+
         Route::get('/chat/messages/{id}', [VendorAuthController::class, 'fetchChatMessages'])->name('chat.fetch');
     });
 
