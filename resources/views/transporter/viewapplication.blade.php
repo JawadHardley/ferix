@@ -83,8 +83,8 @@
                         <!-- 4 -->
                     @elseif ($record->status == 5)
                         <!-- <button class="btn btn-outline-primary">
-                                        <i class="fa fa-award fs-3"></i>
-                                    </button> -->
+                                                    <i class="fa fa-award fs-3"></i>
+                                                </button> -->
                         <div class="ms-5 d-inline"></div>
                     @endif
 
@@ -175,9 +175,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                                <div class="list-group list-group-transparent">
-                                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                                </div> -->
+                                                            <div class="list-group list-group-transparent">
+                                                                <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                            </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -314,7 +314,12 @@
                                 <input type="text" name="importer_email" class="form-control"
                                     value="{{ $record->importer_email }}" {{ $record->status > 1 ? 'disabled' : '' }}>
                             </div>
-                            <div class="col-12 mb-3 col-lg-12">
+                            <div class="col-12 mb-3 col-lg-6">
+                                <div class="form-label">Importer Address</div>
+                                <input type="text" name="importer_address" class="form-control"
+                                    value="{{ $record->importer_address }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                            </div>
+                            <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Fix Number</div>
                                 <input type="text" name="fix_number" class="form-control"
                                     value="{{ $record->fix_number }}" {{ $record->status > 1 ? 'disabled' : '' }}>
@@ -843,9 +848,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                                <div class="list-group list-group-transparent">
-                                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                                </div> -->
+                                                            <div class="list-group list-group-transparent">
+                                                                <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                            </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -1478,11 +1483,11 @@
                     </form>
                 </div>
                 <!-- <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">
-                                        send <i class="fa fa-paper-plane ms-2"></i>
-                                    </button>
-                                </div> -->
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary">
+                                                    send <i class="fa fa-paper-plane ms-2"></i>
+                                                </button>
+                                            </div> -->
             </div>
         </div>
     </div>

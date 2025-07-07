@@ -215,7 +215,7 @@ class CertificateController extends Controller
             ->values();
 
         // Add grandTotal to each record
-        $records->transform(function ($invoice) {
+        $records->transform(function ($invoice) use ($certificates) {
             $feriQty = (float) ($invoice->feri_quantity ?? 0);
             $feriUnits = (float) ($invoice->feri_units ?? 0);
             $codQty = (float) ($invoice->cod_quantities ?? 0);
@@ -231,6 +231,18 @@ class CertificateController extends Controller
             $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
 
             $invoice->amount = $grandTotal;
+
+            // Attach application id as 'appid'
+            $cert = $certificates->get($invoice->cert_id);
+            $invoice->appid = $cert ? $cert->application_id : null;
+
+            // Attach application PO number as 'po'
+            $applications2 = feriApp::where('id', $invoice->appid)->get();
+            if (isset($applications2)) {
+                $app = $applications2[0]->po;
+                $invoice->po = $app;
+            }
+
             return $invoice;
         });
 

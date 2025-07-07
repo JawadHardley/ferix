@@ -1094,6 +1094,14 @@ class VendorAuthController extends Controller
             $cert = $certificates->get($invoice->cert_id);
             $invoice->appid = $cert ? $cert->application_id : null;
 
+            // Attach application PO number as 'po'
+            $applications2 = feriApp::where('id', $invoice->appid)->get();
+            if (isset($applications2)) {
+                $app = $applications2[0]->po;
+                $invoice->po = $app;
+                // dd($app);
+            }
+
             return $invoice;
         });
 

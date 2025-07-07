@@ -67,8 +67,8 @@
 
                                     </td>
                                     <td>
-                                        @if (is_numeric($record->customer_po))
-                                            <span class="badge bg-teal-lt text-teal-lt-fg">{{ $record->customer_po }}</span>
+                                        @if (is_numeric($record->po))
+                                            <span class="badge bg-teal-lt text-teal-lt-fg">{{ $record->po }}</span>
                                         @else
                                             <span class="text-danger" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="to be added">TBS</span>
@@ -79,7 +79,8 @@
                                     </td>
 
                                     <td>
-                                        $ {{ number_format($record->grandTotal, 2) }}
+                                        {{ number_format($record->grandTotal * $record->tz_rate, 2, '.', ',') }}
+                                        {{-- $ {{ number_format($record->grandTotal, 2) }} --}}
                                     </td>
 
                                     <td class="text-end">
@@ -95,19 +96,19 @@
                                             </div>
                                         </div>
                                         <!-- <div class="dropdown">
-                                        <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport"
-                                            data-bs-toggle="dropdown">Actions</button>
-                                        <div class="dropdown-menu dropdown-menu-start">
-                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#mXX">
-                                                <i class="fa fa-message pe-2"></i>Query
-                                            </a>
-                                            <a class="dropdown-item"
-                                                href="{{ route('vendor.showApp', ['id' => $record->id]) }}">
-                                                <i class="fa fa-eye pe-2"></i>View
-                                            </a>
+                                                    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport"
+                                                        data-bs-toggle="dropdown">Actions</button>
+                                                    <div class="dropdown-menu dropdown-menu-start">
+                                                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#mXX">
+                                                            <i class="fa fa-message pe-2"></i>Query
+                                                        </a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('vendor.showApp', ['id' => $record->id]) }}">
+                                                            <i class="fa fa-eye pe-2"></i>View
+                                                        </a>
 
-                                        </div>
-                                    </div> -->
+                                                    </div>
+                                                </div> -->
                                     </td>
                                 </tr>
                             @endforeach
