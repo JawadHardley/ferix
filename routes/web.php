@@ -290,6 +290,10 @@ Route::prefix('vendor')
             ->name('exportapps')
             ->middleware('role');
 
+        Route::get('export/invoices', [CertificateController::class, 'exportInvoices'])
+            ->name('exportinvoices')
+            ->middleware('role');
+
         Route::get('/chat/messages/{id}', [VendorAuthController::class, 'fetchChatMessages'])->name('chat.fetch');
     });
 

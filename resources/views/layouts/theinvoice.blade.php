@@ -24,7 +24,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>
-        PRES-2025-P{{ $invoice->id }}
+        PRES-{{ date('Y') }}-P{{ $invoice->id }}
     </title>
     <meta name="author" content="Jordan Chaki" />
     <meta name="keywords" content="DAGlQ12i2k4,BAE3pwnYqAY,0" />
@@ -310,7 +310,7 @@
             </td>
             <td style="width: 274pt" bgcolor="#FFF">
                 <p class="s6" style="padding-left: 17pt; text-indent: 0pt; text-align: left">
-                    PRES-2025-P{{ $invoice->id }}
+                    PRES-{{ date('Y') }}-P{{ $invoice->id }}
                 </p>
             </td>
         </tr>
@@ -895,7 +895,7 @@
         text-indent: 0pt;
         text-align: left;
       ">
-                    Application Invoice No: <span class="p">PRES-2025-P{{ $invoice->id }}</span>
+                    Application Invoice No: <span class="p">PRES-{{ date('Y') }}-P{{ $invoice->id }}</span>
                 </h3>
                 <h3
                     style="

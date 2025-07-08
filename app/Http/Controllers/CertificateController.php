@@ -361,4 +361,91 @@ class CertificateController extends Controller
 
         return $response;
     }
+
+    public function exportInvoices()
+    {
+        // 1. Get all invoices
+        $records = Invoice::all();
+
+        // 2. Get all certificates referenced by invoices
+        $certIds = $records->pluck('cert_id')->unique()->filter();
+        $certificates = Certificate::whereIn('id', $certIds)->get()->keyBy('id');
+
+        // 3. Get all application_ids from those certificates
+        $applicationIds = $certificates->pluck('application_id')->unique()->filter();
+        $applications = feriApp::whereIn('id', $applicationIds)->with('user')->get()->keyBy('id');
+
+        // 4. Filter invoices: only those whose certificate's application has status = 5
+        $approvedRecords = $records
+            ->filter(function ($invoice) use ($certificates, $applications) {
+                $cert = $certificates->get($invoice->cert_id);
+                if (!$cert) {
+                    return false;
+                }
+                $app = $applications->get($cert->application_id);
+                return $app && $app->status == 5;
+            })
+            ->values();
+
+        // 5. Transform for export
+        $exportData = $approvedRecords->map(function ($invoice) use ($certificates, $applications) {
+            $feriQty = (float) ($invoice->feri_quantity ?? 0);
+            $feriUnits = (float) ($invoice->feri_units ?? 0);
+            $codQty = (float) ($invoice->cod_quantities ?? 0);
+            $codUnits = (float) ($invoice->cod_units ?? 0);
+            $euroRate = (float) ($invoice->euro_rate ?? 1);
+            $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
+
+            $feriAmount = $feriQty * $feriUnits;
+            $codAmount = $codQty * $codUnits;
+            $upTotal = $feriAmount + $codAmount;
+            $transporterAmount = $transporterQty * 0.018;
+            $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
+            $grandTotal_r = number_format($grandTotal, 2, '.', ',');
+            $grandTotal_r = number_format($grandTotal_r * $invoice->tz_rate, 2, '.', ',');
+
+            $cert = $certificates->get($invoice->cert_id);
+            $appid = $cert ? $cert->application_id : null;
+            $app = $appid ? $applications->get($appid) : null;
+
+            return [
+                'Invoice' => 'PRES-2025-P' . $invoice->id,
+                'Company Ref' => $cert ? $invoice->customer_ref : '',
+                'Customer Trip No' => $invoice->customer_trip_no,
+                'Date' => $invoice->invoice_date,
+                'PO' => $app ? $app->po : '',
+                'Cert No' => $invoice->certificate_no,
+                'Amount' => $grandTotal_r,
+            ];
+        });
+
+        // 6. Export to Excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set headers
+        $headers = array_keys($exportData->first() ?? []);
+        $sheet->fromArray($headers, null, 'A1');
+
+        // Set data
+        $sheet->fromArray($exportData->toArray(), null, 'A2');
+
+        // Auto-size columns
+        foreach (range('A', $sheet->getHighestColumn()) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $fileName = 'Feri_Invoices_' . now()->format('Ymd_His') . '.xlsx';
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        $response = new \Symfony\Component\HttpFoundation\StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
+    }
 }
