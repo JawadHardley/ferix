@@ -1088,7 +1088,7 @@ class VendorAuthController extends Controller
             $transporterAmount = $transporterQty * 0.018;
             $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
 
-            $invoice->grandTotal = $grandTotal;
+            $invoice->grandTotal = number_format($grandTotal, 2, '.', ',');
 
             // Attach application id as 'appid'
             $cert = $certificates->get($invoice->cert_id);
