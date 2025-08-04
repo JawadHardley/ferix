@@ -285,7 +285,7 @@
     <p style="text-indent: 0pt; text-align: left"><br /></p>
 
     <p class="s1" style="margin-top: 40px; text-align: center">
-        {{ strtoupper(date('F')) }} STATEMENT
+        {{ strtoupper($invoice->month) }} STATEMENT
     </p>
 
     <p style="padding-top: 3pt; text-indent: 0pt; text-align: left">

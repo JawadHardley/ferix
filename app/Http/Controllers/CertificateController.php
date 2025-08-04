@@ -182,6 +182,7 @@ class CertificateController extends Controller
         $validatedData = $request->validate([
             'start' => 'required|date',
             'end' => 'required|date|after_or_equal:start',
+            'date' => 'required|string|max:255',
         ]);
 
         // Fetch the invoices within the specified date range
@@ -245,6 +246,9 @@ class CertificateController extends Controller
 
             return $invoice;
         });
+
+        //attach month name
+        $records->month = $request->date;
 
         // Pass $invoice, $feriApp, and $applicantName to the view
         $pdf = Pdf::loadView('layouts.thestatement', [
