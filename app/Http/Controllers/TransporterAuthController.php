@@ -20,6 +20,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\mainmail;
 use App\Mail\NewAppMail;
+use App\Mail\Approval;
+use App\Mail\Rejection;
 use App\Mail\CustomVerifyEmail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -780,6 +782,24 @@ class TransporterAuthController extends Controller
         // Update the status to 2
         $feriApp->update(['status' => 4]);
 
+        // ===================================
+        // ===================================
+
+        $r = $feriApp;
+        $transporter = Auth::user();
+        $company = Company::where('type', 'vendor')->first();
+        $vendors = User::where('company', $company->id)->where('role', 'vendor')->get();
+
+        if ($vendors->count() > 0) {
+            $mainVendor = $vendors->first(); // Primary recipient
+            $ccEmails = $vendors->skip(1)->pluck('email')->filter()->all(); // Remove nulls
+
+            Mail::to($mainVendor->email)->cc($ccEmails)->queue(new Approval($r, $mainVendor, $transporter));
+        }
+
+        // ===================================
+        // ===================================
+
         return back()->with([
             'status' => 'success',
             'message' => 'Application status updated successfully.',
@@ -805,6 +825,14 @@ class TransporterAuthController extends Controller
         // Sanitize the message
         $validatedData['message'] = htmlspecialchars($validatedData['message'], ENT_QUOTES, 'UTF-8');
 
+        $reason = chats::create([
+                'user_id' => $user->id, // Current logged-in user ID
+                'application_id' => $id, // Application ID from the route parameter
+                'read' => 0, // Default to unread
+                'message' => $validatedData['message'], // Sanitized message
+                'del' => 0, // Default to not deleted
+            ]);
+
         // Check for rejection logic
         if ($request->has('rejection') && $request->input('rejection') == 1) {
             $feriApp = feriApp::findOrFail($id);
@@ -812,15 +840,27 @@ class TransporterAuthController extends Controller
                 $feriApp->status = 6;
                 $feriApp->save();
             }
-        }
 
-        chats::create([
-            'user_id' => $user->id, // Current logged-in user ID
-            'application_id' => $id, // Application ID from the route parameter
-            'read' => 0, // Default to unread
-            'message' => $validatedData['message'], // Sanitized message
-            'del' => 0, // Default to not deleted
-        ]);
+            // ================
+            // ================
+
+            $r = $feriApp;
+            $reason = $reason->message;
+            $transporter = Auth::user();
+            $company = Company::where('type', 'vendor')->first();
+            $vendors = User::where('company', $company->id)->where('role', 'vendor')->get();
+            // dd($r);
+    
+            if ($vendors->count() > 0) {
+                $mainVendor = $vendors->first(); // Primary recipient
+                $ccEmails = $vendors->skip(1)->pluck('email')->filter()->all(); // Remove nulls
+
+                Mail::to($mainVendor->email)->cc($ccEmails)->queue(new Rejection($r, $mainVendor, $transporter, $reason));
+            }
+                
+            // ================
+            // ================
+        }
 
         $this->readchat($id);
 
