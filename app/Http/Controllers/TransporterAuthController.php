@@ -22,10 +22,12 @@ use App\Mail\mainmail;
 use App\Mail\NewAppMail;
 use App\Mail\Approval;
 use App\Mail\Rejection;
-use App\Mail\CustomVerifyEmail;
+// use App\Mail\CustomVerifyEmail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\CustomVerifyEmail;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -114,7 +116,8 @@ class TransporterAuthController extends Controller
 
         // Send email verification notification
         event(new Registered($user));
-        Notification::route('mail', $user->email)->queue(new WelcomeNotification());
+        Notification::route('mail', $user->email)->notify(new CustomVerifyEmail());
+        
 
         // Auth::login($user);
 
