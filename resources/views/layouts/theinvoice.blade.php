@@ -826,6 +826,7 @@
         text-align: right;
       ">
             GRAND TOTAL (USD) <span class="">: ${{ number_format($grandTotal, 2, '.', ',') }}</span>
+            {{-- GRAND TOTAL (USD) <span class="">: ${{ $grandTotal }}</span> --}}
         </p>
         <p class="s9"
             style="
@@ -833,8 +834,14 @@
         text-indent: 0pt;
         text-align: right;
       ">
-            GRAND TOTAL (TZ) <span class="h2">:
-                {{ number_format($grandTotal_r * $invoice->tz_rate, 2, '.', ',') }}</span>
+            GRAND TOTAL (TZ)
+            <span class="h2">:
+                @if ($invoice->invoice_date > '2025-09-09')
+                    {{ number_format($grandTotal * $invoice->tz_rate, 2, '.', ',') }}
+                @else
+                    {{ number_format($grandTotal_r * $invoice->tz_rate, 2, '.', ',') }}
+                @endif
+            </span>
         </p>
         <p class="s11"
             style="

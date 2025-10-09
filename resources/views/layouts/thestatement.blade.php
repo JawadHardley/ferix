@@ -446,10 +446,11 @@
                     $rate = (float) str_replace(',', '', $record->tz_rate);
                     $tzamountRaw = $amount * $rate;
                     $tzamount = number_format($tzamountRaw, 2, '.', ',');
+                    $tzamountx = (float) str_replace(',', '', $tzamount);
                 @endphp
                 <td class="hrr">{{ $tzamount }} /=</td>
                 @php
-                    $tatal = ($tatal ?? 0) + $tzamountRaw;
+                    $tatal = ($tatal ?? 0) + $tzamountx;
                 @endphp
             </tr>
         @endforeach

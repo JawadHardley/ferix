@@ -117,7 +117,6 @@ class TransporterAuthController extends Controller
         // Send email verification notification
         event(new Registered($user));
         Notification::route('mail', $user->email)->notify(new CustomVerifyEmail());
-        
 
         // Auth::login($user);
 
@@ -327,6 +326,8 @@ class TransporterAuthController extends Controller
                 'hs_code' => 'required|string|max:100',
                 'package_type' => 'required|string|max:255',
                 'quantity' => 'required|numeric|min:1',
+                'weight' => 'required|numeric|min:1',
+                'volume' => 'required|string|max:255',
                 'company_ref' => 'nullable|string|max:255',
                 'cargo_origin' => 'nullable|string|max:255',
                 'customs_decl_no' => 'nullable|string|max:255',
@@ -715,6 +716,8 @@ class TransporterAuthController extends Controller
                 'hs_code' => 'required|string|max:100',
                 'package_type' => 'required|string|max:255',
                 'quantity' => 'required|numeric|min:1',
+                'weight' => 'required|numeric|min:1',
+                'volume' => 'required|string|max:255',
                 'company_ref' => 'nullable|string|max:255',
                 'cargo_origin' => 'nullable|string|max:255',
                 'customs_decl_no' => 'nullable|string|max:255',
@@ -829,12 +832,12 @@ class TransporterAuthController extends Controller
         $validatedData['message'] = htmlspecialchars($validatedData['message'], ENT_QUOTES, 'UTF-8');
 
         $reason = chats::create([
-                'user_id' => $user->id, // Current logged-in user ID
-                'application_id' => $id, // Application ID from the route parameter
-                'read' => 0, // Default to unread
-                'message' => $validatedData['message'], // Sanitized message
-                'del' => 0, // Default to not deleted
-            ]);
+            'user_id' => $user->id, // Current logged-in user ID
+            'application_id' => $id, // Application ID from the route parameter
+            'read' => 0, // Default to unread
+            'message' => $validatedData['message'], // Sanitized message
+            'del' => 0, // Default to not deleted
+        ]);
 
         // Check for rejection logic
         if ($request->has('rejection') && $request->input('rejection') == 1) {
@@ -853,14 +856,14 @@ class TransporterAuthController extends Controller
             $company = Company::where('type', 'vendor')->first();
             $vendors = User::where('company', $company->id)->where('role', 'vendor')->get();
             // dd($r);
-    
+
             if ($vendors->count() > 0) {
                 $mainVendor = $vendors->first(); // Primary recipient
                 $ccEmails = $vendors->skip(1)->pluck('email')->filter()->all(); // Remove nulls
 
                 Mail::to($mainVendor->email)->cc($ccEmails)->queue(new Rejection($r, $mainVendor, $transporter, $reason));
             }
-                
+
             // ================
             // ================
         }

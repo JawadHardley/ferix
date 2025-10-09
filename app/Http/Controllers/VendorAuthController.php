@@ -1088,7 +1088,15 @@ class VendorAuthController extends Controller
             $transporterAmount = $transporterQty * 0.018;
             $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
 
-            $invoice->grandTotal = number_format($grandTotal, 2, '.', ',');
+            // $invoice->grandTotal = number_format($grandTotal, 2, '.', ',');
+            // $invoice->grandTotal = $grandTotal;
+            // dd($invoice->grandTotal);
+
+            if ($invoice->invoice_date > '2025-09-09') {
+                $invoice->grandTotal = $grandTotal;
+            } else {
+                $invoice->grandTotal = number_format($grandTotal, 2, '.', ',');
+            }
 
             // Attach application id as 'appid'
             $cert = $certificates->get($invoice->cert_id);

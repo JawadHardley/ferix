@@ -231,7 +231,16 @@ class CertificateController extends Controller
             $transporterAmount = $transporterQty * 0.018;
             $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
 
-            $invoice->amount = number_format($grandTotal, 2, '.', ',');
+            // $invoice->amount = number_format($grandTotal, 2, '.', ',');
+            // $invoice->amount = $grandTotal;
+
+            if ($invoice->invoice_date > '2025-09-09') {
+                $invoice->amount = $grandTotal;
+            } else {
+                $invoice->amount = number_format($grandTotal, 2, '.', ',');
+                // $invoice->amount = $grandTotal;
+                // dd($invoice->invoice_date);
+            }
 
             // Attach application id as 'appid'
             $cert = $certificates->get($invoice->cert_id);
