@@ -287,7 +287,7 @@
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
-                                <label class="form-label">Quantity</label>
+                                <label class="form-label">Quantity (PKG)</label>
                                 <input type="number" class="form-control" name="quantity"
                                     value="{{ old('quantity') }}" autocomplete="on" required />
                             </div>
