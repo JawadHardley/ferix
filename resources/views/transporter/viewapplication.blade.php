@@ -83,8 +83,8 @@
                         <!-- 4 -->
                     @elseif ($record->status == 5)
                         <!-- <button class="btn btn-outline-primary">
-                                                                                <i class="fa fa-award fs-3"></i>
-                                                                            </button> -->
+                                                                                                                                        <i class="fa fa-award fs-3"></i>
+                                                                                                                                    </button> -->
                         <div class="ms-5 d-inline"></div>
                     @endif
 
@@ -175,9 +175,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                                                                        <div class="list-group list-group-transparent">
-                                                                                            <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                                                                        </div> -->
+                                                                                                                                                <div class="list-group list-group-transparent">
+                                                                                                                                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                                                                                                                </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -461,6 +461,21 @@
                                 <div class="form-label">Volume (Net Weight)T</div>
                                 <input type="text" name="volume" class="form-control" value="{{ $record->volume }}"
                                     {{ $record->status > 1 ? 'disabled' : '' }}>
+                            </div>
+
+                            <div class="col-12 mb-3 col-lg-4">
+                                <div class="form-label">TN</div>
+                                <input type="text" class="form-control" value="{{ $record->weight / 1000 }}"
+                                    disabled>
+                            </div>
+                            <div class="col-12 mb-3 col-lg-4">
+                                <div class="form-label">CBM</div>
+                                <input type="text" class="form-control" value="{{ $record->volume }}" disabled>
+                            </div>
+                            <div class="col-12 mb-3 col-lg-4">
+                                <div class="form-label">UP</div>
+                                <input type="text" class="form-control" value="{{ $record->weight / 1000 }}"
+                                    disabled>
                             </div>
 
                         </div>
@@ -858,9 +873,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                                                                        <div class="list-group list-group-transparent">
-                                                                                            <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                                                                        </div> -->
+                                                                                                                                                <div class="list-group list-group-transparent">
+                                                                                                                                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                                                                                                                </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -1493,11 +1508,11 @@
                     </form>
                 </div>
                 <!-- <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                            <button type="button" class="btn btn-primary">
-                                                                                send <i class="fa fa-paper-plane ms-2"></i>
-                                                                            </button>
-                                                                        </div> -->
+                                                                                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                                                                                    <button type="button" class="btn btn-primary">
+                                                                                                                                        send <i class="fa fa-paper-plane ms-2"></i>
+                                                                                                                                    </button>
+                                                                                                                                </div> -->
             </div>
         </div>
     </div>

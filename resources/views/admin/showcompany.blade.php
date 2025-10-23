@@ -2,8 +2,6 @@
 @section('content')
 
 
-
-
 <x-errorshow />
 
 <div class="card">
