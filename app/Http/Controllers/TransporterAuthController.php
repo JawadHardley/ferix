@@ -992,6 +992,9 @@ class TransporterAuthController extends Controller
 
     public function importFeriApps(Request $request)
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
         if (!Auth::user()->email_verified_at) {
             return view('auth.verify-email');
         }
@@ -1054,14 +1057,29 @@ class TransporterAuthController extends Controller
         //     }
         // }
 
-        $excelFile = $request->file('excel_file');
-        $rows = Excel::toArray([], $excelFile)[0];
+        $rows = Excel::toArray([], $request->file('excel_file'))[0];
 
         if (empty($rows) || count($rows) < 2) {
             return back()->withErrors(['excel_file' => 'Excel file is empty or missing data.']);
         }
 
         $headers = array_map('trim', $rows[0]);
+
+        // Normalize and map user-friendly headers to DB column names
+        $headerMap = [
+            'weight (gw)' => 'weight',
+            'volume (net)' => 'volume',
+        ];
+
+        // Convert headers to lowercase for safer matching
+        foreach ($headers as &$header) {
+            $lower = strtolower($header);
+            if (isset($headerMap[$lower])) {
+                $header = $headerMap[$lower];
+            }
+        }
+        unset($header);
+
         $imported = 0;
         $errors = [];
 
@@ -1077,8 +1095,8 @@ class TransporterAuthController extends Controller
             $data = array_combine($headers, $row);
 
             // --- Forgiving conversion for common fields ---
-            $intFields = ['weight', 'quantity', 'volume'];
-            $floatFields = ['freight_value', 'fob_value', 'insurance_value', 'additional_fees_value'];
+            $intFields = ['weight', 'quantity'];
+            $floatFields = ['freight_value', 'fob_value', 'insurance_value', 'additional_fees_value', 'volume'];
             $dateFields = ['arrival_date'];
             $stringFields = ['company_ref', 'po', 'validate_feri_cert', 'entry_border_drc', 'final_destination', 'arrival_station', 'truck_details', 'importer_name', 'cf_agent', 'exporter_name', 'freight_currency', 'instructions', 'manifest_no', 'occ_bivac', 'fob_currency', 'incoterm', 'insurance_currency', 'additional_fees_currency', 'importer_phone', 'importer_email', 'importer_address', 'exporter_address', 'importer_details', 'exporter_phone', 'exporter_email', 'cf_agent_contact', 'hs_code', 'package_type', 'cargo_origin', 'cargo_description'];
 
@@ -1222,7 +1240,9 @@ class TransporterAuthController extends Controller
                     'cargo_description' => 'required|string|max:255',
                     'hs_code' => 'required|string|max:100',
                     'package_type' => 'required|string|max:255',
-                    'quantity' => 'required|numeric|min:1',
+                    'weight' => 'required|numeric|min:1',
+                    'quantity' => 'required|numeric|max:9999999999',
+                    'volume' => 'required|numeric|max:9999999999',
                     'company_ref' => 'nullable|string|max:255',
                     'cargo_origin' => 'nullable|string|max:255',
                     'customs_decl_no' => 'nullable|string|max:255',
@@ -1315,7 +1335,7 @@ class TransporterAuthController extends Controller
         $incoterms = ['CFR', 'CIF', 'CIP', 'CPT', 'DAF', 'DAP', 'DAT', 'DDP', 'DDU', 'DEQ', 'DES', 'DPU', 'EXW', 'FAS', 'FCA', 'FOB'];
 
         // Define headers (must match your import logic)
-        $headers = ['feri_type', 'transport_mode', 'transporter_company', 'entry_border_drc', 'truck_details', 'quantity', 'weight', 'volume', 'final_destination', 'validate_feri_cert', 'arrival_station', 'arrival_date', 'importer_name', 'importer_phone', 'importer_email', 'importer_address', 'importer_details', 'fix_number', 'exporter_name', 'exporter_phone', 'exporter_email', 'exporter_address', 'cf_agent', 'cf_agent_contact', 'cargo_description', 'hs_code', 'package_type', 'company_ref', 'po', 'cargo_origin', 'customs_decl_no', 'manifest_no', 'occ_bivac', 'instructions', 'fob_currency', 'fob_value', 'incoterm', 'freight_currency', 'freight_value', 'insurance_currency', 'insurance_value', 'additional_fees_currency', 'additional_fees_value'];
+        $headers = ['feri_type', 'transport_mode', 'transporter_company', 'entry_border_drc', 'truck_details', 'quantity', 'weight (GW)', 'volume (Net)', 'final_destination', 'validate_feri_cert', 'arrival_station', 'arrival_date', 'importer_name', 'importer_phone', 'importer_email', 'importer_address', 'importer_details', 'fix_number', 'exporter_name', 'exporter_phone', 'exporter_email', 'exporter_address', 'cf_agent', 'cf_agent_contact', 'cargo_description', 'hs_code', 'package_type', 'company_ref', 'po', 'cargo_origin', 'customs_decl_no', 'manifest_no', 'occ_bivac', 'instructions', 'fob_currency', 'fob_value', 'incoterm', 'freight_currency', 'freight_value', 'insurance_currency', 'insurance_value', 'additional_fees_currency', 'additional_fees_value'];
 
         // Sample row (edit as needed)
         $sampleRow = [
@@ -1326,7 +1346,7 @@ class TransporterAuthController extends Controller
             'XXX XXX', // truck_details
             30, // quantity
             30000, // weight
-            30, // volume
+            30.000, // volume
             $finalDestinations[0], // final_destination
             'XXXX', // validate_feri_cert
             'Lubumbashi', // arrival_station
