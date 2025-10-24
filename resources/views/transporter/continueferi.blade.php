@@ -119,10 +119,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                                                <label class="form-label">Final Destination</label>
-                                                                <input type="text" class="form-control" name="final_destination"
-                                                                    value="{{ old('final_destination') }}" autocomplete="on" required />
-                                                            </div> -->
+                                                                    <label class="form-label">Final Destination</label>
+                                                                    <input type="text" class="form-control" name="final_destination"
+                                                                        value="{{ old('final_destination') }}" autocomplete="on" required />
+                                                                </div> -->
 
 
                         </div>
@@ -195,6 +195,8 @@
                                     <option value="Brasimba S.A"
                                         {{ old('cf_agent') == 'Brasimba S.A' ? 'selected' : '' }}>
                                         Brasimba S.A</option>
+                                    <option value="OLA" {{ old('cf_agent') == 'OLA' ? 'selected' : '' }}>OLA
+                                    </option>
                                     <option value="Chemaf" {{ old('cf_agent') == 'Chemaf' ? 'selected' : '' }}>Chemaf
                                     </option>
                                     <option value="Comexas Afrique"

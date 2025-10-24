@@ -83,8 +83,8 @@
                         <!-- 4 -->
                     @elseif ($record->status == 5)
                         <!-- <button class="btn btn-outline-primary">
-                                                                                                                                                        <i class="fa fa-award fs-3"></i>
-                                                                                                                                                    </button> -->
+                                                                                                                                                            <i class="fa fa-award fs-3"></i>
+                                                                                                                                                        </button> -->
                         <div class="ms-5 d-inline"></div>
                     @endif
 
@@ -175,9 +175,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                                                                                                                                                <div class="list-group list-group-transparent">
-                                                                                                                                                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                                                                                                                                                </div> -->
+                                                                                                                                                                    <div class="list-group list-group-transparent">
+                                                                                                                                                                        <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                                                                                                                                    </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -383,6 +383,8 @@
                                     <option value="Brasimba S.A"
                                         {{ $record->cf_agent == 'Brasimba S.A' ? 'selected' : '' }}>
                                         Brasimba S.A</option>
+                                    <option value="OLA" {{ $record->cf_agent == 'OLA' ? 'selected' : '' }}>OLA
+                                    </option>
                                     <option value="Chemaf" {{ $record->cf_agent == 'Chemaf' ? 'selected' : '' }}>Chemaf
                                     </option>
                                     <option value="Comexas Afrique"
@@ -873,9 +875,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                                                                                                                                                <div class="list-group list-group-transparent">
-                                                                                                                                                                    <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                                                                                                                                                </div> -->
+                                                                                                                                                                    <div class="list-group list-group-transparent">
+                                                                                                                                                                        <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                                                                                                                                    </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -1088,6 +1090,8 @@
                                     <option value="Brasimba S.A"
                                         {{ $record->cf_agent == 'Brasimba S.A' ? 'selected' : '' }}>
                                         Brasimba S.A</option>
+                                    <option value="OLA" {{ $record->cf_agent == 'OLA' ? 'selected' : '' }}>OLA
+                                    </option>
                                     <option value="Chemaf" {{ $record->cf_agent == 'Chemaf' ? 'selected' : '' }}>Chemaf
                                     </option>
                                     <option value="Comexas Afrique"
@@ -1525,11 +1529,11 @@
                     </form>
                 </div>
                 <!-- <div class="modal-footer">
-                                                                                                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                                                                                                    <button type="button" class="btn btn-primary">
-                                                                                                                                                        send <i class="fa fa-paper-plane ms-2"></i>
-                                                                                                                                                    </button>
-                                                                                                                                                </div> -->
+                                                                                                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                                                                                                        <button type="button" class="btn btn-primary">
+                                                                                                                                                            send <i class="fa fa-paper-plane ms-2"></i>
+                                                                                                                                                        </button>
+                                                                                                                                                    </div> -->
             </div>
         </div>
     </div>

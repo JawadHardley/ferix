@@ -98,10 +98,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                                                        <label class="form-label">Final Destination</label>
-                                                                        <input type="text" class="form-control" name="final_destination"
-                                                                            value="{{ old('final_destination') }}" autocomplete="on" required />
-                                                                    </div> -->
+                                                                            <label class="form-label">Final Destination</label>
+                                                                            <input type="text" class="form-control" name="final_destination"
+                                                                                value="{{ old('final_destination') }}" autocomplete="on" required />
+                                                                        </div> -->
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Final Destination</label>
@@ -198,10 +198,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-6 mb-3">
-                                                                        <label class="form-label">Clearing/Forwarding Agent</label>
-                                                                        <input type="text" class="form-control" name="cf_agent" value="{{ old('cf_agent') }}"
-                                                                            autocomplete="on" required />
-                                                                    </div> -->
+                                                                            <label class="form-label">Clearing/Forwarding Agent</label>
+                                                                            <input type="text" class="form-control" name="cf_agent" value="{{ old('cf_agent') }}"
+                                                                                autocomplete="on" required />
+                                                                        </div> -->
 
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label">Clearing/Forwarding Agent</label>
@@ -229,6 +229,8 @@
                                     <option value="Brasimba S.A"
                                         {{ old('cf_agent') == 'Brasimba S.A' ? 'selected' : '' }}>
                                         Brasimba S.A</option>
+                                    <option value="OLA" {{ old('cf_agent') == 'OLA' ? 'selected' : '' }}>OLA
+                                    </option>
                                     <option value="Chemaf" {{ old('cf_agent') == 'Chemaf' ? 'selected' : '' }}>Chemaf
                                     </option>
                                     <option value="Comexas Afrique"
@@ -358,9 +360,9 @@
 
                         <div class="row">
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                        <label class="form-label">FOB Currency</label>
-                                                                        <textarea class="form-control" name="fob_currency" rows="1" autocomplete="on" required>{{ old('fob_currency') }}</textarea>
-                                                                    </div> -->
+                                                                            <label class="form-label">FOB Currency</label>
+                                                                            <textarea class="form-control" name="fob_currency" rows="1" autocomplete="on" required>{{ old('fob_currency') }}</textarea>
+                                                                        </div> -->
 
 
                             <div class="col-12 col-lg-3 mb-3">
@@ -386,17 +388,17 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                        <label class="form-label">Incoterm</label>
-                                                                        <input type="text" class="form-control" name="incoterm" value="{{ old('incoterm') }}"
-                                                                            autocomplete="on" required />
-                                                                    </div> -->
+                                                                            <label class="form-label">Incoterm</label>
+                                                                            <input type="text" class="form-control" name="incoterm" value="{{ old('incoterm') }}"
+                                                                                autocomplete="on" required />
+                                                                        </div> -->
 
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                        <label class="form-label">Freight Currency</label>
-                                                                        <input type="text" class="form-control" name="freight_currency"
-                                                                            value="{{ old('freight_currency') }}" autocomplete="on" required />
-                                                                    </div> -->
+                                                                            <label class="form-label">Freight Currency</label>
+                                                                            <input type="text" class="form-control" name="freight_currency"
+                                                                                value="{{ old('freight_currency') }}" autocomplete="on" required />
+                                                                        </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Freight Currency</label>
@@ -419,10 +421,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                        <label class="form-label">Insurance Currency</label>
-                                                                        <input type="text" class="form-control" name="insurance_currency"
-                                                                            value="{{ old('insurance_currency') }}" autocomplete="on" required />
-                                                                    </div> -->
+                                                                            <label class="form-label">Insurance Currency</label>
+                                                                            <input type="text" class="form-control" name="insurance_currency"
+                                                                                value="{{ old('insurance_currency') }}" autocomplete="on" required />
+                                                                        </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Insurance Currency</label>
@@ -447,10 +449,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                        <label class="form-label">Additional Fees Currency</label>
-                                                                        <input type="text" class="form-control" name="additional_fees_currency"
-                                                                            value="{{ old('additional_fees_currency') }}" autocomplete="on" required />
-                                                                    </div> -->
+                                                                            <label class="form-label">Additional Fees Currency</label>
+                                                                            <input type="text" class="form-control" name="additional_fees_currency"
+                                                                                value="{{ old('additional_fees_currency') }}" autocomplete="on" required />
+                                                                        </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Additional Fees Currency</label>
