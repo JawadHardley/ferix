@@ -1330,7 +1330,7 @@ class TransporterAuthController extends Controller
         $companies = Company::where('type', 'transporter')->pluck('name')->toArray();
         $entryBorders = ['Kasumbalesa', 'Mokambo', 'Sakania'];
         $finalDestinations = ['Likasi DRC', 'Lubumbashi DRC', 'Kolwezi DRC', 'Tenke DRC', 'Kisanfu DRC', 'Lualaba DRC', 'Pumpi DRC'];
-        $cfAgents = ['AGL', 'CARGO CONGO', 'CONNEX', 'African Logistics', 'Afritac', 'Amicongo', 'Aristote', 'Bollore', 'Brasimba', 'Brasimba S.A', 'Chemaf', 'Comexas Afrique', 'Comexas', 'DCG', 'Evele & Co', 'Gecotrans', 'Global Logistics', 'Malabar', 'Polytra', 'Spedag', 'Tradecorp', 'Trade Service'];
+        $cfAgents = ['AGL', 'CARGO CONGO', 'CONNEX', 'African Logistics', 'Afritac', 'Amicongo', 'OLA', 'Aristote', 'Bollore', 'Brasimba', 'Brasimba S.A', 'Chemaf', 'Comexas Afrique', 'Comexas', 'DCG', 'Evele & Co', 'Gecotrans', 'Global Logistics', 'Malabar', 'Polytra', 'Spedag', 'Tradecorp', 'Trade Service'];
         $currencies = ['USD', 'EUR', 'TZS', 'ZAR', 'AOA'];
         $incoterms = ['CFR', 'CIF', 'CIP', 'CPT', 'DAF', 'DAP', 'DAT', 'DDP', 'DDU', 'DEQ', 'DES', 'DPU', 'EXW', 'FAS', 'FCA', 'FOB'];
 
