@@ -225,6 +225,8 @@
                                             Brasimba</option>
                                         <option value="Brasimba S.A"
                                             {{ old('cf_agent') == 'Brasimba S.A' ? 'selected' : '' }}>Brasimba S.A</option>
+                                        <option value="COSMOS"
+                                            {{ old('cf_agent') == 'COSMOS' ? 'selected' : '' }}>COSMOS</option>
                                         <option value="OLA" {{ old('cf_agent') == 'OLA' ? 'selected' : '' }}>OLA
                                         </option>
                                         <option value="Chemaf" {{ old('cf_agent') == 'Chemaf' ? 'selected' : '' }}>Chemaf
