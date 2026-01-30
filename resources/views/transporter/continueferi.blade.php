@@ -8,6 +8,7 @@
             id="multiStepForm" novalidate>
             @csrf
 
+
             <div class="row d-flex align-items-start">
                 <div class="col-12 col-md-2 nav flex-column nav-pills border" id="v-pills-tab" role="tablist"
                     aria-orientation="vertical">
@@ -23,7 +24,7 @@
                 </div>
                 <div class="col-12 col-md-10 tab-content px-5" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
-                        aria-labelledby="v-pills-home-tab" tabindex="0">
+                        tabindex="0" aria-labelledby="v-pills-home-tab">
                         <div class="row">
 
                             <div class="col-12 col-lg-4 mb-3">
