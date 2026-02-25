@@ -91,7 +91,8 @@ class TransporterAuthController extends Controller
     // Show transporter registration form
     public function showRegisterForm()
     {
-        $records = Company::all();
+        // $records = Company::all();
+        $records = Company::where('type', 'transporter')->orderBy('name', 'asc')->get();
         return view('transporter.register', compact('records'));
     }
 
