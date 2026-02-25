@@ -48,7 +48,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-12 col-lg-6 mb-3">
+                            {{-- <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label">Transporter Company</label>
                                 <select class="form-select" name="transporter_company">
                                     <option value="">-- select --</option>
@@ -59,6 +59,27 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </div> --}}
+
+                            {{-- <div class="col-12 col-lg-3 mb-3">
+                                <label class="form-label">Transporter Company</label>
+                                <input type="text" class="form-control" name="transporter_company"
+                                    value="{{ old('transporter_company') }}" autocomplete="on" required />
+                            </div> --}}
+
+                            <div class="col-12 col-lg-6 mb-3">
+                                <label class="form-label">Transporter Company</label>
+
+                                <!-- Visible Text Input -->
+                                <input type="text" id="company_input" name="company_input" class="form-control"
+                                    placeholder="Type company name..." autocomplete="off" required />
+
+                                <!-- Hidden ID Input -->
+                                <input type="hidden" name="transporter_company" id="company_id">
+
+                                <!-- Suggestions Dropdown -->
+                                <div id="company_suggestions" class="list-group bg-dark text-white position-absolute w-100"
+                                    style="z-index: 1000;"></div>
                             </div>
 
                             <div class="col-12 col-lg-6 mb-3">
@@ -98,10 +119,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                                                            <label class="form-label">Final Destination</label>
-                                                                            <input type="text" class="form-control" name="final_destination"
-                                                                                value="{{ old('final_destination') }}" autocomplete="on" required />
-                                                                        </div> -->
+                                                                                                                                <label class="form-label">Final Destination</label>
+                                                                                                                                <input type="text" class="form-control" name="final_destination"
+                                                                                                                                    value="{{ old('final_destination') }}" autocomplete="on" required />
+                                                                                                                            </div> -->
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Final Destination</label>
@@ -198,10 +219,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-6 mb-3">
-                                                                            <label class="form-label">Clearing/Forwarding Agent</label>
-                                                                            <input type="text" class="form-control" name="cf_agent" value="{{ old('cf_agent') }}"
-                                                                                autocomplete="on" required />
-                                                                        </div> -->
+                                                                                                                                <label class="form-label">Clearing/Forwarding Agent</label>
+                                                                                                                                <input type="text" class="form-control" name="cf_agent" value="{{ old('cf_agent') }}"
+                                                                                                                                    autocomplete="on" required />
+                                                                                                                            </div> -->
 
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label">Clearing/Forwarding Agent</label>
@@ -229,8 +250,7 @@
                                     <option value="Brasimba S.A"
                                         {{ old('cf_agent') == 'Brasimba S.A' ? 'selected' : '' }}>
                                         Brasimba S.A</option>
-                                    <option value="COSMOS"
-                                        {{ old('cf_agent') == 'COSMOS' ? 'selected' : '' }}>
+                                    <option value="COSMOS" {{ old('cf_agent') == 'COSMOS' ? 'selected' : '' }}>
                                         COSMOS</option>
                                     <option value="OLA" {{ old('cf_agent') == 'OLA' ? 'selected' : '' }}>OLA
                                     </option>
@@ -363,9 +383,9 @@
 
                         <div class="row">
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                            <label class="form-label">FOB Currency</label>
-                                                                            <textarea class="form-control" name="fob_currency" rows="1" autocomplete="on" required>{{ old('fob_currency') }}</textarea>
-                                                                        </div> -->
+                                                                                                                                <label class="form-label">FOB Currency</label>
+                                                                                                                                <textarea class="form-control" name="fob_currency" rows="1" autocomplete="on" required>{{ old('fob_currency') }}</textarea>
+                                                                                                                            </div> -->
 
 
                             <div class="col-12 col-lg-3 mb-3">
@@ -391,17 +411,17 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                            <label class="form-label">Incoterm</label>
-                                                                            <input type="text" class="form-control" name="incoterm" value="{{ old('incoterm') }}"
-                                                                                autocomplete="on" required />
-                                                                        </div> -->
+                                                                                                                                <label class="form-label">Incoterm</label>
+                                                                                                                                <input type="text" class="form-control" name="incoterm" value="{{ old('incoterm') }}"
+                                                                                                                                    autocomplete="on" required />
+                                                                                                                            </div> -->
 
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                            <label class="form-label">Freight Currency</label>
-                                                                            <input type="text" class="form-control" name="freight_currency"
-                                                                                value="{{ old('freight_currency') }}" autocomplete="on" required />
-                                                                        </div> -->
+                                                                                                                                <label class="form-label">Freight Currency</label>
+                                                                                                                                <input type="text" class="form-control" name="freight_currency"
+                                                                                                                                    value="{{ old('freight_currency') }}" autocomplete="on" required />
+                                                                                                                            </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Freight Currency</label>
@@ -424,10 +444,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                            <label class="form-label">Insurance Currency</label>
-                                                                            <input type="text" class="form-control" name="insurance_currency"
-                                                                                value="{{ old('insurance_currency') }}" autocomplete="on" required />
-                                                                        </div> -->
+                                                                                                                                <label class="form-label">Insurance Currency</label>
+                                                                                                                                <input type="text" class="form-control" name="insurance_currency"
+                                                                                                                                    value="{{ old('insurance_currency') }}" autocomplete="on" required />
+                                                                                                                            </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Insurance Currency</label>
@@ -452,10 +472,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                            <label class="form-label">Additional Fees Currency</label>
-                                                                            <input type="text" class="form-control" name="additional_fees_currency"
-                                                                                value="{{ old('additional_fees_currency') }}" autocomplete="on" required />
-                                                                        </div> -->
+                                                                                                                                <label class="form-label">Additional Fees Currency</label>
+                                                                                                                                <input type="text" class="form-control" name="additional_fees_currency"
+                                                                                                                                    value="{{ old('additional_fees_currency') }}" autocomplete="on" required />
+                                                                                                                            </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Additional Fees Currency</label>
@@ -601,6 +621,63 @@
                 input.addEventListener('input', updateValidationUI);
                 input.addEventListener('change', updateValidationUI);
             });
+        });
+
+
+
+
+
+
+        // The company ajax search functionality
+        // The company ajax search functionality
+        // The company ajax search functionality
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const input = document.getElementById('company_input');
+            const hiddenInput = document.getElementById('company_id');
+            const suggestionsBox = document.getElementById('company_suggestions');
+
+            input.addEventListener('input', function() {
+                let query = this.value;
+
+                // Clear hidden ID when typing
+                hiddenInput.value = "";
+
+                if (query.length < 2) {
+                    suggestionsBox.innerHTML = "";
+                    return;
+                }
+
+                fetch(`/companies/search?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsBox.innerHTML = "";
+
+                        data.forEach(company => {
+                            let item = document.createElement("a");
+                            item.href = "#";
+                            item.classList.add("list-group-item", "list-group-item-action");
+                            item.textContent = company.name;
+
+                            item.addEventListener("click", function(e) {
+                                e.preventDefault();
+                                input.value = company.name;
+                                hiddenInput.value = company.id;
+                                suggestionsBox.innerHTML = "";
+                            });
+
+                            suggestionsBox.appendChild(item);
+                        });
+                    });
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener("click", function(e) {
+                if (!input.contains(e.target)) {
+                    suggestionsBox.innerHTML = "";
+                }
+            });
+
         });
     </script>
 @endsection

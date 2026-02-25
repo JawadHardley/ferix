@@ -13,9 +13,15 @@ use Illuminate\Support\Facades\Auth;
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
+
 Route::get('/', function () {
     return view('landingpage');
 })->name('homesweethome');
+
+// ajax company search
+Route::get('/companies/search', [VendorAuthController::class, 'company_search'])
+    ->name('companies.company_search');
+
 
 Route::get('/email/verify/success', function () {
     return view('auth.verify-success');

@@ -1120,4 +1120,15 @@ class VendorAuthController extends Controller
     {
         return view('vendor.stateform');
     }
+
+    public function company_search(Request $request)
+    {
+        $query = $request->get('q');
+
+        $companies = Company::where('name', 'LIKE', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'name']);
+
+        return response()->json($companies);
+    }
 }
