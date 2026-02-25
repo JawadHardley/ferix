@@ -303,10 +303,10 @@ class TransporterAuthController extends Controller
             // Original validation for regional
             $validatedData = $request->validate([
                 'transport_mode' => 'required|string|max:255',
-                // 'transporter_company' => 'required|string|max:255',
+                'transporter_company' => 'required|string|max:255',
                 //company from companies table
-                'transporter_company' => 'nullable|exists:companies,id',
-                'company_input' => 'required_without:transporter_company|string|max:255',
+                // 'transporter_company' => 'nullable|exists:companies,id',
+                // 'company_input' => 'required_without:transporter_company|string|max:255',
                 // end of company validation
                 'feri_type' => 'required|string|max:255',
                 'entry_border_drc' => 'required|string|max:255',
@@ -376,23 +376,23 @@ class TransporterAuthController extends Controller
         unset($validatedData['invoice'], $validatedData['manifest'], $validatedData['packing_list']);
 
         try {
-            // ----- Company selection / creation logic -----
-            $companyId = $request->transporter_company;
+            // // ----- Company selection / creation logic -----
+            // $companyId = $request->transporter_company;
 
-            if ($companyId) {
-                // User selected existing company
-                $company = Company::find($companyId);
-            } else {
-                // User typed a new company name
-                $company = Company::firstOrCreate([
-                    'name' => trim($request->company_input),
-                    'type' => 'transporter',
-                ]);
-            }
+            // if ($companyId) {
+            //     // User selected existing company
+            //     $company = Company::find($companyId);
+            // } else {
+            //     // User typed a new company name
+            //     $company = Company::firstOrCreate([
+            //         'name' => trim($request->company_input),
+            //         'type' => 'transporter',
+            //     ]);
+            // }
 
-            // Inject transporter company into validated data
-            $validatedData['transporter_company'] = $company?->id;
-            unset($validatedData['company_input']);
+            // // Inject transporter company into validated data
+            // $validatedData['transporter_company'] = $company?->id;
+            // unset($validatedData['company_input']);
 
             $r = feriApp::create($validatedData);
             $transporter = Auth::user();
