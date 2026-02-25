@@ -229,7 +229,8 @@ class TransporterAuthController extends Controller
         }
 
         // Fetch all records from the Company table
-        $records = Company::where('type', 'transporter')->get();
+        // $records = Company::where('type', 'transporter')->get();
+        $records = Company::where('type', 'transporter')->orderBy('name', 'asc')->get();
 
         // Pass the records to the view
         return view('transporter.applyferi', compact('records'));
