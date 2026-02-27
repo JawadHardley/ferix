@@ -305,7 +305,7 @@
               line-height: 12pt;
               text-align: left;
             ">
-                    ALISTAIR JAMES COMPANY Ltd.
+                    {{ strtoupper($company->name) }}
                 </p>
             </td>
             <td style="width: 274pt" bgcolor="#FFF">
@@ -317,7 +317,7 @@
         <tr style="height: 41pt">
             <td style="width: 322pt" bgcolor="#3F4A7E">
                 <p class="s5" style="padding-left: 62pt; text-indent: 0pt; text-align: left">
-                    P.O. Box 4543
+                    {{ !empty($poBox) ? Str::title($poBox) : 'Not Provided !' }}
                 </p>
                 <p class="s5"
                     style="
@@ -327,7 +327,8 @@
               line-height: 14pt;
               text-align: left;
             ">
-                    Kurasini Temeke Dar es salaam
+                    {{ !empty($location1) ? Str::title($location1) : 'Not Provided !' }},
+                    {{ !empty($location2) ? Str::title($location2) : 'Not Provided !' }}
                 </p>
             </td>
             <td style="width: 274pt" bgcolor="#FFF">
@@ -348,7 +349,8 @@
         <tr style="height: 24pt">
             <td style="width: 322pt" bgcolor="#3F4A7E">
                 <p style="padding-left: 62pt; text-indent: 0pt; text-align: left">
-                    <a href="mailto:payables@alistairgroup.com" class="s7">payables@alistairgroup.com</a>
+                    <a href="mailto:payables@alistairgroup.com"
+                        class="s7">{{ !empty($company->email) ? strtolower($company->email) : 'Not Provided !' }}</a>
                 </p>
             </td>
             <td style="
@@ -866,7 +868,7 @@
         text-indent: 0pt;
         text-align: left;
       ">
-                    Applicant: <span class="p">{{ $applicantName }}</span>
+                    Applicant: <span class="p">{{ $applicantName }} </span>
                 </h3>
                 <h3
                     style="

@@ -138,10 +138,26 @@ class CertificateController extends Controller
         // Fetch the applicant's name
         $applicantName = User::find($feriApp->user_id)?->name ?? 'N/A';
 
+        //Get user with app
+        $app_user = User::where('id', $feriApp->user_id)->firstOrFail();
+
+        //Get company details
+        $company = Company::where('id', $app_user->company)->firstOrFail();
+
+        $parts = array_map('trim', explode(',', $company->address));
+
+        $poBox     = $parts[0] ?? null;
+        $location1 = $parts[1] ?? null;
+        $location2 = $parts[2] ?? null;
+
         // Pass $invoice, $feriApp, and $applicantName to the view
         $pdf = Pdf::loadView('layouts.theinvoice', [
             'invoice' => $invoice,
             'feriapp' => $feriApp,
+            'company' => $company,
+            'poBox' => $poBox,
+            'location1' => $location1,
+            'location2' => $location2,
             'applicantName' => Str::title($applicantName),
         ]);
 
