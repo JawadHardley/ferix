@@ -38,7 +38,7 @@
                                 <div class="col-12 col-md-12 tab-content" id="v-pills-tabContent">
                                     <input type="text" class="form-control" name="template_name"
                                         value="{{ $template['name'] }}" autocomplete="on" placeholder="Enter Template Name"
-                                        required />
+                                        required {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                 </div>
                             </div>
                         </div>
@@ -51,7 +51,8 @@
                                         $selectedType = old('template_type', $template->type ?? '');
                                     @endphp
 
-                                    <select name="type" class="form-select" required>
+                                    <select name="type" class="form-select"
+                                        {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} required>
                                         <option value="">-- Select Feri Type --</option>
                                         <option value="regional" {{ $selectedType === 'regional' ? 'selected' : '' }}>
                                             Regional
@@ -78,12 +79,14 @@
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Transport Mode</label>
                                         <input type="text" name="transport_mode" class="form-control"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}
                                             value="{{ old('transport_mode', $formData['transport_mode'] ?? '') }}">
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Transporter Company</label>
-                                        <select class="form-select" name="transporter_company">
+                                        <select class="form-select" name="transporter_company"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="">-- select --</option>
 
                                             @foreach ($records as $company)
@@ -98,7 +101,8 @@
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Entry Border to DRC</label>
-                                        <select class="form-select" name="entry_border_drc">
+                                        <select class="form-select" name="entry_border_drc"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
 
                                             <option value="0"
                                                 {{ $formData['entry_border_drc'] == null ? 'selected' : '' }}>--
@@ -120,27 +124,32 @@
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Border ETA</label>
                                         <input type="date" class="form-control" name="arrival_date"
-                                            value="{{ $formData['arrival_date'] }}" autocomplete="on" required />
+                                            value="{{ $formData['arrival_date'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Truck Details</label>
                                         <input type="text" class="form-control" name="truck_details"
-                                            value="{{ $formData['truck_details'] }}" autocomplete="on" required />
+                                            value="{{ $formData['truck_details'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                         <input type="hidden" class="form-control" name="feri_type" value="regional"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Port of Arrival <span
                                                 class="fs-6">(Rail/Air/Port)</span></label>
                                         <input type="text" class="form-control" name="arrival_station"
-                                            value="{{ $formData['arrival_station'] }}" autocomplete="on" required />
+                                            value="{{ $formData['arrival_station'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Final Destination</label>
-                                        <select class="form-select" name="final_destination">
+                                        <select class="form-select" name="final_destination"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="0"
                                                 {{ $formData['final_destination'] == null ? 'selected' : '' }}>
                                                 --
@@ -194,35 +203,40 @@
                                         <label class="form-label">Importer Name</label>
                                         <input type="text" class="form-control" name="importer_name"
                                             value="{{ old('importer_name', $formData['importer_name'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Importer Address</label>
                                         <input type="text" class="form-control" name="importer_address"
                                             value="{{ old('importer_address', $formData['importer_address'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Importer Phone</label>
                                         <input type="text" class="form-control" name="importer_phone"
                                             value="{{ old('importer_phone', $formData['importer_phone'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Importer Email</label>
                                         <input type="text" class="form-control" name="importer_email"
                                             value="{{ old('importer_email', $formData['importer_email'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-12 mb-3">
                                         <label class="form-label">FXI Number</label>
                                         <input type="text" class="form-control" name="fix_number"
                                             value="{{ old('fix_number', $formData['fix_number'] ?? '') }}"
-                                            autocomplete="on" />
+                                            autocomplete="on"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
                                 </div>
                             </div>
@@ -244,33 +258,38 @@
                                         <label class="form-label">Exporter Name</label>
                                         <input type="text" class="form-control" name="exporter_name"
                                             value="{{ old('exporter_name', $formData['exporter_name'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Exporter Phone</label>
                                         <input type="text" class="form-control" name="exporter_phone"
                                             value="{{ old('exporter_phone', $formData['exporter_phone'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Exporter Email</label>
                                         <input type="email" class="form-control" name="exporter_email"
                                             value="{{ old('exporter_email', $formData['exporter_email'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-12 mb-3">
                                         <label class="form-label">Exporter Address</label>
                                         <input type="text" class="form-control" name="exporter_address"
                                             value="{{ old('exporter_address', $formData['exporter_address'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Clearing/Forwarding Agent</label>
-                                        <select class="form-select" name="cf_agent">
+                                        <select class="form-select" name="cf_agent"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="0" {{ $formData['cf_agent'] == null ? 'selected' : '' }}>
                                                 --
                                                 select --
@@ -366,7 +385,8 @@
                                         <label class="form-label">Clearing/Forwarding Agent Contact</label>
                                         <input type="text" class="form-control" name="cf_agent_contact"
                                             value="{{ old('cf_agent_contact', $formData['cf_agent_contact'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
                                 </div>
                             </div>
@@ -387,40 +407,42 @@
                                 <div class="row">
                                     <div class="col-12 col-lg-12 mb-3">
                                         <label class="form-label">Cargo Description</label>
-                                        <textarea class="form-control" name="cargo_description" rows="1" autocomplete="on" required>{{ old('cargo_description', $formData['cargo_description'] ?? '') }}</textarea>
+                                        <textarea class="form-control" name="cargo_description" rows="1" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>{{ old('cargo_description', $formData['cargo_description'] ?? '') }}</textarea>
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">HS Code</label>
                                         <input type="text" class="form-control" name="hs_code"
                                             value="{{ old('hs_code', $formData['hs_code'] ?? '') }}" autocomplete="on"
-                                            required />
+                                            required {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Package Type</label>
                                         <input type="text" class="form-control" name="package_type"
                                             value="{{ old('package_type', $formData['package_type'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Quantity (PKG)</label>
                                         <input type="number" class="form-control" name="quantity"
                                             value="{{ old('quantity', $formData['quantity'] ?? '') }}" autocomplete="on"
-                                            required />
+                                            required {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Weight (Gross)Kg</label>
                                         <input type="number" class="form-control" name="weight"
                                             value="{{ old('weight', $formData['weight'] ?? '') }}" autocomplete="on"
-                                            required />
+                                            required {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Volume (Net Weight)T</label>
                                         <input type="number" class="form-control" name="volume"
                                             value="{{ old('volume', $formData['volume'] ?? '') }}" autocomplete="on"
-                                            required />
+                                            required {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
                                 </div>
                             </div>
@@ -445,7 +467,8 @@
                                                 later)</span>
                                         </label>
                                         <input type="text" class="form-control" name="po"
-                                            value="{{ old('po', $formData['po'] ?? '') }}" autocomplete="on" required />
+                                            value="{{ old('po', $formData['po'] ?? '') }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
@@ -453,40 +476,46 @@
                                                 Number)</span></label>
                                         <input type="text" class="form-control" name="company_ref"
                                             value="{{ old('company_ref', $formData['company_ref'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Cargo Origin</label>
                                         <input type="text" class="form-control" name="cargo_origin"
                                             value="{{ old('cargo_origin', $formData['cargo_origin'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Customs Declaration Number</label>
                                         <input type="text" class="form-control" name="customs_decl_no"
                                             value="{{ old('customs_decl_no', $formData['customs_decl_no'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Manifest Number / VG</label>
                                         <input type="text" class="form-control" name="manifest_no"
                                             value="{{ old('manifest_no', $formData['manifest_no'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">OCC/ BIVAC</label>
                                         <input type="text" class="form-control" name="occ_bivac"
                                             value="{{ old('occ_bivac', $formData['occ_bivac'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-12 mb-3">
                                         <label class="form-label">Additional Comments</label>
-                                        <textarea class="form-control" name="instructions" rows="1" autocomplete="on" required>{{ old('instructions', $formData['instructions'] ?? '') }}</textarea>
+                                        <textarea class="form-control" name="instructions" rows="1" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>{{ old('instructions', $formData['instructions'] ?? '') }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -507,7 +536,8 @@
                                 <div class="row">
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">FOB Currency</label>
-                                        <select class="form-select" name="fob_currency">
+                                        <select class="form-select" name="fob_currency"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="USD"
                                                 {{ old('fob_currency', $formData['fob_currency'] ?? '') == 'USD' ? 'selected' : '' }}>
                                                 USD
@@ -535,12 +565,14 @@
                                         <label class="form-label">FOB Value / VALEUR FOB</label>
                                         <input type="text" class="form-control" name="fob_value"
                                             value="{{ old('fob_value', $formData['fob_value'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Freight Currency</label>
-                                        <select class="form-select" name="freight_currency">
+                                        <select class="form-select" name="freight_currency"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="USD"
                                                 {{ old('freight_currency', $formData['freight_currency'] ?? '') == 'USD' ? 'selected' : '' }}>
                                                 USD
@@ -564,11 +596,13 @@
                                         <label class="form-label">Freight Value</label>
                                         <input type="text" class="form-control" name="freight_value"
                                             value="{{ old('freight_value', $formData['freight_value'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Insurance Currency</label>
-                                        <select class="form-select" name="insurance_currency">
+                                        <select class="form-select" name="insurance_currency"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="USD"
                                                 {{ old('insurance_currency', $formData['insurance_currency'] ?? '') == 'USD' ? 'selected' : '' }}>
                                                 USD
@@ -596,11 +630,13 @@
                                         <label class="form-label">Insurance Value</label>
                                         <input type="text" class="form-control" name="insurance_value"
                                             value="{{ old('insurance_value', $formData['insurance_value'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Additional Fees Currency</label>
-                                        <select class="form-select" name="additional_fees_currency">
+                                        <select class="form-select" name="additional_fees_currency"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="USD"
                                                 {{ old('additional_fees_currency', $formData['additional_fees_currency'] ?? '') == 'USD' ? 'selected' : '' }}>
                                                 USD
@@ -628,12 +664,14 @@
                                         <label class="form-label">Additional Fees Value</label>
                                         <input type="text" class="form-control" name="additional_fees_value"
                                             value="{{ old('additional_fees_value', $formData['additional_fees_value'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Incoterm</label>
-                                        <select class="form-select" name="incoterm">
+                                        <select class="form-select" name="incoterm"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="0"
                                                 {{ old('incoterm', $formData['incoterm'] ?? '') == '0' ? 'selected' : '' }}>
                                                 --
@@ -708,18 +746,20 @@
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Commercial Invoice</label>
-                                        <input type="file" class="form-control" name="invoice" autocomplete="on" />
+                                        <input type="file" class="form-control" name="invoice" autocomplete="on"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Packing list</label>
-                                        <input type="file" class="form-control" name="packing_list"
-                                            autocomplete="on" />
+                                        <input type="file" class="form-control" name="packing_list" autocomplete="on"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Manifest</label>
-                                        <input type="file" class="form-control" name="manifest" autocomplete="on" />
+                                        <input type="file" class="form-control" name="manifest" autocomplete="on"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
@@ -727,7 +767,7 @@
                                                 class="fs-6 text-danger">(Merged)</span>
                                         </label>
                                         <input type="file" class="form-control" name="customs" autocomplete="on"
-                                            required />
+                                            required {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                 </div>
@@ -741,22 +781,30 @@
                 <div class="card shadow-lg border border-secondary-subtle fade-slide-in mb-5">
 
                     <div class="row d-flex align-items-start p-3">
-                        <div class="col-12 col-md-12 tab-content" id="v-pills-tabContent">
-                            <a href="./dashboard" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn-next btn btn-outline-primary">
-                                <i class="fa fa-floppy-disk pe-2"></i>
-                                Save
-                                Template</button>
+                        <div class="col-12 col-md-6 tab-content d-flex gap-2" id="v-pills-tabContent">
+                            <a href="{{ route(Auth::user()->role . '' . '.listtemplate') }}"
+                                class="btn btn-secondary">Cancel</a>
                             <a href="{{ route('transporter.applyferi', ['template' => $template->id]) }}"
                                 class="btn btn-success">
                                 <i class="fa fa-network-wired pe-2"></i>Use Template
                             </a>
-
-                            <a class="btn btn-outline-danger" href="#" data-bs-toggle="modal"
-                                data-bs-target="#templateDeleteModal{{ $template->id }}">
-                                <i class="fa fa-trash pe-2"></i>Delete
-                            </a>
                         </div>
+
+                        @if (Auth::user()->id == $template->user_id)
+                            <div class="col-12 col-md-6 tab-content d-flex justify-content-end gap-2"
+                                id="v-pills-tabContent">
+                                <button type="submit" class="btn-next btn btn-outline-primary">
+                                    <i class="fa fa-floppy-disk pe-2"></i>
+                                    Save
+                                    Template
+                                </button>
+
+                                <a class="btn btn-outline-danger" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#templateDeleteModal{{ $template->id }}">
+                                    <i class="fa fa-trash pe-2"></i>Delete
+                                </a>
+                            </div>
+                        @endif
                     </div>
 
                 </div>
@@ -789,7 +837,8 @@
                                 <div class="col-12 col-md-12 tab-content" id="v-pills-tabContent">
                                     <input type="text" class="form-control" name="template_name"
                                         value="{{ $template['name'] }}" autocomplete="on"
-                                        placeholder="Enter Template Name" required />
+                                        placeholder="Enter Template Name" required
+                                        {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                 </div>
                             </div>
                         </div>
@@ -802,7 +851,8 @@
                                         $selectedType = old('template_type', $template->type ?? '');
                                     @endphp
 
-                                    <select name="type" class="form-select" required>
+                                    <select name="type" class="form-select" required
+                                        {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                         <option value="">-- Select Feri Type --</option>
                                         <option value="regional" {{ $selectedType === 'regional' ? 'selected' : '' }}>
                                             Regional
@@ -831,7 +881,8 @@
                                         <label class="form-label">Company Ref <span class="fs-6 text-danger">(Trip
                                                 Number)</span></label>
                                         <input type="text" class="form-control" name="company_ref"
-                                            value="{{ $formData['company_ref'] }}" autocomplete="on" required />
+                                            value="{{ $formData['company_ref'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
@@ -839,19 +890,22 @@
                                                 later)</span>
                                         </label>
                                         <input type="text" class="form-control" name="po"
-                                            value="{{ $formData['po'] }}" autocomplete="on" required />
+                                            value="{{ $formData['po'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Validated Feri Certificate Number</label>
                                         <input type="text" class="form-control" name="validate_feri_cert"
                                             value="{{ old('validate_feri_cert', $formData['validate_feri_cert'] ?? '') }}"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Entry Border to DRC</label>
-                                        <select class="form-select" name="entry_border_drc">
+                                        <select class="form-select" name="entry_border_drc"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="0"
                                                 {{ $formData['entry_border_drc'] == null ? 'selected' : '' }}>--
                                                 select
@@ -871,7 +925,8 @@
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Final Destination</label>
-                                        <select class="form-select" name="final_destination">
+                                        <select class="form-select" name="final_destination"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="0"
                                                 {{ $formData['final_destination'] == '0' ? 'selected' : '' }}>--
                                                 select
@@ -907,28 +962,33 @@
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Border ETA</label>
                                         <input type="date" class="form-control" name="arrival_date"
-                                            value="{{ $formData['arrival_date'] }}" autocomplete="on" required />
+                                            value="{{ $formData['arrival_date'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Customs Declaration Number</label>
                                         <input type="text" class="form-control" name="customs_decl_no"
-                                            value="{{ $formData['customs_decl_no'] }}" autocomplete="on" required />
+                                            value="{{ $formData['customs_decl_no'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Truck Details</label>
                                         <input type="text" class="form-control" name="truck_details"
-                                            value="{{ $formData['truck_details'] }}" autocomplete="on" required />
+                                            value="{{ $formData['truck_details'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                         <input type="hidden" class="form-control" name="feri_type" value="continuance"
-                                            autocomplete="on" required />
+                                            autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Port of Arrival <span
                                                 class="fs-6">(Rail/Air/Port)</span></label>
                                         <input type="text" class="form-control" name="arrival_station"
-                                            value="{{ $formData['arrival_station'] }}" autocomplete="on" required />
+                                            value="{{ $formData['arrival_station'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
                                 </div>
                             </div>
@@ -946,7 +1006,8 @@
 
                                     <div class="col-12 col-lg-12 mb-3">
                                         <label class="form-label">Transporter Company</label>
-                                        <select class="form-select" name="transporter_company">
+                                        <select class="form-select" name="transporter_company"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="">-- select --</option>
 
                                             @foreach ($records as $company)
@@ -962,31 +1023,36 @@
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Quantity</label>
                                         <input type="number" class="form-control" name="quantity"
-                                            value="{{ $formData['quantity'] }}" autocomplete="on" required />
+                                            value="{{ $formData['quantity'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Weights: Tons/kgs</label>
                                         <input type="number" class="form-control" name="weight"
-                                            value="{{ $formData['weight'] }}" autocomplete="on" required />
+                                            value="{{ $formData['weight'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-4 mb-3">
                                         <label class="form-label">Volume: CBM</label>
                                         <input type="text" class="form-control" name="volume" autocomplete="on"
-                                            value="{{ $formData['volume'] }}" required />
+                                            value="{{ $formData['volume'] }}" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Importer Name</label>
                                         <input type="text" class="form-control" name="importer_name"
-                                            value="{{ $formData['importer_name'] }}" autocomplete="on" required />
+                                            value="{{ $formData['importer_name'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Shipping Line/Agent</label>
-                                        <select class="form-select" name="cf_agent">
+                                        <select class="form-select" name="cf_agent"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="0" {{ $formData['cf_agent'] == null ? 'selected' : '' }}>
                                                 --
                                                 select
@@ -1098,12 +1164,14 @@
                                     <div class="col-12 col-lg-12 mb-3">
                                         <label class="form-label">Forwarding Agent</label>
                                         <input type="text" class="form-control" name="exporter_name"
-                                            value="{{ $formData['exporter_name'] }}" autocomplete="on" required />
+                                            value="{{ $formData['exporter_name'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Freight Currency</label>
-                                        <select class="form-select" name="freight_currency">
+                                        <select class="form-select" name="freight_currency"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>
                                             <option value="USD"
                                                 {{ $formData['freight_currency'] == 'USD' ? 'selected' : '' }}>
                                                 USD
@@ -1130,41 +1198,47 @@
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Freight Cost</label>
                                         <input type="text" class="form-control" name="freight_value"
-                                            value="{{ $formData['freight_value'] }}" autocomplete="on" required />
+                                            value="{{ $formData['freight_value'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">FOB Value / VALEUR FOB</label>
                                         <input type="text" class="form-control" name="fob_value"
-                                            value="{{ $formData['fob_value'] }}" autocomplete="on" required />
+                                            value="{{ $formData['fob_value'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Insurance Value</label>
                                         <input type="text" class="form-control" name="insurance_value"
-                                            value="{{ $formData['insurance_value'] }}" autocomplete="on" required />
+                                            value="{{ $formData['insurance_value'] }}" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-6 mb-3">
                                         <label class="form-label">Additional Comments</label>
-                                        <textarea class="form-control" name="instructions" rows="1" autocomplete="on" required>{{ $formData['instructions'] }}</textarea>
+                                        <textarea class="form-control" name="instructions" rows="1" autocomplete="on" required
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }}>{{ $formData['instructions'] }}</textarea>
                                     </div>
 
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Commercial Invoice</label>
-                                        <input type="file" class="form-control" name="invoice" autocomplete="on" />
+                                        <input type="file" class="form-control" name="invoice" autocomplete="on"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Packing list</label>
-                                        <input type="file" class="form-control" name="packing_list"
-                                            autocomplete="on" />
+                                        <input type="file" class="form-control" name="packing_list" autocomplete="on"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
                                         <label class="form-label">Manifest</label>
-                                        <input type="file" class="form-control" name="manifest" autocomplete="on" />
+                                        <input type="file" class="form-control" name="manifest" autocomplete="on"
+                                            {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
                                     <div class="col-12 col-lg-3 mb-3">
@@ -1172,7 +1246,7 @@
                                                 class="fs-6 text-danger">(Merged)</span>
                                         </label>
                                         <input type="file" class="form-control" name="customs" autocomplete="on"
-                                            required />
+                                            required {{ Auth::user()->id != $template->user_id ? 'disabled' : '' }} />
                                     </div>
 
 
@@ -1185,14 +1259,18 @@
                 <div class="card shadow-lg border border-secondary-subtle fade-slide-in mb-5">
                     <div class="row d-flex align-items-start p-3">
                         <div class="col-12 col-md-12 tab-content" id="v-pills-tabContent">
-                            <a href="./dashboard" class="btn btn-secondary">Cancel</a>
+
+                            <a href="{{ route(Auth::user()->role . '' . '.dashboard') }}"
+                                class="btn btn-secondary">Cancel</a>
+
                             <button type="submit" class="btn-next btn btn-outline-primary">
                                 <i class="fa fa-floppy-disk pe-2"></i>
                                 Save
-                                Template</button>
+                                Template
+                            </button>
 
                             <a href="{{ route('transporter.applyferi', ['template' => $template->id]) }}"
-                                class="btn btn-success">
+                                class="btn btn-success justify-content-end">
                                 <i class="fa fa-network-wired pe-2"></i>Use Template
                             </a>
 
@@ -1200,6 +1278,7 @@
                                 data-bs-target="#templateDeleteModal{{ $template->id }}">
                                 <i class="fa fa-trash pe-2"></i>Delete
                             </a>
+
                         </div>
                     </div>
                 </div>

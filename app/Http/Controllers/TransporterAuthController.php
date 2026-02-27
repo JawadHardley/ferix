@@ -1056,12 +1056,13 @@ class TransporterAuthController extends Controller
     public function showdashboard()
     {
         $feris = feriApp::where('user_id', Auth::id())->get();
+        $records = FormTemplate::with('user')->where('company_id', Auth::user()->company)->orderBy('created_at', 'asc')->get();
 
         // If no data found, set $feris to 0
         if ($feris->isEmpty()) {
             $feris = 0;
         }
-        return view('transporter.dashboard', compact('feris'));
+        return view('transporter.dashboard', compact('feris', 'records'));
     }
 
     public function sampcalculator()
@@ -1690,6 +1691,7 @@ class TransporterAuthController extends Controller
 
     public function edittemplate($id)
     {
+
         $template = FormTemplate::where('company_id', Auth::user()->company)
             ->findOrFail($id);
         // dd($template->form_data);
@@ -1703,6 +1705,10 @@ class TransporterAuthController extends Controller
 
     public function updateTemplate(Request $request, $id)
     {
+        if(Auth::user()->id !== FormTemplate::findOrFail($id)->user_id){
+            abort(403, 'Unauthorized action.');
+        }
+
         // dd($request);
         $template = FormTemplate::findOrFail($id);
 
@@ -1730,6 +1736,11 @@ class TransporterAuthController extends Controller
 
     public function destroyTemplate($id)
     {
+        
+        if(Auth::user()->id !== FormTemplate::findOrFail($id)->user_id){
+            abort(403, 'Unauthorized action.');
+        }
+
         FormTemplate::destroy($id);
         return redirect('transporter/template/list')->with([
             'status' => 'success',

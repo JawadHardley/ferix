@@ -77,16 +77,20 @@
                                             <div class="dropdown-menu dropdown-menu-start">
                                                 <a class="dropdown-item"
                                                     href="{{ route('transporter.edittemplate', $record->id) }}">
-                                                    <i class="fa fa-eye pe-2"></i>View/Edit
+                                                    <i class="fa fa-eye pe-2"></i>View
+                                                    {{ Auth::user()->id == $record->user_id ? '/Edit' : '' }}
                                                 </a>
                                                 <a href="{{ route('transporter.applyferi', ['template' => $record->id]) }}"
                                                     class="dropdown-item">
                                                     <i class="fa fa-network-wired text-primary pe-2"></i>Use Template
                                                 </a>
-                                                <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal"
-                                                    data-bs-target="#templateDeleteModal{{ $record->id }}">
-                                                    <i class="fa fa-trash pe-2"></i>Delete
-                                                </a>
+                                                @if (Auth::user()->id == $record->user_id)
+                                                    <a class="dropdown-item text-danger" href="#"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#templateDeleteModal{{ $record->id }}">
+                                                        <i class="fa fa-trash pe-2"></i>Delete
+                                                    </a>
+                                                @endif
 
                                             </div>
                                         </span>
