@@ -62,9 +62,25 @@
                                 <a class="dropdown-item" href="{{ route('transporter.continueferi') }}">
                                     Continuance
                                 </a>
-                                <a class="dropdown-item" href="{{ route('transporter.importapply') }}">
+                                {{-- <a class="dropdown-item" href="{{ route('transporter.importapply') }}">
                                     Template
-                                </a>
+                                </a> --}}
+                                <div class="dropdown">
+                                    <a href="#" class="dropdown-toggle dropdown-item"
+                                        data-bs-toggle="dropdown">Templates</a>
+                                    <div class="dropdown-menu text-blue">
+                                        <a class="dropdown-item" href="{{ route('transporter.importapply') }}">
+                                            <i class="fa fa-table"></i> Excel Template
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('transporter.listtemplate') }}">
+                                            <i class="fa fa-server"></i> List of Templates
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('transporter.manualtemplate') }}">
+                                            <i class="fa fa-circle-plus"></i> Add Template
+                                        </a>
+                                    </div>
+                                </div>
+
                             </div>
                         </li>
                         <li class="nav-item dropdown">

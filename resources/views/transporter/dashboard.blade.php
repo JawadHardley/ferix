@@ -224,11 +224,11 @@
                 <div class="modal-body">
                     <div class="row">
 
-                        <div class="col-sm-12 col-md-6 col-lg-6 mb-3">
+                        <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
                             <a href="{{ route('transporter.applyferi') }}" class="card card-link">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h3 class="card-title text-center p-5">
+                                        <h3 class="card-title text-center p-3">
                                             <i class="fa fa-mountain-city display-4"></i>
                                         </h3>
                                         <p class="card-title text-center">Regional</p>
@@ -237,11 +237,11 @@
                             </a>
                         </div>
 
-                        <div class="col-sm-12 col-md-6 col-lg-6 mb-3">
+                        <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
                             <a href="{{ route('transporter.continueferi') }}" class="card card-link">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h3 class="card-title text-center p-5">
+                                        <h3 class="card-title text-center p-3">
                                             <i class="fa fa-truck-fast display-4"></i>
                                         </h3>
                                         <p class="card-title text-center">Continuance</p>
@@ -249,6 +249,20 @@
                                 </div>
                             </a>
                         </div>
+
+                        <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                            <a href="{{ route('transporter.listtemplate') }}" class="card card-link">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="card-title text-center p-3">
+                                            <i class="fa fa-network-wired display-4"></i>
+                                        </h3>
+                                        <p class="card-title text-center">Templates</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
                     </div>
 
                 </div>

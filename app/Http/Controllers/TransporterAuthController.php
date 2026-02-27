@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\chats;
 use App\Models\Company;
 use App\Models\Rate;
+use App\Models\FormTemplate;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -222,7 +223,49 @@ class TransporterAuthController extends Controller
     }
 
     // Show feri application form
-    public function applyferi()
+    public function applyferi(Request $request)
+    {
+        //if user has not verified email
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+        
+        $template = null;
+        $type ='';
+        $formData = [];
+
+        if ($request->filled('template')) {
+
+            $template = FormTemplate::where('company_id', Auth::user()->company)
+                ->where('id', $request->template)
+                ->first();
+
+                // dd($template->type);
+
+            if (!$template) {
+                abort(404);
+            }
+
+            $formData = $template->form_data;
+            $type = $template->type;
+        }
+
+        // Fetch all records from the Company table
+        // $records = Company::where('type', 'transporter')->get();
+        $records = Company::where('type', 'transporter')->orderBy('name', 'asc')->get();
+        
+        if ($type == 'regional') {
+            // Pass the records to the view
+            return view('transporter.applyferi', compact('records', 'template', 'formData'));
+        } elseif ($type == 'continuance') {
+            return view('transporter.continueferi', compact('records', 'template', 'formData'));
+        } else {
+            return view('transporter.applyferi', compact('records', 'template', 'formData'));
+        }
+    }
+
+        // Show feri application form
+    public function manualtemplate()
     {
         //if user has not verified email
         if (!Auth::user()->email_verified_at) {
@@ -234,7 +277,23 @@ class TransporterAuthController extends Controller
         $records = Company::where('type', 'transporter')->orderBy('name', 'asc')->get();
 
         // Pass the records to the view
-        return view('transporter.applyferi', compact('records'));
+        return view('transporter.manualtemplate', compact('records'));
+    }
+
+     // Show feri application form
+    public function listtemplate()
+    {
+        //if user has not verified email
+        if (!Auth::user()->email_verified_at) {
+            return view('auth.verify-email');
+        }
+
+        // Fetch all records from the Company table
+        // $records = Company::where('type', 'transporter')->get();
+        $records = FormTemplate::with('user')->where('company_id', Auth::user()->company)->orderBy('created_at', 'asc')->get();
+
+        // Pass the records to the view
+        return view('transporter.listtemplate', compact('records'));
     }
 
     // Show feri application form
@@ -289,6 +348,7 @@ class TransporterAuthController extends Controller
                 'invoice' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
                 'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
                 'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'customs' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
             ]);
 
             // Set all other fields to 0
@@ -354,6 +414,7 @@ class TransporterAuthController extends Controller
                 'invoice' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
                 'packing_list' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
                 'manifest' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'customs' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
             ]);
             $validatedData['feri_type'] = 'regional';
         }
@@ -361,21 +422,26 @@ class TransporterAuthController extends Controller
         // Add user_id and status
         $validatedData['user_id'] = Auth::id();
         $validatedData['status'] = 1;
+        
 
         // Handle file uploads for all types
         $documentUploads = [];
         foreach ($fileFields as $fileField) {
             if ($request->hasFile($fileField)) {
                 $file = $request->file($fileField);
+                
                 $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('feri_documents', $filename, 'private');
                 $documentUploads[$fileField] = $path;
             }
         }
+
         $validatedData['documents_upload'] = json_encode($documentUploads);
+                // dd($validatedData['documents_upload']);
 
         // Remove file fields so they are not inserted as columns
-        unset($validatedData['invoice'], $validatedData['manifest'], $validatedData['packing_list']);
+        unset($validatedData['invoice'], $validatedData['manifest'], $validatedData['packing_list'], $validatedData['customs']);
+
 
         try {
             // // ----- Company selection / creation logic -----
@@ -395,7 +461,7 @@ class TransporterAuthController extends Controller
             // // Inject transporter company into validated data
             // $validatedData['transporter_company'] = $company?->id;
             // unset($validatedData['company_input']);
-
+            // dd($request->hasFile($fileField));
             $r = feriApp::create($validatedData);
             $transporter = Auth::user();
             $company = Company::where('type', 'vendor')->first();
@@ -409,8 +475,7 @@ class TransporterAuthController extends Controller
                 Mail::to($mainVendor->email)->cc($ccEmails)->queue(new NewAppMail($r, $mainVendor, $transporter));
             }
 
-            return redirect()
-                ->back()
+            return redirect('transporter/applications')
                 ->with([
                     'status' => 'success',
                     'message' => 'Feri application sent successfully!',
@@ -1471,4 +1536,206 @@ class TransporterAuthController extends Controller
             ],
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    |  PUBLIC METHODS
+    |--------------------------------------------------------------------------
+    */
+
+    public function storetamplate(Request $request)
+    {
+        $type = $request->type; // regional or continuance
+
+        $rules = $this->getRulesByType($type);
+
+        $validated = $request->validate($rules);
+
+        // Save actual FERI application here...
+        // Feri::create($validated);
+
+        return back()->with('success', 'Application submitted successfully.');
+    }
+
+
+    public function saveTemplate(Request $request)
+    {
+        $type = $request->type;
+        // dd($request);
+
+        // Get original strict rules
+        $rules = $this->getRulesByType($type);
+
+        // Remove required dynamically
+        $templateRules = $this->removeRequired($rules);
+
+        $validated = $request->validate($templateRules);
+
+        FormTemplate::create([
+            'user_id'   => Auth::user()->id,
+            'company_id'   => Auth::user()->company,
+            'name'      => $request->template_name,
+            'type'      => $type,
+            'form_data' => $validated
+        ]);
+
+        // return back()->with('success', 'Template saved successfully.');
+        return redirect()->route('transporter.listtemplate')->with([
+            'message' => 'Template Saved successfully.',
+            'status' => 'success'
+            ]);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    |  RULE ENGINE
+    |--------------------------------------------------------------------------
+    */
+
+    private function getRulesByType(string $type): array
+    {
+        if ($type === 'continuance') {
+            return [
+                'type' => 'nullable|string|max:255',
+                'company_ref' => 'nullable|string|max:255',
+                'po' => 'nullable|string|max:100',
+                'validate_feri_cert' => 'nullable|string|max:255',
+                'entry_border_drc' => 'required|string|max:255',
+                'arrival_date' => 'required|date|after_or_equal:today',
+                'final_destination' => 'required|string|max:255',
+                'customs_decl_no' => 'nullable|string|max:255',
+                'arrival_station' => 'required|string|max:255',
+                'truck_details' => 'required|string|max:255',
+                'transporter_company' => 'required|integer|exists:companies,id',
+                'weight' => 'required|numeric|min:1',
+                'quantity' => 'required|numeric|max:9999999999',
+                'volume' => 'required|numeric|max:9999999999',
+                'importer_name' => 'required|string|max:255',
+                'cf_agent' => 'required|string|max:255',
+                'exporter_name' => 'required|string|max:255',
+                'freight_currency' => 'nullable|string|max:50',
+                'freight_value' => 'nullable|numeric|max:9999999999',
+                'fob_value' => 'nullable|numeric|max:9999999999',
+                'insurance_value' => 'nullable|numeric|max:9999999999',
+                'instructions' => 'nullable|string',
+            ];
+        }
+
+        if ($type === 'regional') {
+            return [
+                'type' => 'nullable|string|max:255',
+                'transport_mode' => 'required|string|max:255',
+                'transporter_company' => 'required|integer|exists:companies,id',
+                'feri_type' => 'required|string|max:255',
+                'entry_border_drc' => 'required|string|max:255',
+                'truck_details' => 'required|string|max:255',
+                'arrival_station' => 'required|string|max:255',
+                'arrival_date' => 'required|date|after_or_equal:today',
+                'final_destination' => 'required|string|max:255',
+                'importer_name' => 'required|string|max:255',
+                'importer_phone' => 'required|string|max:20',
+                'importer_email' => 'nullable|string|max:255',
+                'importer_address' => 'nullable|string|max:255',
+                'exporter_address' => 'nullable|string|max:255',
+                'importer_details' => 'nullable|string|max:255',
+                'fix_number' => 'nullable|string|max:255',
+                'exporter_name' => 'required|string|max:255',
+                'exporter_phone' => 'required|string|max:20',
+                'exporter_email' => 'nullable|string|max:255',
+                'cf_agent' => 'required|string|max:255',
+                'cf_agent_contact' => 'required|string|max:255',
+                'cargo_description' => 'required|string|max:255',
+                'hs_code' => 'required|string|max:100',
+                'package_type' => 'required|string|max:255',
+                'weight' => 'required|numeric|min:1',
+                'quantity' => 'required|numeric|max:9999999999',
+                'volume' => 'required|numeric|max:9999999999',
+                'company_ref' => 'nullable|string|max:255',
+                'cargo_origin' => 'nullable|string|max:255',
+                'customs_decl_no' => 'nullable|string|max:255',
+                'manifest_no' => 'nullable|string|max:255',
+                'occ_bivac' => 'nullable|string|max:255',
+                'instructions' => 'nullable|string',
+                'fob_currency' => 'nullable|string|max:50',
+                'fob_value' => 'nullable|numeric|max:9999999999',
+                'po' => 'nullable|string|max:100',
+                'incoterm' => 'nullable|string|max:50',
+                'freight_currency' => 'nullable|string|max:50',
+                'freight_value' => 'nullable|numeric|max:9999999999',
+                'insurance_currency' => 'nullable|string|max:50',
+                'insurance_value' => 'nullable|numeric|max:9999999999',
+                'additional_fees_currency' => 'nullable|string|max:50',
+                'additional_fees_value' => 'nullable|numeric|max:9999999999',
+            ];
+        }
+
+        return [];
+    }
+
+
+    private function removeRequired(array $rules): array
+    {
+        foreach ($rules as $field => $rule) {
+
+            $rules[$field] = collect(explode('|', $rule))
+                ->reject(fn ($r) => $r === 'required')
+                ->prepend('nullable')
+                ->unique()
+                ->implode('|');
+        }
+
+        return $rules;
+    }
+
+    public function edittemplate($id)
+    {
+        $template = FormTemplate::where('company_id', Auth::user()->company)
+            ->findOrFail($id);
+        // dd($template->form_data);
+
+        $formData = $template->form_data;
+
+        $records = Company::where('type', 'transporter')->orderBy('name')->get();
+
+        return view('transporter.edittemplate', compact('template', 'formData', 'records'));
+    }
+
+    public function updateTemplate(Request $request, $id)
+    {
+        // dd($request);
+        $template = FormTemplate::findOrFail($id);
+
+        $type = $request->type;
+        // dd($type);
+
+        $rules = $this->getRulesByType($type);
+
+        // Relax rules for template editing
+        $templateRules = $this->removeRequired($rules);
+
+        $validated = $request->validate($templateRules);
+
+        $template->update([
+            'name' => $request->template_name,
+            'type' => $type,
+            'form_data' => $validated
+        ]);
+
+        return redirect()->back()->with([
+            'message' => 'Template updated successfully.',
+            'status' => 'success'
+            ]);
+    }
+
+    public function destroyTemplate($id)
+    {
+        FormTemplate::destroy($id);
+        return redirect('transporter/template/list')->with([
+            'status' => 'success',
+            'message' => 'Template Deleted successfully!.',
+        ]);
+    }
+
+
 }

@@ -136,10 +136,28 @@ Route::prefix('transporter')
         Route::post('update', [TransporterAuthController::class, 'updateProfile'])
             ->name('updateProfile')
             ->middleware('role');
+            
+        Route::post('template/save', [TransporterAuthController::class, 'saveTemplate'])
+            ->name('saveTemplate')
+            ->middleware('role');
+
+        Route::get('/templates/{id}/edit', [TransporterAuthController::class, 'edittemplate'])
+            ->name('edittemplate')
+            ->middleware('role');
+
+        Route::put('/templates/{id}', [TransporterAuthController::class, 'updatetemplate'])
+            ->name('updatetemplate')
+            ->middleware('role');
 
         //feri application
         Route::get('apply', [TransporterAuthController::class, 'applyferi'])
             ->name('applyferi')
+            ->middleware('role');
+        Route::get('template/list', [TransporterAuthController::class, 'listtemplate'])
+            ->name('listtemplate')
+            ->middleware('role');
+        Route::get('template/apply', [TransporterAuthController::class, 'manualtemplate'])
+            ->name('manualtemplate')
             ->middleware('role');
         Route::get('applycontinueferi', [TransporterAuthController::class, 'continueferi'])
             ->name('continueferi')
@@ -161,6 +179,9 @@ Route::prefix('transporter')
             ->middleware('role');
         Route::delete('application/delete/{id}', [TransporterAuthController::class, 'destroyApp'])
             ->name('destroyApp')
+            ->middleware('role');
+        Route::delete('template/delete/{id}', [TransporterAuthController::class, 'destroyTemplate'])
+            ->name('destroyTemplate')
             ->middleware('role');
         Route::post('application/edit/{id}', [TransporterAuthController::class, 'editApp'])
             ->name('editApp')

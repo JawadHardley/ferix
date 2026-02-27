@@ -2,7 +2,25 @@
 @section('content')
     <x-errorshow />
     <div class="card">
-        <h1 class="m-3">Continuance Feri Application Form</h1>
+        {{-- <h1 class="m-3 justify-content-start d-flex align-items-middle">
+            <span class="me-3">Continuance Feri Application Form</span>
+            @if ($template)
+                <span class="fs-4 bg-success rounded bg-opacity-10 px-3">:{{ $template->name }}</span>
+            @endif
+        </h1> --}}
+
+        <h1 class="m-3 justify-content-start d-flex align-items-middle">
+            <span class="me-5">Continuance Feri Application Form</span>
+            @if (!empty($template))
+                <span class="fs-4 bg-success rounded bg-opacity-10 px-3">
+                    <span class="pe-2 fs-5 text-opacity-25 text-muted">
+                        <i class="fa fa-network-wired text-warning pe-2"></i>Template:
+                    </span>
+                    {{ $template->name }}
+                </span>
+            @endif
+        </h1>
+
         <hr />
         <form action="{{ route('transporter.feriApp') }}" method="POST" enctype="multipart/form-data" class="w-100 p-5"
             id="multiStepForm" novalidate>
@@ -23,91 +41,102 @@
                         aria-selected="false">Consignment Details</button>
                 </div>
                 <div class="col-12 col-md-10 tab-content px-5" id="v-pills-tabContent">
-                    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
-                        tabindex="0" aria-labelledby="v-pills-home-tab">
+                    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" tabindex="0"
+                        aria-labelledby="v-pills-home-tab">
                         <div class="row">
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Company Ref <span class="fs-6 text-danger">(Trip
                                         Number)</span></label>
                                 <input type="text" class="form-control" name="company_ref"
-                                    value="{{ old('company_ref') }}" autocomplete="on" required />
+                                    value="{{ old('company_ref', $formData['company_ref'] ?? '') }}" autocomplete="on"
+                                    required />
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">PO <span class="fs-6 text-danger">(TBS: To be added
                                         later)</span>
                                 </label>
-                                <input type="text" class="form-control" name="po" value="{{ old('po') }}"
-                                    autocomplete="on" required />
+                                <input type="text" class="form-control" name="po"
+                                    value="{{ old('po', $formData['po'] ?? '') }}" autocomplete="on" required />
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Validated Feri Certificate Number</label>
                                 <input type="text" class="form-control" name="validate_feri_cert"
-                                    value="{{ old('validate_feri_cert') }}" autocomplete="on" required />
+                                    value="{{ old('validate_feri_cert', $formData['validate_feri_cert'] ?? '') }}"
+                                    autocomplete="on" required />
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Entry Border to DRC</label>
+                                @php
+                                    $selectedEntryBorder = old('entry_border_drc', $formData['entry_border_drc'] ?? '');
+                                @endphp
                                 <select class="form-select" name="entry_border_drc">
-                                    <option value="0" {{ old('entry_border_drc') == '0' ? 'selected' : '' }}>-- select
-                                        --</option>
-                                    <option value="Kasumbalesa"
-                                        {{ old('entry_border_drc') == 'Kasumbalesa' ? 'selected' : '' }}>Kasumbalesa
+                                    <option value="0" {{ $selectedEntryBorder == '0' ? 'selected' : '' }}>-- select --
                                     </option>
-                                    <option value="Mokambo" {{ old('entry_border_drc') == 'Mokambo' ? 'selected' : '' }}>
+                                    <option value="Kasumbalesa"
+                                        {{ $selectedEntryBorder == 'Kasumbalesa' ? 'selected' : '' }}>Kasumbalesa</option>
+                                    <option value="Mokambo" {{ $selectedEntryBorder == 'Mokambo' ? 'selected' : '' }}>
                                         Mokambo</option>
-                                    <option value="Sakania" {{ old('entry_border_drc') == 'Sakania' ? 'selected' : '' }}>
+                                    <option value="Sakania" {{ $selectedEntryBorder == 'Sakania' ? 'selected' : '' }}>
                                         Sakania</option>
                                 </select>
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Final Destination</label>
+                                @php
+                                    $selectedFinalDestination = old(
+                                        'final_destination',
+                                        $formData['final_destination'] ?? '',
+                                    );
+                                @endphp
                                 <select class="form-select" name="final_destination">
-                                    <option value="0" {{ old('final_destination') == '0' ? 'selected' : '' }}>-- select
-                                        --</option>
+                                    <option value="0" {{ $selectedFinalDestination == '0' ? 'selected' : '' }}>--
+                                        select --</option>
                                     <option value="Likasi DRC"
-                                        {{ old('final_destination') == 'Likasi DRC' ? 'selected' : '' }}>Likasi DRC
+                                        {{ $selectedFinalDestination == 'Likasi DRC' ? 'selected' : '' }}>Likasi DRC
                                     </option>
                                     <option value="Kolwezi DRC"
-                                        {{ old('final_destination') == 'Kolwezi DRC' ? 'selected' : '' }}>Kolwezi DRC
+                                        {{ $selectedFinalDestination == 'Kolwezi DRC' ? 'selected' : '' }}>Kolwezi DRC
                                     </option>
                                     <option value="Lubumbashi DRC"
-                                        {{ old('final_destination') == 'Lubumbashi DRC' ? 'selected' : '' }}>
-                                        Lubumbashi DRC</option>
+                                        {{ $selectedFinalDestination == 'Lubumbashi DRC' ? 'selected' : '' }}>Lubumbashi
+                                        DRC</option>
                                     <option value="Tenke DRC"
-                                        {{ old('final_destination') == 'Tenke DRC' ? 'selected' : '' }}>
-                                        Tenke DRC</option>
+                                        {{ $selectedFinalDestination == 'Tenke DRC' ? 'selected' : '' }}>Tenke DRC</option>
                                     <option value="Kisanfu DRC"
-                                        {{ old('final_destination') == 'Kisanfu DRC' ? 'selected' : '' }}>
-                                        Kisanfu DRC</option>
+                                        {{ $selectedFinalDestination == 'Kisanfu DRC' ? 'selected' : '' }}>Kisanfu DRC
+                                    </option>
                                     <option value="Lualaba DRC"
-                                        {{ old('final_destination') == 'Lualaba DRC' ? 'selected' : '' }}>
-                                        Lualaba DRC</option>
+                                        {{ $selectedFinalDestination == 'Lualaba DRC' ? 'selected' : '' }}>Lualaba DRC
+                                    </option>
                                     <option value="Pumpi DRC"
-                                        {{ old('final_destination') == 'Pumpi DRC' ? 'selected' : '' }}>
-                                        Pumpi DRC</option>
+                                        {{ $selectedFinalDestination == 'Pumpi DRC' ? 'selected' : '' }}>Pumpi DRC</option>
                                 </select>
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Border ETA</label>
                                 <input type="date" class="form-control" name="arrival_date"
-                                    value="{{ old('arrival_date') }}" autocomplete="on" required />
+                                    value="{{ old('arrival_date', $formData['arrival_date'] ?? '') }}" autocomplete="on"
+                                    required />
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Customs Declaration Number</label>
                                 <input type="text" class="form-control" name="customs_decl_no"
-                                    value="{{ old('customs_decl_no') }}" autocomplete="on" required />
+                                    value="{{ old('customs_decl_no', $formData['customs_decl_no'] ?? '') }}"
+                                    autocomplete="on" required />
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Truck Details</label>
                                 <input type="text" class="form-control" name="truck_details"
-                                    value="{{ old('truck_details') }}" autocomplete="on" required />
+                                    value="{{ old('truck_details', $formData['truck_details'] ?? '') }}"
+                                    autocomplete="on" required />
                                 <input type="hidden" class="form-control" name="feri_type" value="continuance"
                                     autocomplete="on" required />
                             </div>
@@ -116,14 +145,15 @@
                                 <label class="form-label">Port of Arrival <span
                                         class="fs-6">(Rail/Air/Port)</span></label>
                                 <input type="text" class="form-control" name="arrival_station"
-                                    value="{{ old('arrival_station') }}" autocomplete="on" required />
+                                    value="{{ old('arrival_station', $formData['arrival_station'] ?? '') }}"
+                                    autocomplete="on" required />
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                                                    <label class="form-label">Final Destination</label>
-                                                                    <input type="text" class="form-control" name="final_destination"
-                                                                        value="{{ old('final_destination') }}" autocomplete="on" required />
-                                                                </div> -->
+                                                                                                                                                                                                                                                                <label class="form-label">Final Destination</label>
+                                                                                                                                                                                                                                                                <input type="text" class="form-control" name="final_destination"
+                                                                                                                                                                                                                                                                    value="{{ old('final_destination') }}" autocomplete="on" required />
+                                                                                                                                                                                                                                                            </div> -->
 
 
                         </div>
@@ -134,11 +164,17 @@
 
                             <div class="col-12 col-lg-12 mb-3">
                                 <label class="form-label">Transporter Company</label>
+                                @php
+                                    $selectedTransporterCompany = old(
+                                        'transporter_company',
+                                        $formData['transporter_company'] ?? '',
+                                    );
+                                @endphp
                                 <select class="form-select" name="transporter_company">
                                     <option value="">-- select --</option>
                                     @foreach ($records as $record)
                                         <option value="{{ $record->id }}"
-                                            {{ old('transporter_company', $dbValue->transporter_company ?? '') == $record->id ? 'selected' : '' }}>
+                                            {{ $selectedTransporterCompany == $record->id ? 'selected' : '' }}>
                                             {{ $record->name }}
                                         </option>
                                     @endforeach
@@ -148,85 +184,86 @@
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Quantity</label>
                                 <input type="number" class="form-control" name="quantity"
-                                    value="{{ old('quantity') }}" autocomplete="on" required />
+                                    value="{{ old('quantity', $formData['quantity'] ?? '') }}" autocomplete="on"
+                                    required />
                             </div>
 
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Weights: Tons/kgs</label>
-                                <input type="number" class="form-control" name="weight" value="{{ old('weight') }}"
-                                    autocomplete="on" required />
+                                <input type="number" class="form-control" name="weight"
+                                    value="{{ old('weight', $formData['weight'] ?? '') }}" autocomplete="on" required />
                             </div>
 
                             <div class="col-12 col-lg-4 mb-3">
                                 <label class="form-label">Volume: CBM</label>
                                 <input type="text" class="form-control" name="volume" autocomplete="on"
-                                    value="{{ old('volume') }}" required />
+                                    value="{{ old('volume', $formData['volume'] ?? '') }}" required />
                             </div>
 
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label">Importer Name</label>
                                 <input type="text" class="form-control" name="importer_name"
-                                    value="{{ old('importer_name') }}" autocomplete="on" required />
+                                    value="{{ old('importer_name', $formData['importer_name'] ?? '') }}"
+                                    autocomplete="on" required />
                             </div>
 
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label">Shipping Line/Agent</label>
+                                @php
+                                    $selectedCfAgent = old('cf_agent', $formData['cf_agent'] ?? '');
+                                @endphp
                                 <select class="form-select" name="cf_agent">
-                                    <option value="0" {{ old('cf_agent') == '0' ? 'selected' : '' }}>-- select --
+                                    <option value="0" {{ $selectedCfAgent == '0' ? 'selected' : '' }}>-- select --
                                     </option>
-                                    <option value="AGL" {{ old('cf_agent') == 'AGL' ? 'selected' : '' }}>AGL</option>
-                                    <option value="CARGO CONGO" {{ old('cf_agent') == 'CARGO CONGO' ? 'selected' : '' }}>
+                                    <option value="AGL" {{ $selectedCfAgent == 'AGL' ? 'selected' : '' }}>AGL</option>
+                                    <option value="CARGO CONGO" {{ $selectedCfAgent == 'CARGO CONGO' ? 'selected' : '' }}>
                                         CARGO CONGO</option>
-                                    <option value="CONNEX" {{ old('cf_agent') == 'CONNEX' ? 'selected' : '' }}>CONNEX
+                                    <option value="CONNEX" {{ $selectedCfAgent == 'CONNEX' ? 'selected' : '' }}>CONNEX
                                     </option>
                                     <option value="African Logistics"
-                                        {{ old('cf_agent') == 'African Logistics' ? 'selected' : '' }}>African Logistics
+                                        {{ $selectedCfAgent == 'African Logistics' ? 'selected' : '' }}>African Logistics
                                     </option>
-                                    <option value="Afritac" {{ old('cf_agent') == 'Afritac' ? 'selected' : '' }}>Afritac
+                                    <option value="Afritac" {{ $selectedCfAgent == 'Afritac' ? 'selected' : '' }}>Afritac
                                     </option>
-                                    <option value="Amicongo" {{ old('cf_agent') == 'Amicongo' ? 'selected' : '' }}>
+                                    <option value="Amicongo" {{ $selectedCfAgent == 'Amicongo' ? 'selected' : '' }}>
                                         Amicongo</option>
-                                    <option value="Aristote" {{ old('cf_agent') == 'Aristote' ? 'selected' : '' }}>
+                                    <option value="Aristote" {{ $selectedCfAgent == 'Aristote' ? 'selected' : '' }}>
                                         Aristote</option>
-                                    <option value="Bollore" {{ old('cf_agent') == 'Bollore' ? 'selected' : '' }}>Bollore
+                                    <option value="Bollore" {{ $selectedCfAgent == 'Bollore' ? 'selected' : '' }}>Bollore
                                     </option>
-                                    <option value="Brasimba" {{ old('cf_agent') == 'Brasimba' ? 'selected' : '' }}>
+                                    <option value="Brasimba" {{ $selectedCfAgent == 'Brasimba' ? 'selected' : '' }}>
                                         Brasimba</option>
                                     <option value="Brasimba S.A"
-                                        {{ old('cf_agent') == 'Brasimba S.A' ? 'selected' : '' }}>
-                                        Brasimba S.A</option>
-                                    <option value="COSMOS"
-                                        {{ old('cf_agent') == 'COSMOS' ? 'selected' : '' }}>
-                                        COSMOS</option>
-                                    <option value="OLA" {{ old('cf_agent') == 'OLA' ? 'selected' : '' }}>OLA
+                                        {{ $selectedCfAgent == 'Brasimba S.A' ? 'selected' : '' }}>Brasimba S.A</option>
+                                    <option value="COSMOS" {{ $selectedCfAgent == 'COSMOS' ? 'selected' : '' }}>COSMOS
                                     </option>
-                                    <option value="Chemaf" {{ old('cf_agent') == 'Chemaf' ? 'selected' : '' }}>Chemaf
+                                    <option value="OLA" {{ $selectedCfAgent == 'OLA' ? 'selected' : '' }}>OLA</option>
+                                    <option value="Chemaf" {{ $selectedCfAgent == 'Chemaf' ? 'selected' : '' }}>Chemaf
                                     </option>
                                     <option value="Comexas Afrique"
-                                        {{ old('cf_agent') == 'Comexas Afrique' ? 'selected' : '' }}>Comexas Afrique
+                                        {{ $selectedCfAgent == 'Comexas Afrique' ? 'selected' : '' }}>Comexas Afrique
                                     </option>
-                                    <option value="Comexas" {{ old('cf_agent') == 'Comexas' ? 'selected' : '' }}>Comexas
+                                    <option value="Comexas" {{ $selectedCfAgent == 'Comexas' ? 'selected' : '' }}>Comexas
                                     </option>
-                                    <option value="DCG" {{ old('cf_agent') == 'DCG' ? 'selected' : '' }}>DCG</option>
-                                    <option value="Evele & Co" {{ old('cf_agent') == 'Evele & Co' ? 'selected' : '' }}>
+                                    <option value="DCG" {{ $selectedCfAgent == 'DCG' ? 'selected' : '' }}>DCG</option>
+                                    <option value="Evele & Co" {{ $selectedCfAgent == 'Evele & Co' ? 'selected' : '' }}>
                                         Evele & Co</option>
-                                    <option value="Gecotrans" {{ old('cf_agent') == 'Gecotrans' ? 'selected' : '' }}>
+                                    <option value="Gecotrans" {{ $selectedCfAgent == 'Gecotrans' ? 'selected' : '' }}>
                                         Gecotrans</option>
                                     <option value="Global Logistics"
-                                        {{ old('cf_agent') == 'Global Logistics' ? 'selected' : '' }}>Global Logistics
+                                        {{ $selectedCfAgent == 'Global Logistics' ? 'selected' : '' }}>Global Logistics
                                     </option>
-                                    <option value="Malabar" {{ old('cf_agent') == 'Malabar' ? 'selected' : '' }}>Malabar
+                                    <option value="Malabar" {{ $selectedCfAgent == 'Malabar' ? 'selected' : '' }}>Malabar
                                     </option>
-                                    <option value="Polytra" {{ old('cf_agent') == 'Polytra' ? 'selected' : '' }}>Polytra
+                                    <option value="Polytra" {{ $selectedCfAgent == 'Polytra' ? 'selected' : '' }}>Polytra
                                     </option>
-                                    <option value="Spedag" {{ old('cf_agent') == 'Spedag' ? 'selected' : '' }}>Spedag
+                                    <option value="Spedag" {{ $selectedCfAgent == 'Spedag' ? 'selected' : '' }}>Spedag
                                     </option>
-                                    <option value="Tradecorp" {{ old('cf_agent') == 'Tradecorp' ? 'selected' : '' }}>
+                                    <option value="Tradecorp" {{ $selectedCfAgent == 'Tradecorp' ? 'selected' : '' }}>
                                         Tradecorp</option>
                                     <option value="Trade Service"
-                                        {{ old('cf_agent') == 'Trade Service' ? 'selected' : '' }}>Trade Service
-                                    </option>
+                                        {{ $selectedCfAgent == 'Trade Service' ? 'selected' : '' }}>Trade Service</option>
                                 </select>
                             </div>
 
@@ -240,21 +277,26 @@
                             <div class="col-12 col-lg-12 mb-3">
                                 <label class="form-label">Forwarding Agent</label>
                                 <input type="text" class="form-control" name="exporter_name"
-                                    value="{{ old('exporter_name') }}" autocomplete="on" required />
+                                    value="{{ old('exporter_name', $formData['exporter_name'] ?? '') }}"
+                                    autocomplete="on" required />
                             </div>
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Freight Currency</label>
+                                @php
+                                    $selectedFreightCurrency = old(
+                                        'freight_currency',
+                                        $formData['freight_currency'] ?? '',
+                                    );
+                                @endphp
                                 <select class="form-select" name="freight_currency">
-                                    <option value="USD" {{ old('freight_currency') == 'USD' ? 'selected' : '' }}>USD
+                                    <option value="USD" {{ $selectedFreightCurrency == 'USD' ? 'selected' : '' }}>USD
                                     </option>
-                                    <option value="EUR" {{ old('freight_currency') == 'EUR' ? 'selected' : '' }}>EUR
+                                    <option value="EUR" {{ $selectedFreightCurrency == 'EUR' ? 'selected' : '' }}>EUR
                                     </option>
-                                    <option value="ZAR" {{ old('freight_currency') == 'ZAR' ? 'selected' : '' }}>ZAR
+                                    <option value="ZAR" {{ $selectedFreightCurrency == 'ZAR' ? 'selected' : '' }}>ZAR
                                     </option>
-                                    <option value="EUR" {{ old('freight_currency') == 'EUR' ? 'selected' : '' }}>EUR
-                                    </option>
-                                    <option value="AOA" {{ old('freight_currency') == 'AOA' ? 'selected' : '' }}>AOA
+                                    <option value="AOA" {{ $selectedFreightCurrency == 'AOA' ? 'selected' : '' }}>AOA
                                     </option>
                                 </select>
                             </div>
@@ -262,24 +304,27 @@
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Freight Cost</label>
                                 <input type="text" class="form-control" name="freight_value"
-                                    value="{{ old('freight_value') }}" autocomplete="on" required />
+                                    value="{{ old('freight_value', $formData['freight_value'] ?? '') }}"
+                                    autocomplete="on" required />
                             </div>
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">FOB Value / VALEUR FOB</label>
                                 <input type="text" class="form-control" name="fob_value"
-                                    value="{{ old('fob_value') }}" autocomplete="on" required />
+                                    value="{{ old('fob_value', $formData['fob_value'] ?? '') }}" autocomplete="on"
+                                    required />
                             </div>
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Insurance Value</label>
                                 <input type="text" class="form-control" name="insurance_value"
-                                    value="{{ old('insurance_value') }}" autocomplete="on" required />
+                                    value="{{ old('insurance_value', $formData['insurance_value'] ?? '') }}"
+                                    autocomplete="on" required />
                             </div>
 
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label">Additional Comments</label>
-                                <textarea class="form-control" name="instructions" rows="1" autocomplete="on" required>{{ old('instructions') }}</textarea>
+                                <textarea class="form-control" name="instructions" rows="1" autocomplete="on" required>{{ old('instructions', $formData['instructions'] ?? '') }}</textarea>
                             </div>
 
 
