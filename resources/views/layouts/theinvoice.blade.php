@@ -321,6 +321,7 @@
                 </p>
                 <p class="s5"
                     style="
+                    width: 80%;
               padding-left: 62pt;
               padding-right: 167pt;
               text-indent: 0pt;
@@ -328,6 +329,7 @@
               text-align: left;
             ">
                     {{ !empty($location1) ? Str::title($location1) : 'Not Provided !' }},
+                    <br />
                     {{ !empty($location2) ? Str::title($location2) : 'Not Provided !' }}
                 </p>
             </td>
