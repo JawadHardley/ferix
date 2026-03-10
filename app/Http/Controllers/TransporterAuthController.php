@@ -1705,7 +1705,8 @@ class TransporterAuthController extends Controller
 
     public function updateTemplate(Request $request, $id)
     {
-        if(Auth::user()->id !== FormTemplate::findOrFail($id)->user_id){
+        $holder = FormTemplate::findOrFail($id)->user_id;
+        if(Auth::user()->id != $holder){
             abort(403, 'Unauthorized action.');
         }
 
