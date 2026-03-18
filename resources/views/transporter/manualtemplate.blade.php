@@ -310,6 +310,10 @@
                                         </option>
                                         <option value="DCG" {{ old('cf_agent') == 'DCG' ? 'selected' : '' }}>DCG
                                         </option>
+                                        <option value="DOUANE EXPRESS CUSTOMS"
+                                            {{ old('cf_agent') == 'DOUANE EXPRESS CUSTOMS' ? 'selected' : '' }}>DOUANE
+                                            EXPRESS CUSTOMS
+                                        </option>
                                         <option value="Evele & Co"
                                             {{ old('cf_agent') == 'Evele & Co' ? 'selected' : '' }}>
                                             Evele & Co</option>
