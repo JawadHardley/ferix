@@ -150,10 +150,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-4 mb-3">
-                                                                                                                                                                                                                                                                <label class="form-label">Final Destination</label>
-                                                                                                                                                                                                                                                                <input type="text" class="form-control" name="final_destination"
-                                                                                                                                                                                                                                                                    value="{{ old('final_destination') }}" autocomplete="on" required />
-                                                                                                                                                                                                                                                            </div> -->
+                                                                                                                                                                                                                                                                    <label class="form-label">Final Destination</label>
+                                                                                                                                                                                                                                                                    <input type="text" class="form-control" name="final_destination"
+                                                                                                                                                                                                                                                                        value="{{ old('final_destination') }}" autocomplete="on" required />
+                                                                                                                                                                                                                                                                </div> -->
 
 
                         </div>
@@ -247,6 +247,9 @@
                                     <option value="Comexas" {{ $selectedCfAgent == 'Comexas' ? 'selected' : '' }}>Comexas
                                     </option>
                                     <option value="DCG" {{ $selectedCfAgent == 'DCG' ? 'selected' : '' }}>DCG</option>
+                                    <option value="DOUANE EXPRESS CUSTOMS"
+                                        {{ $selectedCfAgent == 'DOUANE EXPRESS CUSTOMS' ? 'selected' : '' }}>DOUANE EXPRESS
+                                        CUSTOMS</option>
                                     <option value="Evele & Co" {{ $selectedCfAgent == 'Evele & Co' ? 'selected' : '' }}>
                                         Evele & Co</option>
                                     <option value="Gecotrans" {{ $selectedCfAgent == 'Gecotrans' ? 'selected' : '' }}>
