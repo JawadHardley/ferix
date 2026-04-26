@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id'); // Foreign key for users table
-            $table->unsignedBigInteger('application_id'); // Foreign key for feriApp table
+            $table->unsignedBigInteger('application_id'); // Foreign key for feriapp table
             $table->boolean('read')->default(0); // 0 = unread, 1 = read
             $table->text('message'); // Holds sanitized text
             $table->boolean('del')->default(0); // 0 = not deleted, 1 = deleted
@@ -22,7 +22,7 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('application_id')->references('id')->on('feriApp')->onDelete('cascade');
+            $table->foreign('application_id')->references('id')->on('feriapp')->onDelete('cascade');
         });
     }
 
