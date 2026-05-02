@@ -86,6 +86,9 @@ class ApplicationController extends Controller
             }
         }
 
+        // Resolve company name to ID
+        $validatedData['transporter_company'] = $this->resolveCompanyId($validatedData['transporter_company']);
+
         $validatedData['feri_type'] = 'continuance';
         $validatedData['user_id'] = Auth::id();
         $validatedData['status'] = 1;
@@ -158,6 +161,9 @@ class ApplicationController extends Controller
         $validatedData['user_id'] = Auth::id();
         $validatedData['status'] = 1;
 
+        // Resolve company name to ID
+        $validatedData['transporter_company'] = $this->resolveCompanyId($validatedData['transporter_company']);
+
         // Handle file uploads
         $documentUploads = $this->handleFileUploads($request);
         $validatedData['documents_upload'] = json_encode($documentUploads);
@@ -186,6 +192,26 @@ class ApplicationController extends Controller
         }
 
         return $documentUploads;
+    }
+
+    private function resolveCompanyId($companyInput)
+    {
+        // If it's already numeric, return it
+        if (is_numeric($companyInput)) {
+            return (int) $companyInput;
+        }
+
+        // If it's a string, try to find the company by name
+        $company = Company::where('name', $companyInput)->first();
+        if ($company) {
+            return $company->id;
+        }
+
+        // If not found, throw validation error
+        throw new \Illuminate\Validation\ValidationException(
+            \Illuminate\Support\Facades\Validator::make([], [])->errors(),
+            response()->json(['error' => "Company '$companyInput' not found"], 422)
+        );
     }
 
     private function notifyVendors($application, $transporter)

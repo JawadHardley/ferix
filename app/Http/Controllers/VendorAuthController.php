@@ -238,7 +238,7 @@ class VendorAuthController extends Controller
             $companyId = $record->transporter_company;
             if ($companyId !== null && $companyId !== '') {
                 $company = Company::find((int) $companyId);
-                $companyName = $company->name;
+                $companyName = $company ? $company->name : 'Unknown Company';
             } else {
                 $companyName = 'No Company Assigned';
             }
@@ -287,7 +287,7 @@ class VendorAuthController extends Controller
             $companyId = $record->transporter_company;
             if ($companyId !== null && $companyId !== '') {
                 $company = Company::find((int) $companyId);
-                $companyName = $company->name;
+                $companyName = $company ? $company->name : 'Unknown Company';
             } else {
                 $companyName = 'No Company Assigned';
             }
@@ -336,7 +336,7 @@ class VendorAuthController extends Controller
             $companyId = $record->transporter_company;
             if ($companyId !== null && $companyId !== '') {
                 $company = Company::find((int) $companyId);
-                $companyName = $company->name;
+                $companyName = $company ? $company->name : 'Unknown Company';
             } else {
                 $companyName = 'No Company Assigned';
             }
