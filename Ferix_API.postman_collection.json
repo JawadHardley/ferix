@@ -1,0 +1,434 @@
+{
+  "info": {
+    "_postman_id": "ferix-api-collection",
+    "name": "Ferix API - Regional & Continuance Applications",
+    "description": "Complete REST API collection for Ferix application management with Sanctum authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('api_token', jsonData.token);",
+                  "    pm.environment.set('token_created_at', new Date().getTime());",
+                  "    console.log('Token saved to environment');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"olomidereck@hotmail.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Transporter\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"company_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "List All Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Regional Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feri_type\": \"regional\",\n  \"transport_mode\": \"Road\",\n  \"transporter_company\": \"Alistair James Company Ltd\",\n  \"entry_border_drc\": \"Kasumbalesa\",\n  \"truck_details\": \"Volvo FH16 Registration: KEN-4573-A, Capacity: 25 tons\",\n  \"arrival_station\": \"Kasumbalesa Border Post\",\n  \"arrival_date\": \"2026-05-15\",\n  \"final_destination\": \"Kinshasa, Democratic Republic of Congo\",\n  \"importer_name\": \"Sulphur Imports DRC Ltd\",\n  \"importer_phone\": \"+243912345678\",\n  \"importer_email\": \"purchasing@sulphur-imports.cd\",\n  \"importer_address\": \"123 Boulevard de l'Indépendance, Kinshasa, DRC\",\n  \"exporter_name\": \"Global Minerals Trading Corp\",\n  \"exporter_phone\": \"+1-888-555-0100\",\n  \"exporter_email\": \"exports@globalmineral.com\",\n  \"exporter_address\": \"456 Trade Lane, New York, USA\",\n  \"cf_agent\": \"Congo Freight Solutions\",\n  \"cf_agent_contact\": \"+243812345678\",\n  \"cargo_description\": \"Elemental Sulphur (99.9% purity) for industrial applications\",\n  \"hs_code\": \"250100\",\n  \"package_type\": \"Bulk (Bagged in 50kg bags)\",\n  \"quantity\": 500,\n  \"weight\": 25000,\n  \"volume\": \"125 cubic meters\",\n  \"company_ref\": \"ORD-2026-SULPH-001\",\n  \"cargo_origin\": \"Kuwait\",\n  \"customs_decl_no\": \"CUST-2026-045821\",\n  \"manifest_no\": \"KEN-SHIP-2026-18374\",\n  \"occ_bivac\": \"OCC-2026-SULPH\",\n  \"instructions\": \"Handle with care. Ensure proper ventilation. Do not expose to moisture.\",\n  \"fob_currency\": \"USD\",\n  \"fob_value\": 15000,\n  \"po\": \"PO-2026-SULPH-15K\",\n  \"incoterm\": \"CIF\",\n  \"freight_currency\": \"USD\",\n  \"freight_value\": 2500,\n  \"insurance_currency\": \"USD\",\n  \"insurance_value\": 850,\n  \"additional_fees_currency\": \"USD\",\n  \"additional_fees_value\": 300,\n  \"importer_details\": \"Established importing company with 10+ years experience\",\n  \"fix_number\": \"FIX-SULPH-2026-001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/applications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Continuance Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feri_type\": \"continuance\",\n  \"company_ref\": \"ORD-2026-SULPH-001-CONT\",\n  \"po\": \"PO-2026-SULPH-15K-FOLLOW\",\n  \"validate_feri_cert\": \"CERT-2026-SULPH-001\",\n  \"entry_border_drc\": \"Kasumbalesa\",\n  \"arrival_date\": \"2026-06-20\",\n  \"final_destination\": \"Lubumbashi, Democratic Republic of Congo\",\n  \"customs_decl_no\": \"CUST-2026-045822\",\n  \"arrival_station\": \"Kasumbalesa Border Post\",\n  \"truck_details\": \"Scania R440 Registration: KEN-2847-B, Capacity: 20 tons\",\n  \"transporter_company\": \"Alistair James Company Ltd\",\n  \"weight\": 18000,\n  \"quantity\": 360,\n  \"volume\": \"90 cubic meters\",\n  \"importer_name\": \"Sulphur Imports DRC Ltd\",\n  \"cf_agent\": \"Congo Freight Solutions\",\n  \"exporter_name\": \"Global Minerals Trading Corp\",\n  \"freight_currency\": \"USD\",\n  \"freight_value\": 1800,\n  \"fob_value\": 10800,\n  \"insurance_value\": 600,\n  \"instructions\": \"Follow-up shipment for previous CERT-2026-SULPH-001. Same handling requirements.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/applications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Application Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Application",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"final_destination\": \"Updated Destination\",\n  \"arrival_date\": \"2026-05-20\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/applications/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Application",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Application Operations",
+      "item": [
+        {
+          "name": "Get Application Age",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications/:id/age",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                ":id",
+                "age"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download Certificate",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications/:id/certificate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                ":id",
+                "certificate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download Invoice",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications/:id/invoice",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                ":id",
+                "invoice"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-refresh token if older than 24 hours",
+          "var tokenAge = new Date().getTime() - parseInt(pm.environment.get('token_created_at') || 0);",
+          "var tokenExpiry = 24 * 60 * 60 * 1000; // 24 hours in milliseconds",
+          "",
+          "if (tokenAge > tokenExpiry) {",
+          "    console.log('Token expired. Refreshing...');",
+          "    pm.sendRequest({",
+          "        url: pm.environment.get('base_url') + '/api/login',",
+          "        method: 'POST',",
+          "        header: {'Content-Type': 'application/json'},",
+          "        body: {",
+          "            mode: 'raw',",
+          "            raw: JSON.stringify({",
+          "                email: 'olomidereck@hotmail.com',",
+          "                password: '123456'",
+          "            })",
+          "        }",
+          "    }, function(err, response) {",
+          "        if (!err) {",
+          "            var jsonData = response.json();",
+          "            pm.environment.set('api_token', jsonData.token);",
+          "            pm.environment.set('token_created_at', new Date().getTime());",
+          "            console.log('Token refreshed successfully');",
+          "        }",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "api_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_created_at",
+      "value": "0",
+      "type": "string"
+    }
+  ]
+}

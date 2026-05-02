@@ -18,6 +18,11 @@ Route::get('/', function () {
     return view('landingpage');
 })->name('homesweethome');
 
+// Global login route - redirects to transporter login
+Route::get('/login', function () {
+    return redirect()->route('transporter.login');
+})->name('login');
+
 // ajax company search
 Route::get('/companies/search', [VendorAuthController::class, 'company_search'])
     ->name('companies.company_search');
