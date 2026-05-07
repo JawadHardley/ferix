@@ -2,6 +2,26 @@
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
+{{-- @php
+    $feriQty = (float) ($invoice->feri_quantity ?? 0);
+    $feriUnits = (float) ($invoice->feri_units ?? 0);
+    $codQty = (float) ($invoice->cod_quantities ?? 0);
+    $codUnits = (float) ($invoice->cod_units ?? 0);
+    $euroRate = (float) ($invoice->euro_rate ?? 1);
+    $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
+
+    // Calculating the amounts
+    $feriAmount = $feriQty * $feriUnits;
+    $codAmount = $codQty * $codUnits;
+    $upTotal = $feriAmount + $codAmount;
+    $transporterAmount = $transporterQty * 0.018;
+    // if ($invoice->customer_trip_no == '11096049')
+    $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
+    $grandTotal_r = number_format($grandTotal, 2, '.', ',');
+
+    $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - Y');
+@endphp --}}
+
 @php
     $feriQty = (float) ($invoice->feri_quantity ?? 0);
     $feriUnits = (float) ($invoice->feri_units ?? 0);
@@ -15,7 +35,32 @@
     $codAmount = $codQty * $codUnits;
     $upTotal = $feriAmount + $codAmount;
     $transporterAmount = $transporterQty * 0.018;
-    $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
+
+    // Load discarded trips JSON
+    $discardedTrips = [];
+
+    $jsonPath = resource_path('views/layouts/hold.html');
+
+    if (file_exists($jsonPath)) {
+        $discardedTrips = json_decode(file_get_contents($jsonPath), true) ?? [];
+    }
+
+    // Extract trip number from customer_trip_no
+    preg_match('/^\d+/', $invoice->customer_trip_no, $matches);
+
+    $tripNumber = $matches[0] ?? null;
+
+    // Skip -5 deduction if trip is in discarded list
+    $discount = in_array($tripNumber, $discardedTrips) ? 0 : 5;
+
+    if ($discount > 0) {
+        $lawfulDeduction = 0;
+    } else {
+        $lawfulDeduction = 5;
+    }
+
+    $grandTotal = $transporterAmount + $upTotal * $euroRate - $discount;
+
     $grandTotal_r = number_format($grandTotal, 2, '.', ',');
 
     $formattedDate = \Carbon\Carbon::parse($invoice->invoice_date)->format('d - F - Y');
@@ -26,7 +71,7 @@
     <title>
         PRES-{{ date('Y') }}-P{{ $invoice->id }}
     </title>
-    <meta name="author" content="Jordan Chaki" />
+    <meta name="author" content="PRESIS FINANCE" />
     <meta name="keywords" content="DAGlQ12i2k4,BAE3pwnYqAY,0" />
     <style type="text/css">
         * {
@@ -821,7 +866,11 @@
         text-indent: 0pt;
         text-align: right;
       ">
-            DISCOUNT APPLIED <span class="">: $5</span>
+            @if ($lawfulDeduction == 0)
+                DISCOUNT APPLIED <span class="">: $5</span>
+            @else
+                {{-- nothing --}}
+            @endif
         </p>
         <p class="s"
             style="
@@ -925,7 +974,7 @@
 
 
     <p style="padding-top: 3pt; text-indent: 0pt; text-align: left"><br /></p>
-    <h3 style="text-indent: 0pt; text-align: right; padding-right: 80px;">NOTE</h3>
+    <h3 style="text-indent: 0pt; text-align: right; padding-right: 80px;"></h3>
     <p
         style="
         padding-top: 4pt;
@@ -933,9 +982,7 @@
         text-indent: 0pt;
         text-align: left;
       ">
-        <a href="http://www.ex.com/" class="a" target="_blank">Exchange rates are based on the daily ex rates.
-            For
-            reference visit </a><a href="http://www.ex.com/" target="_blank">www.ex.com</a>
+        {{-- nothing --}}
     </p>
     <h2
         style="
