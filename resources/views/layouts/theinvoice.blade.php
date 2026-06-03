@@ -3,7 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 {{-- @php
-    $feriQty = (float) ($invoice->feri_quantity ?? 0);
+    // $feriQty = (float) ($invoice->feri_quantity ?? 0);
+    // $feriQty = round((float) ($invoice->feri_quantity ?? 0), 2);
+    $feriQty = max($feriapp->weight / 1000, $invoice->feri_quantity);
     $feriUnits = (float) ($invoice->feri_units ?? 0);
     $codQty = (float) ($invoice->cod_quantities ?? 0);
     $codUnits = (float) ($invoice->cod_units ?? 0);
@@ -24,6 +26,8 @@
 
 @php
     $feriQty = (float) ($invoice->feri_quantity ?? 0);
+    // $feriQty = max($feriapp->weight / 1000, $invoice->feri_quantity);
+    $feriUnits = (float) ($invoice->feri_units ?? 0);
     $feriUnits = (float) ($invoice->feri_units ?? 0);
     $codQty = (float) ($invoice->cod_quantities ?? 0);
     $codUnits = (float) ($invoice->cod_units ?? 0);
@@ -869,7 +873,6 @@
             @if ($lawfulDeduction == 0)
                 DISCOUNT APPLIED <span class="">: $5</span>
             @else
-                {{-- nothing --}}
             @endif
         </p>
         <p class="s"
@@ -892,7 +895,7 @@
                 @if ($invoice->invoice_date > '2025-09-09')
                     {{ number_format($grandTotal * $invoice->tz_rate, 2, '.', ',') }}
                 @else
-                    {{ number_format($grandTotal_r * $invoice->tz_rate, 2, '.', ',') }}
+                    {{ number_format($grandTotal * $invoice->tz_rate, 2, '.', ',') }}
                 @endif
             </span>
         </p>

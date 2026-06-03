@@ -1,3 +1,4 @@
+{{-- resources/views/components/calculator.blade.php --}}
 <div class="container general mb-3 card">
     <div class="row p-5">
 
@@ -32,16 +33,12 @@
         </div>
         <div class="col-12 col-md-8 mb-3">
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="ttype" id="radioDefault1">
-                <label class="form-check-label" for="radioDefault1">
-                    Road
-                </label>
+                <input class="form-check-input" type="radio" name="ttype" id="radioRoad" value="road">
+                <label class="form-check-label" for="radioRoad">Road</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="ttype" id="radioDefault1">
-                <label class="form-check-label" for="radioDefault1">
-                    Rail
-                </label>
+                <input class="form-check-input" type="radio" name="ttype" id="radioRail" value="rail">
+                <label class="form-check-label" for="radioRail">Rail</label>
             </div>
         </div>
         <div class="col-12 col-md-4 mb-3">
@@ -56,7 +53,7 @@
     </div>
 </div>
 
-<div class="container freight mb-3  card fade-section">
+<div class="container freight mb-3 card fade-section">
     <div class="row p-5">
         <h1 class="mb-5">Freight Details</h1>
         <div class="col-12 col-md-4 mb-3">
@@ -64,24 +61,21 @@
         </div>
         <div class="col-12 col-md-8 mb-3">
             <div class="mb-3">
-                <!-- <label for="exampleFormControlInput1" class="form-label">Email address</label> -->
                 <input type="number" class="form-control" name="gross" placeholder="Eg 1000">
             </div>
         </div>
         <div class="col-12 col-md-4 mb-3">
-            Volume (m3):
+            Net Weight (Tons): {{-- label changed --}}
         </div>
         <div class="col-12 col-md-8 mb-3">
             <div class="mb-3">
-                <!-- <label for="exampleFormControlInput1" class="form-label">Email address</label> -->
-                <input type="number" class="form-control" name="volume" placeholder="Eg 1000">
+                <input type="number" class="form-control" name="volume" placeholder="Eg 35.460">
             </div>
         </div>
         <div class="col-12 col-md-4 mb-3">
             Freight cost:
         </div>
         <div class="col-12 col-md-4 mb-3">
-            <!-- <label for="exampleFormControlInput1" class="form-label">Email address</label> -->
             <input type="number" class="form-control" name="ucost" placeholder="Eg 250">
         </div>
         <div class="col-12 col-md-4 mb-3">
@@ -142,175 +136,164 @@
                     <td class="ans2">24.00 USD</td>
                 </tr>
         </table>
-
     </div>
 </div>
 
 <script>
-window.tzRate = {{$eur}};
+    window.tzRate = {{ $eur }};
 </script>
 
 <script>
-window.tshRate = {{$tz}};
+    window.tshRate = {{ $tz }};
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const generalInputs = document.querySelectorAll('.general input, .general select');
-    const freightDiv = document.querySelector('.freight');
-    const freightInputs = document.querySelectorAll('.freight input, .freight select');
-    const answersDiv = document.querySelector('.answers');
-    const calcBtn = document.querySelector('.call');
-    const resetBtn = document.querySelector('.reseter');
-    const regionalRow = document.querySelector('.regional');
+    document.addEventListener('DOMContentLoaded', function() {
+        const generalInputs = document.querySelectorAll('.general input, .general select');
+        const freightDiv = document.querySelector('.freight');
+        const freightInputs = document.querySelectorAll('.freight input, .freight select');
+        const answersDiv = document.querySelector('.answers');
+        const calcBtn = document.querySelector('.call');
+        const resetBtn = document.querySelector('.reseter');
+        const regionalRow = document.querySelector('.regional');
 
-    // Helper to check if all inputs in a NodeList are filled
-    function allFilled(inputs) {
-        return Array.from(inputs).every(input => {
-            if (input.type === 'radio') {
-                const group = document.getElementsByName(input.name);
-                return Array.from(group).some(r => r.checked);
+        function allFilled(inputs) {
+            return Array.from(inputs).every(input => {
+                if (input.type === 'radio') {
+                    const group = document.getElementsByName(input.name);
+                    return Array.from(group).some(r => r.checked);
+                }
+                return input.value && input.value.trim() !== '';
+            });
+        }
+
+        function fadeShow(el) {
+            el.classList.add('show');
+        }
+
+        function fadeHide(el) {
+            el.classList.remove('show');
+        }
+
+        fadeHide(freightDiv);
+        fadeHide(answersDiv);
+        if (regionalRow) regionalRow.classList.add('d-none');
+
+        function checkGeneral() {
+            if (allFilled(generalInputs)) {
+                fadeShow(freightDiv);
+            } else {
+                fadeHide(freightDiv);
+                fadeHide(answersDiv);
+                if (regionalRow) regionalRow.classList.add('d-none');
             }
-            return input.value && input.value.trim() !== '';
-        });
-    }
-
-    // Fade helpers
-    function fadeShow(el) {
-        el.classList.add('show');
-    }
-
-    function fadeHide(el) {
-        el.classList.remove('show');
-    }
-
-    // Hide freight, answers, and regional row initially
-    fadeHide(freightDiv);
-    fadeHide(answersDiv);
-    if (regionalRow) regionalRow.classList.add('d-none');
-
-    // Show/hide freight based on general inputs
-    function checkGeneral() {
-        if (allFilled(generalInputs)) {
-            fadeShow(freightDiv);
-        } else {
-            fadeHide(freightDiv);
-            fadeHide(answersDiv);
-            if (regionalRow) regionalRow.classList.add('d-none');
         }
-    }
 
-    // Enable/disable calculate button based on all inputs
-    function checkAll() {
-        if (allFilled(generalInputs) && allFilled(freightInputs)) {
-            calcBtn.disabled = false;
-        } else {
-            calcBtn.disabled = true;
-            fadeHide(answersDiv);
-            if (regionalRow) regionalRow.classList.add('d-none');
+        function checkAll() {
+            if (allFilled(generalInputs) && allFilled(freightInputs)) {
+                calcBtn.disabled = false;
+            } else {
+                calcBtn.disabled = true;
+                fadeHide(answersDiv);
+                if (regionalRow) regionalRow.classList.add('d-none');
+            }
         }
-    }
 
-    // Attach listeners to general and freight inputs
-    generalInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            checkGeneral();
-            checkAll();
-        });
-        if (input.type === 'radio') {
-            input.addEventListener('change', function() {
+        generalInputs.forEach(input => {
+            input.addEventListener('input', function() {
                 checkGeneral();
                 checkAll();
             });
-        }
+            if (input.type === 'radio') {
+                input.addEventListener('change', function() {
+                    checkGeneral();
+                    checkAll();
+                });
+            }
+        });
+        freightInputs.forEach(input => {
+            input.addEventListener('input', checkAll);
+        });
+
+        calcBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const typeSelect = document.querySelector('.general select[name="type"]');
+            const typeValue = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text
+                .toLowerCase() : '';
+            const ucostInput = document.querySelector('.freight input[name="ucost"]');
+            const grossInput = document.querySelector('.freight input[name="gross"]');
+            const volumeInput = document.querySelector('.freight input[name="volume"]');
+            const currencySelect = document.querySelector('.general select[name="currency"]');
+            const currencyValue = currencySelect ? currencySelect.value : '1';
+            const ucost = parseFloat(ucostInput ? ucostInput.value : '');
+            const gross = parseFloat(grossInput ? grossInput.value : '');
+            const volume = parseFloat(volumeInput ? volumeInput.value : '');
+
+            if (regionalRow) regionalRow.classList.add('d-none');
+
+            let finalAns2 = 0;
+            let finalCurrency = 'USD';
+
+            if (typeValue === 'continuance' && !isNaN(ucost)) {
+                document.querySelector('.fcost').textContent = ucost.toFixed(2);
+                const ans1 = +(ucost * 0.018).toFixed(2);
+                document.querySelector('.ans1').textContent = ans1.toFixed(2);
+                finalAns2 = ans1 + 20;
+
+                document.querySelector('.disc1').textContent = 'ADMIN-COD-Continuance';
+                document.querySelector('.disc1-c').textContent = 'USD';
+                document.querySelector('.disc1-d').textContent = '20.00';
+                document.querySelector('.codunit').textContent = '20.00';
+                document.querySelector('.callunit').textContent = '1.00';
+                document.querySelector('.calltotal').textContent = '20.00';
+
+                fadeShow(answersDiv);
+            } else if (typeValue === 'regional' && !isNaN(gross) && !isNaN(volume) && !isNaN(ucost)) {
+                if (regionalRow) regionalRow.classList.remove('d-none');
+
+                // ---------- CHANGED LINES ----------
+                // Net weight is directly the volume input (already in tons)
+                const x = volume;
+                // -----------------------------------
+
+                const regionalResult = ((x * 4) + 40) * window.tzRate;
+                const ans1 = +(ucost * 0.018).toFixed(2);
+                document.querySelector('.fcost').textContent = ucost.toFixed(2);
+                document.querySelector('.ans1').textContent = ans1.toFixed(2);
+                finalAns2 = regionalResult + ans1;
+
+                document.querySelector('.disc1').textContent = 'Feri/COD Admin Fee';
+                document.querySelector('.disc1-c').textContent = 'EUR';
+                document.querySelector('.disc1-d').textContent = '40.00';
+                document.querySelector('.codunit').textContent = '40.00';
+                document.querySelector('.callunit').textContent = x.toFixed(2);
+                document.querySelector('.calltotal').textContent = (x * 4).toFixed(2);
+
+                fadeShow(answersDiv);
+            } else {
+                fadeHide(answersDiv);
+                if (regionalRow) regionalRow.classList.add('d-none');
+            }
+
+            if (!isNaN(finalAns2) && finalAns2 > 0) {
+                if (currencyValue === '2') {
+                    finalAns2 = finalAns2 / window.tzRate;
+                    finalCurrency = 'EUR';
+                } else if (currencyValue === '3') {
+                    finalAns2 = finalAns2 * window.tshRate;
+                    finalCurrency = 'TZS';
+                }
+                document.querySelector('.ans2').textContent =
+                    finalAns2.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }) + ' ' + finalCurrency;
+            }
+        });
+
+        resetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.reload();
+        });
     });
-    freightInputs.forEach(input => {
-        input.addEventListener('input', checkAll);
-    });
-
-    // Calculate button logic
-    calcBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    const typeSelect = document.querySelector('.general select[name="type"]');
-    const typeValue = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text.toLowerCase() : '';
-    const ucostInput = document.querySelector('.freight input[name="ucost"]');
-    const grossInput = document.querySelector('.freight input[name="gross"]');
-    const volumeInput = document.querySelector('.freight input[name="volume"]');
-    const currencySelect = document.querySelector('.general select[name="currency"]');
-    const currencyValue = currencySelect ? currencySelect.value : '1';
-    const ucost = parseFloat(ucostInput ? ucostInput.value : '');
-    const gross = parseFloat(grossInput ? grossInput.value : '');
-    const volume = parseFloat(volumeInput ? volumeInput.value : '');
-
-    // Always hide regional row first
-    if (regionalRow) regionalRow.classList.add('d-none');
-
-    let finalAns2 = 0;
-    let finalCurrency = 'USD';
-
-    if (typeValue === 'continuance' && !isNaN(ucost)) {
-        document.querySelector('.fcost').textContent = ucost.toFixed(2);
-        const ans1 = +(ucost * 0.018).toFixed(2);
-        document.querySelector('.ans1').textContent = ans1.toFixed(2);
-        finalAns2 = ans1 + 20;
-
-        // Reset the fields to their "continuance" values
-        document.querySelector('.disc1').textContent = 'ADMIN-COD-Continuance';
-        document.querySelector('.disc1-c').textContent = 'USD';
-        document.querySelector('.disc1-d').textContent = '20.00';
-        document.querySelector('.codunit').textContent = '20.00';
-        document.querySelector('.callunit').textContent = '1.00';
-        document.querySelector('.calltotal').textContent = '20.00';
-
-        fadeShow(answersDiv);
-    } else if (typeValue === 'regional' && !isNaN(gross) && !isNaN(volume) && !isNaN(ucost)) {
-        // Show the regional row
-        if (regionalRow) regionalRow.classList.remove('d-none');
-        // Step 1: m = gross / 1000
-        const m = gross / 1000;
-        // Step 2: use max(volume, m)
-        const x = (volume >= m) ? volume : m;
-        // Step 3: (x * 4 + 40) * 1.15
-        const regionalResult = ((x * 4) + 40) * window.tzRate;
-        // Step 4: ucost * 1.18%
-        const ans1 = +(ucost * 0.018).toFixed(2);
-        document.querySelector('.fcost').textContent = ucost.toFixed(2);
-        document.querySelector('.ans1').textContent = ans1.toFixed(2);
-        // Step 5: add regionalResult + ans1
-        finalAns2 = regionalResult + ans1;
-
-        // Set your requested fields for regional
-        document.querySelector('.disc1').textContent = 'Feri/COD Admin Fee';
-        document.querySelector('.disc1-c').textContent = 'EUR';
-        document.querySelector('.disc1-d').textContent = '40.00';
-        document.querySelector('.codunit').textContent = '40.00';
-        document.querySelector('.callunit').textContent = x.toFixed(2);
-        document.querySelector('.calltotal').textContent = (x * 4).toFixed(2);
-
-        fadeShow(answersDiv);
-    } else {
-        fadeHide(answersDiv);
-        if (regionalRow) regionalRow.classList.add('d-none');
-    }
-
-    // Currency conversion for ans2
-    if (!isNaN(finalAns2) && finalAns2 > 0) {
-        if (currencyValue === '2') { // EUR
-            finalAns2 = finalAns2 / window.tzRate;
-            finalCurrency = 'EUR';
-        } else if (currencyValue === '3') { // TZS
-            finalAns2 = finalAns2 * window.tshRate;
-            finalCurrency = 'TZS';
-        }
-        document.querySelector('.ans2').textContent = finalAns2.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ' + finalCurrency;
-    }
-
-});
-
-    // Reset button logic
-    resetBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.location.reload();
-    });
-});
 </script>
