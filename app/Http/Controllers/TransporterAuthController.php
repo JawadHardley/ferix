@@ -101,7 +101,13 @@ class TransporterAuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string'],
+            'name' => [
+                'required',
+                'string',
+                'max:200',
+                'regex:/^[a-zA-Z0-9\s\-\.]+$/', // only allow letters, numbers, spaces, hyphens, dots
+                'not_regex:/https?:\/\//i', // block URLs
+            ],
             'company' => ['required', 'integer', 'exists:companies,id'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:6'],
@@ -118,7 +124,7 @@ class TransporterAuthController extends Controller
 
         // Send email verification notification
         event(new Registered($user));
-        Notification::route('mail', $user->email)->notify(new CustomVerifyEmail());
+        // Notification::route('mail', $user->email)->notify(new CustomVerifyEmail());
 
         // Auth::login($user);
 
@@ -229,18 +235,17 @@ class TransporterAuthController extends Controller
         if (!Auth::user()->email_verified_at) {
             return view('auth.verify-email');
         }
-        
+
         $template = null;
-        $type ='';
+        $type = '';
         $formData = [];
 
         if ($request->filled('template')) {
-
             $template = FormTemplate::where('company_id', Auth::user()->company)
                 ->where('id', $request->template)
                 ->first();
 
-                // dd($template->type);
+            // dd($template->type);
 
             if (!$template) {
                 abort(404);
@@ -253,7 +258,7 @@ class TransporterAuthController extends Controller
         // Fetch all records from the Company table
         // $records = Company::where('type', 'transporter')->get();
         $records = Company::where('type', 'transporter')->orderBy('name', 'asc')->get();
-        
+
         if ($type == 'regional') {
             // Pass the records to the view
             return view('transporter.applyferi', compact('records', 'template', 'formData'));
@@ -264,7 +269,7 @@ class TransporterAuthController extends Controller
         }
     }
 
-        // Show feri application form
+    // Show feri application form
     public function manualtemplate()
     {
         //if user has not verified email
@@ -280,7 +285,7 @@ class TransporterAuthController extends Controller
         return view('transporter.manualtemplate', compact('records'));
     }
 
-     // Show feri application form
+    // Show feri application form
     public function listtemplate()
     {
         //if user has not verified email
@@ -290,7 +295,10 @@ class TransporterAuthController extends Controller
 
         // Fetch all records from the Company table
         // $records = Company::where('type', 'transporter')->get();
-        $records = FormTemplate::with('user')->where('company_id', Auth::user()->company)->orderBy('created_at', 'asc')->get();
+        $records = FormTemplate::with('user')
+            ->where('company_id', Auth::user()->company)
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         // Pass the records to the view
         return view('transporter.listtemplate', compact('records'));
@@ -422,14 +430,13 @@ class TransporterAuthController extends Controller
         // Add user_id and status
         $validatedData['user_id'] = Auth::id();
         $validatedData['status'] = 1;
-        
 
         // Handle file uploads for all types
         $documentUploads = [];
         foreach ($fileFields as $fileField) {
             if ($request->hasFile($fileField)) {
                 $file = $request->file($fileField);
-                
+
                 $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('feri_documents', $filename, 'private');
                 $documentUploads[$fileField] = $path;
@@ -437,11 +444,10 @@ class TransporterAuthController extends Controller
         }
 
         $validatedData['documents_upload'] = json_encode($documentUploads);
-                // dd($validatedData['documents_upload']);
+        // dd($validatedData['documents_upload']);
 
         // Remove file fields so they are not inserted as columns
         unset($validatedData['invoice'], $validatedData['manifest'], $validatedData['packing_list'], $validatedData['customs']);
-
 
         try {
             // // ----- Company selection / creation logic -----
@@ -475,11 +481,10 @@ class TransporterAuthController extends Controller
                 Mail::to($mainVendor->email)->cc($ccEmails)->queue(new NewAppMail($r, $mainVendor, $transporter));
             }
 
-            return redirect('transporter/applications')
-                ->with([
-                    'status' => 'success',
-                    'message' => 'Feri application sent successfully!',
-                ]);
+            return redirect('transporter/applications')->with([
+                'status' => 'success',
+                'message' => 'Feri application sent successfully!',
+            ]);
         } catch (\Exception $e) {
             return redirect()
                 ->back()
@@ -1056,7 +1061,10 @@ class TransporterAuthController extends Controller
     public function showdashboard()
     {
         $feris = feriApp::where('user_id', Auth::id())->get();
-        $records = FormTemplate::with('user')->where('company_id', Auth::user()->company)->orderBy('created_at', 'asc')->get();
+        $records = FormTemplate::with('user')
+            ->where('company_id', Auth::user()->company)
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         // If no data found, set $feris to 0
         if ($feris->isEmpty()) {
@@ -1436,7 +1444,7 @@ class TransporterAuthController extends Controller
             'XXX XXX', // truck_details
             30, // quantity
             30000, // weight
-            30.000, // volume
+            30.0, // volume
             $finalDestinations[0], // final_destination
             'XXXX', // validate_feri_cert
             'Lubumbashi', // arrival_station
@@ -1558,7 +1566,6 @@ class TransporterAuthController extends Controller
         return back()->with('success', 'Application submitted successfully.');
     }
 
-
     public function saveTemplate(Request $request)
     {
         $type = $request->type;
@@ -1573,20 +1580,21 @@ class TransporterAuthController extends Controller
         $validated = $request->validate($templateRules);
 
         FormTemplate::create([
-            'user_id'   => Auth::user()->id,
-            'company_id'   => Auth::user()->company,
-            'name'      => $request->template_name,
-            'type'      => $type,
-            'form_data' => $validated
+            'user_id' => Auth::user()->id,
+            'company_id' => Auth::user()->company,
+            'name' => $request->template_name,
+            'type' => $type,
+            'form_data' => $validated,
         ]);
 
         // return back()->with('success', 'Template saved successfully.');
-        return redirect()->route('transporter.listtemplate')->with([
-            'message' => 'Template Saved successfully.',
-            'status' => 'success'
+        return redirect()
+            ->route('transporter.listtemplate')
+            ->with([
+                'message' => 'Template Saved successfully.',
+                'status' => 'success',
             ]);
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -1674,16 +1682,10 @@ class TransporterAuthController extends Controller
         return [];
     }
 
-
     private function removeRequired(array $rules): array
     {
         foreach ($rules as $field => $rule) {
-
-            $rules[$field] = collect(explode('|', $rule))
-                ->reject(fn ($r) => $r === 'required')
-                ->prepend('nullable')
-                ->unique()
-                ->implode('|');
+            $rules[$field] = collect(explode('|', $rule))->reject(fn($r) => $r === 'required')->prepend('nullable')->unique()->implode('|');
         }
 
         return $rules;
@@ -1691,9 +1693,7 @@ class TransporterAuthController extends Controller
 
     public function edittemplate($id)
     {
-
-        $template = FormTemplate::where('company_id', Auth::user()->company)
-            ->findOrFail($id);
+        $template = FormTemplate::where('company_id', Auth::user()->company)->findOrFail($id);
         // dd($template->form_data);
 
         $formData = $template->form_data;
@@ -1706,7 +1706,7 @@ class TransporterAuthController extends Controller
     public function updateTemplate(Request $request, $id)
     {
         $holder = FormTemplate::findOrFail($id)->user_id;
-        if(Auth::user()->id != $holder){
+        if (Auth::user()->id != $holder) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1726,19 +1726,20 @@ class TransporterAuthController extends Controller
         $template->update([
             'name' => $request->template_name,
             'type' => $type,
-            'form_data' => $validated
+            'form_data' => $validated,
         ]);
 
-        return redirect()->back()->with([
-            'message' => 'Template updated successfully.',
-            'status' => 'success'
+        return redirect()
+            ->back()
+            ->with([
+                'message' => 'Template updated successfully.',
+                'status' => 'success',
             ]);
     }
 
     public function destroyTemplate($id)
     {
-        
-        if(Auth::user()->id !== FormTemplate::findOrFail($id)->user_id){
+        if (Auth::user()->id !== FormTemplate::findOrFail($id)->user_id) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1748,6 +1749,4 @@ class TransporterAuthController extends Controller
             'message' => 'Template Deleted successfully!.',
         ]);
     }
-
-
 }

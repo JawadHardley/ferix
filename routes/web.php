@@ -9,19 +9,17 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-
 
 Route::get('/', function () {
     return view('landingpage');
 })->name('homesweethome');
 
 // ajax company search
-Route::get('/companies/search', [VendorAuthController::class, 'company_search'])
-    ->name('companies.company_search');
-
+Route::get('/companies/search', [VendorAuthController::class, 'company_search'])->name('companies.company_search');
 
 Route::get('/email/verify/success', function () {
     return view('auth.verify-success');
@@ -66,7 +64,8 @@ Route::prefix('admin')
             ->name('updateProfile')
             ->middleware('role');
         Route::get('register', [AdminAuthController::class, 'showRegisterForm'])->name('register');
-        Route::post('register', [AdminAuthController::class, 'register']);
+        // Route::post('register', [AdminAuthController::class, 'register']);
+        Route::post('register', [AdminAuthController::class, 'register'])->middleware('throttle:3,10'); // 3 attempts per 10 minutes
         Route::get('admins', [AdminAuthController::class, 'showAdmins'])
             ->name('showAdmins')
             ->middleware('role');
@@ -125,7 +124,8 @@ Route::prefix('transporter')
         // Route::get('login', [TransporterAuthController::class, 'showLoginForm'])->name('login');
         Route::post('login', [TransporterAuthController::class, 'login']);
         Route::get('register', [TransporterAuthController::class, 'showRegisterForm'])->name('register');
-        Route::post('register', [TransporterAuthController::class, 'register']);
+        // Route::post('register', [TransporterAuthController::class, 'register']);
+        Route::post('register', [TransporterAuthController::class, 'register'])->middleware('throttle:3,10');
         Route::get('profile', [TransporterAuthController::class, 'showProfile'])
             ->name('showProfile')
             ->middleware('role')
@@ -136,7 +136,7 @@ Route::prefix('transporter')
         Route::post('update', [TransporterAuthController::class, 'updateProfile'])
             ->name('updateProfile')
             ->middleware('role');
-            
+
         Route::post('template/save', [TransporterAuthController::class, 'saveTemplate'])
             ->name('saveTemplate')
             ->middleware('role');
@@ -242,7 +242,8 @@ Route::prefix('vendor')
             ->name('changePassword')
             ->middleware('role');
         Route::get('register', [VendorAuthController::class, 'showRegisterForm'])->name('register');
-        Route::post('register', [VendorAuthController::class, 'register']);
+        // Route::post('register', [VendorAuthController::class, 'register']);
+        Route::post('register', [VendorAuthController::class, 'register'])->middleware('throttle:3,10');
         Route::get('profile', [VendorAuthController::class, 'showProfile'])
             ->name('showProfile')
             ->middleware('role')

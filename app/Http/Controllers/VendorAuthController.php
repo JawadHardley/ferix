@@ -101,7 +101,13 @@ class VendorAuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string'],
+            'name' => [
+                'required',
+                'string',
+                'max:200',
+                'regex:/^[a-zA-Z0-9\s\-\.]+$/', // only allow letters, numbers, spaces, hyphens, dots
+                'not_regex:/https?:\/\//i',     // block URLs
+            ],
             'company' => ['required', 'integer', 'exists:companies,id'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:6'],

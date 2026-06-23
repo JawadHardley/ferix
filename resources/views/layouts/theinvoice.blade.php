@@ -34,6 +34,9 @@
     $euroRate = (float) ($invoice->euro_rate ?? 1);
     $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
 
+    // Invading netweight to reflect gross weight for FERI calculation
+    $feriQty = $feriapp->weight / 1000;
+
     // Calculating the amounts
     $feriAmount = $feriQty * $feriUnits;
     $codAmount = $codQty * $codUnits;
