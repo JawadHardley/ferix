@@ -35,7 +35,7 @@
     $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
 
     // Only apply this logic for FERI apps created from 22 June 2026 onward
-    if ($feriapp->created_at >= Carbon::parse('2026-06-22 00:00:00')) {
+    if ($feriapp->created_at >= \Carbon\Carbon::parse('2026-06-22 00:00:00')) {
         // Invading netweight to reflect gross weight for FERI calculation
         $feriQty = $feriapp->weight / 1000;
     }
