@@ -106,7 +106,7 @@ class VendorAuthController extends Controller
                 'string',
                 'max:200',
                 'regex:/^[a-zA-Z0-9\s\-\.]+$/', // only allow letters, numbers, spaces, hyphens, dots
-                'not_regex:/https?:\/\//i',     // block URLs
+                'not_regex:/https?:\/\//i', // block URLs
             ],
             'company' => ['required', 'integer', 'exists:companies,id'],
             'email' => ['required', 'email', 'unique:users'],
@@ -628,7 +628,7 @@ class VendorAuthController extends Controller
 
         $parts = array_map('trim', explode(',', $company->address));
 
-        $poBox     = $parts[0] ?? null;
+        $poBox = $parts[0] ?? null;
         $location1 = $parts[1] ?? null;
         $location2 = $parts[2] ?? null;
 
@@ -734,7 +734,7 @@ class VendorAuthController extends Controller
 
         $parts = array_map('trim', explode(',', $company->address));
 
-        $poBox     = $parts[0] ?? null;
+        $poBox = $parts[0] ?? null;
         $location1 = $parts[1] ?? null;
         $location2 = $parts[2] ?? null;
 
@@ -867,7 +867,7 @@ class VendorAuthController extends Controller
 
             $parts = array_map('trim', explode(',', $company->address));
 
-            $poBox     = $parts[0] ?? null;
+            $poBox = $parts[0] ?? null;
             $location1 = $parts[1] ?? null;
             $location2 = $parts[2] ?? null;
 
@@ -1114,6 +1114,7 @@ class VendorAuthController extends Controller
         // Get all application_ids from those certificates
         $applicationIds = $certificates->pluck('application_id')->unique()->filter();
         $applications = feriApp::whereIn('id', $applicationIds)->get()->keyBy('id');
+        // dd($applications);  
 
         // Filter invoices: only those whose certificate's application has status = 5
         $approvedRecords = $records
@@ -1127,8 +1128,21 @@ class VendorAuthController extends Controller
             })
             ->values();
 
+            
         // Add grandTotal to each record
-        $approvedRecords->transform(function ($invoice) use ($certificates) {
+        $approvedRecords->transform(function ($invoice) use ($certificates, $applications) {
+            $cert = $certificates->get($invoice->cert_id);
+
+            if (!$cert) {
+                return $invoice;
+            }
+
+            $feriapp = $applications->get($cert->application_id);
+
+            if (!$feriapp) {
+                return $invoice;
+            }
+    
             $feriQty = (float) ($invoice->feri_quantity ?? 0);
             $feriUnits = (float) ($invoice->feri_units ?? 0);
             $codQty = (float) ($invoice->cod_quantities ?? 0);
@@ -1136,6 +1150,12 @@ class VendorAuthController extends Controller
             $euroRate = (float) ($invoice->euro_rate ?? 1);
             $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
 
+            
+            // Only apply this logic for FERI apps created from 22 June 2026 onward
+            if ($feriapp->created_at >= \Carbon\Carbon::parse('2026-06-22 00:00:00')) {
+                // Invading netweight to reflect gross weight for FERI calculation
+                $feriQty = $feriapp->weight / 1000;
+            }
             $feriAmount = $feriQty * $feriUnits;
             $codAmount = $codQty * $codUnits;
             $upTotal = $feriAmount + $codAmount;
