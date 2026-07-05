@@ -146,7 +146,7 @@ class CertificateController extends Controller
 
         $parts = array_map('trim', explode(',', $company->address));
 
-        $poBox     = $parts[0] ?? null;
+        $poBox = $parts[0] ?? null;
         $location1 = $parts[1] ?? null;
         $location2 = $parts[2] ?? null;
 
@@ -190,7 +190,7 @@ class CertificateController extends Controller
 
         $parts = array_map('trim', explode(',', $company->address));
 
-        $poBox     = $parts[0] ?? null;
+        $poBox = $parts[0] ?? null;
         $location1 = $parts[1] ?? null;
         $location2 = $parts[2] ?? null;
 
@@ -248,13 +248,19 @@ class CertificateController extends Controller
             ->values();
 
         // Add grandTotal to each record
-        $records->transform(function ($invoice) use ($certificates) {
+        $records->transform(function ($invoice) use ($certificates, $applications) {
             $feriQty = (float) ($invoice->feri_quantity ?? 0);
             $feriUnits = (float) ($invoice->feri_units ?? 0);
             $codQty = (float) ($invoice->cod_quantities ?? 0);
             $codUnits = (float) ($invoice->cod_units ?? 0);
             $euroRate = (float) ($invoice->euro_rate ?? 1);
             $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
+
+            // Only apply this logic for FERI apps created from 22 June 2026 onward
+            if ($invoice->created_at >= \Carbon\Carbon::parse('2026-06-22 00:00:00')) {
+                // Invading netweight to reflect gross weight for FERI calculation
+                $feriQty = $applications->first()->weight / 1000;
+            }
 
             // Calculating the amounts
             $feriAmount = $feriQty * $feriUnits;
