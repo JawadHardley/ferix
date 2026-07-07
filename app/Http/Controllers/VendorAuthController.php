@@ -1114,7 +1114,7 @@ class VendorAuthController extends Controller
         // Get all application_ids from those certificates
         $applicationIds = $certificates->pluck('application_id')->unique()->filter();
         $applications = feriApp::whereIn('id', $applicationIds)->get()->keyBy('id');
-        // dd($applications);  
+        // dd($applications);
 
         // Filter invoices: only those whose certificate's application has status = 5
         $approvedRecords = $records
@@ -1128,7 +1128,6 @@ class VendorAuthController extends Controller
             })
             ->values();
 
-            
         // Add grandTotal to each record
         $approvedRecords->transform(function ($invoice) use ($certificates, $applications) {
             $cert = $certificates->get($invoice->cert_id);
@@ -1142,7 +1141,7 @@ class VendorAuthController extends Controller
             if (!$feriapp) {
                 return $invoice;
             }
-    
+
             $feriQty = (float) ($invoice->feri_quantity ?? 0);
             $feriUnits = (float) ($invoice->feri_units ?? 0);
             $codQty = (float) ($invoice->cod_quantities ?? 0);
@@ -1150,12 +1149,12 @@ class VendorAuthController extends Controller
             $euroRate = (float) ($invoice->euro_rate ?? 1);
             $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
 
-            
             // Only apply this logic for FERI apps created from 22 June 2026 onward
             if ($feriapp->created_at >= \Carbon\Carbon::parse('2026-06-22 00:00:00')) {
                 // Invading netweight to reflect gross weight for FERI calculation
                 $feriQty = $feriapp->weight / 1000;
             }
+
             $feriAmount = $feriQty * $feriUnits;
             $codAmount = $codQty * $codUnits;
             $upTotal = $feriAmount + $codAmount;

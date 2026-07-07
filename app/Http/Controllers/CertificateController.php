@@ -268,7 +268,6 @@ class CertificateController extends Controller
             $upTotal = $feriAmount + $codAmount;
             $transporterAmount = $transporterQty * 0.018;
             $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
-
             // $invoice->amount = number_format($grandTotal, 2, '.', ',');
             // $invoice->amount = $grandTotal;
 
@@ -447,13 +446,20 @@ class CertificateController extends Controller
             $euroRate = (float) ($invoice->euro_rate ?? 1);
             $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
 
+            // Only apply this logic for FERI apps created from 22 June 2026 onward
+            if ($invoice->created_at >= \Carbon\Carbon::parse('2026-06-22 00:00:00')) {
+                // Invading netweight to reflect gross weight for FERI calculation
+                $feriQty = $applications->first()->weight / 1000;
+                // dd($feriQty);
+            }
+
             $feriAmount = $feriQty * $feriUnits;
             $codAmount = $codQty * $codUnits;
             $upTotal = $feriAmount + $codAmount;
             $transporterAmount = $transporterQty * 0.018;
             $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
-            $grandTotal_r = number_format($grandTotal, 2, '.', ',');
-            $grandTotal_r = number_format($grandTotal_r * $invoice->tz_rate, 2, '.', ',');
+            // $grandTotal_r = number_format($grandTotal, 2, '.', ',');
+            $grandTotal_r = number_format($grandTotal * $invoice->tz_rate, 2, '.', ',');
 
             $cert = $certificates->get($invoice->cert_id);
             $appid = $cert ? $cert->application_id : null;
