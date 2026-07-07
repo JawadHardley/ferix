@@ -618,7 +618,7 @@ class CertificateController extends Controller
             'date' => 'required|string|max:255',
         ]);
 
-        // Fetch invoices within date range
+        // 1. Get invoices in date range
         $records = Invoice::whereBetween('invoice_date', [$validatedData['start'], $validatedData['end']])->get();
 
         if ($records->isEmpty()) {
@@ -628,14 +628,14 @@ class CertificateController extends Controller
             ]);
         }
 
-        // Get certificates and applications
+        // 2. Load related certificates and applications
         $certIds = $records->pluck('cert_id')->unique()->filter();
         $certificates = Certificate::whereIn('id', $certIds)->get()->keyBy('id');
 
         $applicationIds = $certificates->pluck('application_id')->unique()->filter();
         $applications = feriApp::whereIn('id', $applicationIds)->get()->keyBy('id');
 
-        // Filter only invoices where application status == 5
+        // 3. Filter only invoices where application status == 5
         $records = $records
             ->filter(function ($invoice) use ($certificates, $applications) {
                 $cert = $certificates->get($invoice->cert_id);
@@ -654,21 +654,20 @@ class CertificateController extends Controller
             ]);
         }
 
-        // Load discarded trips from hold.html
+        // 4. Load discarded trips (hold.html)
         $discardedTrips = [];
         $jsonPath = resource_path('views/layouts/hold.html');
         if (file_exists($jsonPath)) {
             $discardedTrips = json_decode(file_get_contents($jsonPath), true) ?? [];
         }
 
-        // Transform each invoice
+        // 5. Transform each invoice – compute USD grand total, store in ->amount (formatted with commas)
         $records->transform(function ($invoice) use ($certificates, $applications, $discardedTrips) {
             $cert = $certificates->get($invoice->cert_id);
             $app = $cert ? $applications->get($cert->application_id) : null;
 
-            // Base quantities
+            // FERI quantity: base from invoice, override if app created on/after 2026-06-22
             $feriQty = (float) ($invoice->feri_quantity ?? 0);
-            // Override if app created on/after 2026-06-22
             if ($app && $app->created_at >= \Carbon\Carbon::parse('2026-06-22 00:00:00')) {
                 $feriQty = (float) ($app->weight / 1000); // gross weight in tons
             }
@@ -679,39 +678,37 @@ class CertificateController extends Controller
             $euroRate = (float) ($invoice->euro_rate ?? 1);
             $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
 
-            // Calculations
             $feriAmount = $feriQty * $feriUnits;
             $codAmount = $codQty * $codUnits;
             $upTotal = $feriAmount + $codAmount;
             $transporterAmount = $transporterQty * 0.018;
 
-            // Determine discount (5 USD deduction unless trip is discarded)
+            // Determine discount (-5 USD) unless trip is in discarded list
             preg_match('/^\d+/', $invoice->customer_trip_no, $matches);
             $tripNumber = $matches[0] ?? null;
             $discount = in_array($tripNumber, $discardedTrips) ? 0 : 5;
 
             $grandTotalUSD = $transporterAmount + $upTotal * $euroRate - $discount;
 
-            // Convert to TZS using invoice's exchange rate
-            $tzRate = (float) ($invoice->tz_rate ?? 0);
-            $grandTotalTZS = $grandTotalUSD * $tzRate;
+            // Store as USD amount (formatted with commas) – exactly as the original code did
+            // Keep the same conditional formatting as original (if date > 2025-09-09, store as raw number, else formatted)
+            if ($invoice->invoice_date > '2025-09-09') {
+                $invoice->amount = $grandTotalUSD; // raw number (no commas)
+            } else {
+                $invoice->amount = number_format($grandTotalUSD, 2, '.', ',');
+            }
 
-            // Store formatted amount for the view (with thousands separator)
-            $invoice->amount = number_format($grandTotalTZS, 2, '.', ',');
-
-            // Attach extra fields for display in statement PDF
+            // Attach extra fields for the statement (appid, po) – these are used in the blade
             $invoice->appid = $cert ? $cert->application_id : null;
             $invoice->po = $app ? $app->po : '';
-            $invoice->certificate_no = $invoice->certificate_no ?? '';
-            $invoice->customer_ref = $invoice->customer_ref ?? '';
 
             return $invoice;
         });
 
-        // Attach month name for the header
+        // 6. Attach month name for the header
         $records->month = $validatedData['date'];
 
-        // Generate PDF
+        // 7. Generate PDF
         $pdf = Pdf::loadView('layouts.thestatement', [
             'invoice' => $records,
         ]);
