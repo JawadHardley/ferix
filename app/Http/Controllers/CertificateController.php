@@ -413,7 +413,7 @@ class CertificateController extends Controller
         return $response;
     }
 
-    public function exportInvoices()
+    public function exportInvoicesxxx()
     {
         // 1. Get all invoices
         $records = Invoice::all();
@@ -479,6 +479,116 @@ class CertificateController extends Controller
         $sheet->fromArray($headers, null, 'A1');
 
         // Set data
+        $sheet->fromArray($exportData->toArray(), null, 'A2');
+
+        // Auto-size columns
+        foreach (range('A', $sheet->getHighestColumn()) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $fileName = 'Feri_Invoices_' . now()->format('Ymd_His') . '.xlsx';
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        $response = new \Symfony\Component\HttpFoundation\StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
+    }
+
+    public function exportInvoices()
+    {
+        // 1. Get all invoices
+        $records = Invoice::all();
+
+        // 2. Get certificates and applications
+        $certIds = $records->pluck('cert_id')->unique()->filter();
+        $certificates = Certificate::whereIn('id', $certIds)->get()->keyBy('id');
+
+        $applicationIds = $certificates->pluck('application_id')->unique()->filter();
+        $applications = feriApp::whereIn('id', $applicationIds)->with('user')->get()->keyBy('id');
+
+        // 3. Filter only invoices whose application has status = 5
+        $approvedRecords = $records
+            ->filter(function ($invoice) use ($certificates, $applications) {
+                $cert = $certificates->get($invoice->cert_id);
+                if (!$cert) {
+                    return false;
+                }
+                $app = $applications->get($cert->application_id);
+                return $app && $app->status == 5;
+            })
+            ->values();
+
+        // 4. Load discarded trips from hold.html
+        $discardedTrips = [];
+        $jsonPath = resource_path('views/layouts/hold.html');
+        if (file_exists($jsonPath)) {
+            $discardedTrips = json_decode(file_get_contents($jsonPath), true) ?? [];
+        }
+
+        // 5. Transform for export
+        $exportData = $approvedRecords->map(function ($invoice) use ($certificates, $applications, $discardedTrips) {
+            // Get the associated certificate and application
+            $cert = $certificates->get($invoice->cert_id);
+            $app = $cert ? $applications->get($cert->application_id) : null;
+
+            // --- FERI quantity override ---
+            $feriQty = (float) ($invoice->feri_quantity ?? 0);
+            if ($app && $app->created_at >= \Carbon\Carbon::parse('2026-06-22 00:00:00')) {
+                $feriQty = (float) ($app->weight / 1000); // gross weight in tons
+            }
+
+            $feriUnits = (float) ($invoice->feri_units ?? 0);
+            $codQty = (float) ($invoice->cod_quantities ?? 0);
+            $codUnits = (float) ($invoice->cod_units ?? 0);
+            $euroRate = (float) ($invoice->euro_rate ?? 1);
+            $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
+
+            // --- Calculations ---
+            $feriAmount = $feriQty * $feriUnits;
+            $codAmount = $codQty * $codUnits;
+            $upTotal = $feriAmount + $codAmount;
+            $transporterAmount = $transporterQty * 0.018;
+
+            // Determine discount (5 USD deduction unless trip is discarded)
+            preg_match('/^\d+/', $invoice->customer_trip_no, $matches);
+            $tripNumber = $matches[0] ?? null;
+            $discount = in_array($tripNumber, $discardedTrips) ? 0 : 5;
+
+            $grandTotalUSD = $transporterAmount + $upTotal * $euroRate - $discount;
+
+            // Convert to TZS using the invoice's exchange rate
+            $tzRate = (float) ($invoice->tz_rate ?? 0);
+            $grandTotalTZS = $grandTotalUSD * $tzRate;
+
+            // Format for display (thousands separator)
+            $formattedTZS = number_format($grandTotalTZS, 2, '.', ',');
+
+            return [
+                'Invoice' => 'PRES-2025-P' . $invoice->id,
+                'Company Ref' => $invoice->customer_ref ?? '',
+                'Customer Trip No' => $invoice->customer_trip_no,
+                'Date' => $invoice->invoice_date,
+                'PO' => $app ? $app->po : '',
+                'Cert No' => $invoice->certificate_no,
+                'Amount' => $formattedTZS,
+            ];
+        });
+
+        // 6. Build Excel spreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Headers
+        $headers = array_keys($exportData->first() ?? []);
+        $sheet->fromArray($headers, null, 'A1');
+
+        // Data
         $sheet->fromArray($exportData->toArray(), null, 'A2');
 
         // Auto-size columns
