@@ -459,7 +459,7 @@ class CertificateController extends Controller
             $transporterAmount = $transporterQty * 0.018;
             $grandTotal = $transporterAmount + $upTotal * $euroRate - 5;
             $grandTotal_r = number_format($grandTotal, 2, '.', ',');
-            $grandTotal_r = number_format($grandTotal_r * $invoice->tz_rate, 2, '.', ',');
+            $grandTotal_r = number_format($grandTotal * $invoice->tz_rate, 2, '.', ',');
 
             $cert = $certificates->get($invoice->cert_id);
             $appid = $cert ? $cert->application_id : null;
