@@ -208,7 +208,7 @@ class CertificateController extends Controller
         return $pdf->download("{$invoice->customer_trip_no}.pdf");
     }
 
-    public function statement_download(Request $request)
+    public function statement_downloadxxx(Request $request)
     {
         // Validate the request data
         $validatedData = $request->validate([
@@ -608,5 +608,114 @@ class CertificateController extends Controller
         $response->headers->set('Cache-Control', 'max-age=0');
 
         return $response;
+    }
+
+    public function statement_download(Request $request)
+    {
+        $validatedData = $request->validate([
+            'start' => 'required|date',
+            'end' => 'required|date|after_or_equal:start',
+            'date' => 'required|string|max:255',
+        ]);
+
+        // Fetch invoices within date range
+        $records = Invoice::whereBetween('invoice_date', [$validatedData['start'], $validatedData['end']])->get();
+
+        if ($records->isEmpty()) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'No invoices in that date range',
+            ]);
+        }
+
+        // Get certificates and applications
+        $certIds = $records->pluck('cert_id')->unique()->filter();
+        $certificates = Certificate::whereIn('id', $certIds)->get()->keyBy('id');
+
+        $applicationIds = $certificates->pluck('application_id')->unique()->filter();
+        $applications = feriApp::whereIn('id', $applicationIds)->get()->keyBy('id');
+
+        // Filter only invoices where application status == 5
+        $records = $records
+            ->filter(function ($invoice) use ($certificates, $applications) {
+                $cert = $certificates->get($invoice->cert_id);
+                if (!$cert) {
+                    return false;
+                }
+                $app = $applications->get($cert->application_id);
+                return $app && $app->status == 5;
+            })
+            ->values();
+
+        if ($records->isEmpty()) {
+            return back()->with([
+                'status' => 'error',
+                'message' => 'No approved applications in that date range',
+            ]);
+        }
+
+        // Load discarded trips from hold.html
+        $discardedTrips = [];
+        $jsonPath = resource_path('views/layouts/hold.html');
+        if (file_exists($jsonPath)) {
+            $discardedTrips = json_decode(file_get_contents($jsonPath), true) ?? [];
+        }
+
+        // Transform each invoice
+        $records->transform(function ($invoice) use ($certificates, $applications, $discardedTrips) {
+            $cert = $certificates->get($invoice->cert_id);
+            $app = $cert ? $applications->get($cert->application_id) : null;
+
+            // Base quantities
+            $feriQty = (float) ($invoice->feri_quantity ?? 0);
+            // Override if app created on/after 2026-06-22
+            if ($app && $app->created_at >= \Carbon\Carbon::parse('2026-06-22 00:00:00')) {
+                $feriQty = (float) ($app->weight / 1000); // gross weight in tons
+            }
+
+            $feriUnits = (float) ($invoice->feri_units ?? 0);
+            $codQty = (float) ($invoice->cod_quantities ?? 0);
+            $codUnits = (float) ($invoice->cod_units ?? 0);
+            $euroRate = (float) ($invoice->euro_rate ?? 1);
+            $transporterQty = (float) ($invoice->transporter_quantity ?? 0);
+
+            // Calculations
+            $feriAmount = $feriQty * $feriUnits;
+            $codAmount = $codQty * $codUnits;
+            $upTotal = $feriAmount + $codAmount;
+            $transporterAmount = $transporterQty * 0.018;
+
+            // Determine discount (5 USD deduction unless trip is discarded)
+            preg_match('/^\d+/', $invoice->customer_trip_no, $matches);
+            $tripNumber = $matches[0] ?? null;
+            $discount = in_array($tripNumber, $discardedTrips) ? 0 : 5;
+
+            $grandTotalUSD = $transporterAmount + $upTotal * $euroRate - $discount;
+
+            // Convert to TZS using invoice's exchange rate
+            $tzRate = (float) ($invoice->tz_rate ?? 0);
+            $grandTotalTZS = $grandTotalUSD * $tzRate;
+
+            // Store formatted amount for the view (with thousands separator)
+            $invoice->amount = number_format($grandTotalTZS, 2, '.', ',');
+
+            // Attach extra fields for display in statement PDF
+            $invoice->appid = $cert ? $cert->application_id : null;
+            $invoice->po = $app ? $app->po : '';
+            $invoice->certificate_no = $invoice->certificate_no ?? '';
+            $invoice->customer_ref = $invoice->customer_ref ?? '';
+
+            return $invoice;
+        });
+
+        // Attach month name for the header
+        $records->month = $validatedData['date'];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('layouts.thestatement', [
+            'invoice' => $records,
+        ]);
+
+        return $pdf->download('STATEMENT.pdf');
     }
 }
