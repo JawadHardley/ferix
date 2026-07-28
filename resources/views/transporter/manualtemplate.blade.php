@@ -301,6 +301,9 @@
                                         </option>
                                         <option value="Chemaf" {{ old('cf_agent') == 'Chemaf' ? 'selected' : '' }}>Chemaf
                                         </option>
+                                        <option value="C-Link Sarl"
+                                            {{ old('cf_agent') == 'C-Link Sarl' ? 'selected' : '' }}>C-Link Sarl
+                                        </option>
                                         <option value="Comexas Afrique"
                                             {{ old('cf_agent') == 'Comexas Afrique' ? 'selected' : '' }}>
                                             Comexas Afrique

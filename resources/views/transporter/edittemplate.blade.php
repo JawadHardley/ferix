@@ -338,6 +338,9 @@
                                                 {{ $formData['cf_agent'] == 'Chemaf' ? 'selected' : '' }}>
                                                 Chemaf
                                             </option>
+                                            <option value="C-Link Sarl"
+                                                {{ $formData['cf_agent'] == 'C-Link Sarl' ? 'selected' : '' }}>C-Link Sarl
+                                            </option>
                                             <option value="Comexas Afrique"
                                                 {{ $formData['cf_agent'] == 'Comexas Afrique' ? 'selected' : '' }}>
                                                 Comexas Afrique
