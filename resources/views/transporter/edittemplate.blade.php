@@ -1117,6 +1117,11 @@
                                             <option value="DCG"
                                                 {{ $formData['cf_agent'] == 'DCG' ? 'selected' : '' }}>DCG
                                             </option>
+                                            <option value="DOUANE EXPRESS CUSTOMS"
+                                                {{ $formData['cf_agent'] == 'DOUANE EXPRESS CUSTOMS' ? 'selected' : '' }}>
+                                                DOUANE
+                                                EXPRESS CUSTOMS
+                                            </option>
                                             <option value="Evele & Co"
                                                 {{ $formData['cf_agent'] == 'Evele & Co' ? 'selected' : '' }}>
                                                 Evele & Co</option>
