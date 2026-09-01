@@ -236,10 +236,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-6 mb-3">
-                                                                                                                                                                                                                                                                                <label class="form-label">Clearing/Forwarding Agent</label>
-                                                                                                                                                                                                                                                                                <input type="text" class="form-control" name="cf_agent" value="{{ old('cf_agent') }}"
-                                                                                                                                                                                                                                                                                    autocomplete="on" required />
-                                                                                                                                                                                                                                                                            </div> -->
+                                                                                                                                                                                                                                                                                    <label class="form-label">Clearing/Forwarding Agent</label>
+                                                                                                                                                                                                                                                                                    <input type="text" class="form-control" name="cf_agent" value="{{ old('cf_agent') }}"
+                                                                                                                                                                                                                                                                                        autocomplete="on" required />
+                                                                                                                                                                                                                                                                                </div> -->
 
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label">Clearing/Forwarding Agent</label>
@@ -415,49 +415,44 @@
 
                         <div class="row">
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                                                                                                                                                                                                                                <label class="form-label">FOB Currency</label>
-                                                                                                                                                                                                                                                                                <textarea class="form-control" name="fob_currency" rows="1" autocomplete="on" required>{{ old('fob_currency') }}</textarea>
-                                                                                                                                                                                                                                                                            </div> -->
+                                <div class="col-12 col-lg-3 mb-3">
+                                    <label class="form-label">FOB Currency</label>
+                                    @php
+                                        $selectedFobCurrency = old('fob_currency', $formData['fob_currency'] ?? '');
+                                    @endphp
+                                    <select class="form-select" name="fob_currency">
+                                        <option value="USD" {{ $selectedFobCurrency == 'USD' ? 'selected' : '' }}>USD
+                                        </option>
+                                        <option value="EUR" {{ $selectedFobCurrency == 'EUR' ? 'selected' : '' }}>EUR
+                                        </option>
+                                        <option value="TZS" {{ $selectedFobCurrency == 'TZS' ? 'selected' : '' }}>TZS
+                                        </option>
+                                        <option value="ZAR" {{ $selectedFobCurrency == 'ZAR' ? 'selected' : '' }}>ZAR
+                                        </option>
+                                        <option value="AOA" {{ $selectedFobCurrency == 'AOA' ? 'selected' : '' }}>AOA
+                                        </option>
+                                    </select>
+                                </div>
 
+                                <div class="col-12 col-lg-3 mb-3">
+                                    <label class="form-label">FOB Value / VALEUR FOB</label>
+                                    <input type="text" class="form-control" name="fob_value"
+                                        value="{{ old('fob_value', $formData['fob_value'] ?? '') }}" autocomplete="on"
+                                        required />
+                                </div>
 
-                            <div class="col-12 col-lg-3 mb-3">
-                                <label class="form-label">FOB Currency</label>
-                                @php
-                                    $selectedFobCurrency = old('fob_currency', $formData['fob_currency'] ?? '');
-                                @endphp
-                                <select class="form-select" name="fob_currency">
-                                    <option value="USD" {{ $selectedFobCurrency == 'USD' ? 'selected' : '' }}>USD
-                                    </option>
-                                    <option value="EUR" {{ $selectedFobCurrency == 'EUR' ? 'selected' : '' }}>EUR
-                                    </option>
-                                    <option value="TZS" {{ $selectedFobCurrency == 'TZS' ? 'selected' : '' }}>TZS
-                                    </option>
-                                    <option value="ZAR" {{ $selectedFobCurrency == 'ZAR' ? 'selected' : '' }}>ZAR
-                                    </option>
-                                    <option value="AOA" {{ $selectedFobCurrency == 'AOA' ? 'selected' : '' }}>AOA
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="col-12 col-lg-3 mb-3">
-                                <label class="form-label">FOB Value / VALEUR FOB</label>
-                                <input type="text" class="form-control" name="fob_value"
-                                    value="{{ old('fob_value', $formData['fob_value'] ?? '') }}" autocomplete="on"
-                                    required />
-                            </div>
-
-                            <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                                                                                                                                                                                                                                <label class="form-label">Incoterm</label>
-                                                                                                                                                                                                                                                                                <input type="text" class="form-control" name="incoterm" value="{{ old('incoterm') }}"
-                                                                                                                                                                                                                                                                                    autocomplete="on" required />
-                                                                                                                                                                                                                                                                            </div> -->
+                                <!-- <div class="col-12 col-lg-3 mb-3">
+                                                                                                                                                                                                                                                                                    <label class="form-label">Incoterm</label>
+                                                                                                                                                                                                                                                                                    <input type="text" class="form-control" name="incoterm" value="{{ old('incoterm') }}"
+                                                                                                                                                                                                                                                                                        autocomplete="on" required />
+                                                                                                                                                                                                                                                                                </div> -->
 
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                                                                                                                                                                                                                                <label class="form-label">Freight Currency</label>
-                                                                                                                                                                                                                                                                                <input type="text" class="form-control" name="freight_currency"
-                                                                                                                                                                                                                                                                                    value="{{ old('freight_currency') }}" autocomplete="on" required />
-                                                                                                                                                                                                                                                                            </div> -->
+                                                                                                                                                                                                                                                                                    <label class="form-label">Freight Currency</label>
+                                                                                                                                                                                                                                                                                    <input type="text" class="form-control" name="freight_currency"
+                                                                                                                                                                                                                                                                                        value="{{ old('freight_currency') }}" autocomplete="on" required />
+                                                                                                                                                                                                                                                                                </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Freight Currency</label>
@@ -487,10 +482,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                                                                                                                                                                                                                                <label class="form-label">Insurance Currency</label>
-                                                                                                                                                                                                                                                                                <input type="text" class="form-control" name="insurance_currency"
-                                                                                                                                                                                                                                                                                    value="{{ old('insurance_currency') }}" autocomplete="on" required />
-                                                                                                                                                                                                                                                                            </div> -->
+                                                                                                                                                                                                                                                                                    <label class="form-label">Insurance Currency</label>
+                                                                                                                                                                                                                                                                                    <input type="text" class="form-control" name="insurance_currency"
+                                                                                                                                                                                                                                                                                        value="{{ old('insurance_currency') }}" autocomplete="on" required />
+                                                                                                                                                                                                                                                                                </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Insurance Currency</label>
@@ -522,10 +517,10 @@
                             </div>
 
                             <!-- <div class="col-12 col-lg-3 mb-3">
-                                                                                                                                                                                                                                                                                <label class="form-label">Additional Fees Currency</label>
-                                                                                                                                                                                                                                                                                <input type="text" class="form-control" name="additional_fees_currency"
-                                                                                                                                                                                                                                                                                    value="{{ old('additional_fees_currency') }}" autocomplete="on" required />
-                                                                                                                                                                                                                                                                            </div> -->
+                                                                                                                                                                                                                                                                                    <label class="form-label">Additional Fees Currency</label>
+                                                                                                                                                                                                                                                                                    <input type="text" class="form-control" name="additional_fees_currency"
+                                                                                                                                                                                                                                                                                        value="{{ old('additional_fees_currency') }}" autocomplete="on" required />
+                                                                                                                                                                                                                                                                                </div> -->
 
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Additional Fees Currency</label>
