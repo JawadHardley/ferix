@@ -736,18 +736,10 @@ class TransporterAuthController extends Controller
         $feriApp = feriApp::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
         // Only allow editing if status is 1
-        // if ($feriApp->status != 1 || $user->id != $feriApp->user_id) {
-        //     return back()->with([
-        //         'status' => 'error',
-        //         'message' => 'You cannot edit this application because its status does not allow editing.',
-        //     ]);
-        // }
-
-        // Allow editing only if not completed and belongs to user
-        if ($feriApp->status < 5 || $user->id != $feriApp->user_id) {
+        if ($feriApp->status != 1 || $user->id != $feriApp->user_id) {
             return back()->with([
                 'status' => 'error',
-                'message' => 'You cannot edit this application because it is completed or you are not the owner.',
+                'message' => 'You cannot edit this application because its status does not allow editing.',
             ]);
         }
 
@@ -866,32 +858,6 @@ class TransporterAuthController extends Controller
 
         // Update the feriApp record with validated data
         $feriApp->update($validatedData);
-
-        // --- Update related invoice if it exists ---
-        $latestDraft = Certificate::where('application_id', $id)->where('type', 'draft')->latest()->first();
-
-        if ($latestDraft) {
-            $invoice = Invoice::where('cert_id', $latestDraft->id)->first();
-            if ($invoice) {
-                // 1. Update transporter_quantity = freight_value + additional_fees_value
-                $invoice->transporter_quantity = (float) ($feriApp->freight_value ?? 0) + (float) ($feriApp->additional_fees_value ?? 0);
-
-                // 2. Update feri_quantity based on application logic
-                //    For regional apps, we used volume initially; but for apps created after 2026-06-22 we use weight/1000.
-                $appCreatedAt = $feriApp->created_at;
-                $cutoffDate = \Carbon\Carbon::parse('2026-06-22 00:00:00');
-                if ($appCreatedAt >= $cutoffDate) {
-                    $invoice->feri_quantity = (float) ($feriApp->weight / 1000);
-                } else {
-                    $invoice->feri_quantity = (float) ($feriApp->volume ?? 0);
-                }
-
-                // 3. (Optional) Update any other invoice fields that depend on feriApp data
-                // e.g., if you store fob_value, insurance_value, etc. in invoice, update them.
-
-                $invoice->save();
-            }
-        }
 
         return back()->with([
             'status' => 'success',
