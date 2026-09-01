@@ -83,8 +83,8 @@
                         <!-- 4 -->
                     @elseif ($record->status == 5)
                         <!-- <button class="btn btn-outline-primary">
-                                                                                                                                                                                <i class="fa fa-award fs-3"></i>
-                                                                                                                                                                            </button> -->
+                                                                                                                                                                                                    <i class="fa fa-award fs-3"></i>
+                                                                                                                                                                                                </button> -->
                         <div class="ms-5 d-inline"></div>
                     @endif
 
@@ -175,9 +175,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                                                                                                                                                                        <div class="list-group list-group-transparent">
-                                                                                                                                                                                            <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                            <div class="list-group list-group-transparent">
+                                                                                                                                                                                                                <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                                                                                                                                                                            </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -200,12 +200,12 @@
                                 <div class="col-12 mb-3 col-lg-4">
                                     <div class="form-label">Transport Mode</div>
                                     <input type="text" name="transport_mode" class="form-control"
-                                        value="{{ $record->transport_mode }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        value="{{ $record->transport_mode }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                                 </div>
                                 <div class="col-12 col-lg-4 mb-3">
                                     <label class="form-label">Transporter Company</label>
                                     <select class="form-select" name="transporter_company"
-                                        {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        {{ $record->status > 5 ? 'disabled' : '' }}>
                                         <option value="">-- select --</option>
                                         @foreach ($companies as $company)
                                             <option value="{{ $company->id }}"
@@ -221,7 +221,7 @@
                                 <div class="col-12 col-lg-6 mb-3">
                                     <label class="form-label">Entry Border to DRC</label>
                                     <select class="form-select" name="entry_border_drc"
-                                        {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                        {{ $record->status > 5 ? 'disabled' : '' }} required>
                                         <option value="0"
                                             {{ $record->entry_border_drc == '0' || !$record->entry_border_drc ? 'selected' : '' }}>
                                             -- select --</option>
@@ -241,25 +241,25 @@
                                     <label class="form-label">Border ETA</label>
                                     <input type="date" class="form-control" name="arrival_date"
                                         value="{{ $record->arrival_date }}" autocomplete="on"
-                                        {{ $record->status > 1 ? 'disabled' : '' }} required />
+                                        {{ $record->status > 5 ? 'disabled' : '' }} required />
                                 </div>
 
                                 <div class="col-12 mb-3 col-lg-4">
                                     <div class="form-label">Truck Details</div>
                                     <input type="text" name="truck_details" class="form-control"
-                                        value="{{ $record->truck_details }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        value="{{ $record->truck_details }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                                 </div>
                                 <div class="col-12 mb-3 col-lg-4">
                                     <div class="form-label">Arrival Station</div>
                                     <input type="text" name="arrival_station" class="form-control"
                                         value="{{ $record->arrival_station }}"
-                                        {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        {{ $record->status > 5 ? 'disabled' : '' }}>
                                 </div>
 
                                 <div class="col-12 mb-3 col-lg-4">
                                     <label class="form-label">Final Destination</label>
                                     <select class="form-select" name="final_destination"
-                                        {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                        {{ $record->status > 5 ? 'disabled' : '' }} required>
                                         <option value="" {{ !$record->final_destination ? 'selected' : '' }}>--
                                             select --
                                         </option>
@@ -302,27 +302,27 @@
                             <div class="col-12 mb-3 col-lg-12">
                                 <div class="form-label">Importer Name</div>
                                 <input type="text" name="importer_name" class="form-control"
-                                    value="{{ $record->importer_name }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->importer_name }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Importer Phone</div>
                                 <input type="text" name="importer_phone" class="form-control"
-                                    value="{{ $record->importer_phone }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->importer_phone }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Importer Email</div>
                                 <input type="text" name="importer_email" class="form-control"
-                                    value="{{ $record->importer_email }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->importer_email }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Importer Address</div>
                                 <input type="text" name="importer_address" class="form-control"
-                                    value="{{ $record->importer_address }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->importer_address }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Fix Number</div>
                                 <input type="text" name="fix_number" class="form-control"
-                                    value="{{ $record->fix_number }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->fix_number }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                         </div>
@@ -339,22 +339,22 @@
                             <div class="col-12 mb-3 col-lg-4">
                                 <div class="form-label">Exporter Name</div>
                                 <input type="text" name="exporter_name" class="form-control"
-                                    value="{{ $record->exporter_name }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->exporter_name }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-4">
                                 <div class="form-label">Exporter Phone</div>
                                 <input type="text" name="exporter_phone" class="form-control"
-                                    value="{{ $record->exporter_phone }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->exporter_phone }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-4">
                                 <div class="form-label">Exporter Email</div>
                                 <input type="text" name="exporter_email" class="form-control"
-                                    value="{{ $record->exporter_email }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->exporter_email }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-12">
                                 <label class="form-label">CF Agent</label>
-                                <select class="form-select" name="cf_agent" {{ $record->status > 1 ? 'disabled' : '' }}
+                                <select class="form-select" name="cf_agent" {{ $record->status > 5 ? 'disabled' : '' }}
                                     required>
                                     <option value="" {{ !$record->cf_agent ? 'selected' : '' }}>-- select --
                                     </option>
@@ -423,7 +423,7 @@
                             <div class="col-12 mb-3 col-lg-12">
                                 <div class="form-label">CF Agent Contact</div>
                                 <input type="text" name="cf_agent_contact" class="form-control"
-                                    value="{{ $record->cf_agent_contact }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->cf_agent_contact }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                         </div>
@@ -440,32 +440,32 @@
                             <div class="col-12 mb-3 col-lg-12">
                                 <div class="form-label">Cargo Description</div>
                                 <input type="text" name="cargo_description" class="form-control"
-                                    value="{{ $record->cargo_description }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->cargo_description }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">HS Code</div>
                                 <input type="text" name="hs_code" class="form-control"
-                                    value="{{ $record->hs_code }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->hs_code }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Package Type</div>
                                 <input type="text" name="package_type" class="form-control"
-                                    value="{{ $record->package_type }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->package_type }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-4">
                                 <div class="form-label">Quantity (Bags)</div>
                                 <input type="text" name="quantity" class="form-control"
-                                    value="{{ round($record->quantity) }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ round($record->quantity) }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-4">
                                 <div class="form-label">Weight (Gross)Kg</div>
                                 <input type="text" name="weight" class="form-control" value="{{ $record->weight }}"
-                                    {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-4">
                                 <div class="form-label">Volume (Net Weight)T</div>
                                 <input type="text" name="volume" class="form-control" value="{{ $record->volume }}"
-                                    {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-4">
@@ -497,38 +497,38 @@
                             <div class="col-12 mb-3 col-lg-2">
                                 <div class="form-label">PO Number</div>
                                 <input type="text" name="po" class="form-control" value="{{ $record->po }}"
-                                    {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-2">
                                 <div class="form-label">Company Ref</div>
                                 <input type="text" name="company_ref" class="form-control"
-                                    value="{{ $record->company_ref }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->company_ref }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-4">
                                 <div class="form-label">Cargo Origin</div>
                                 <input type="text" name="cargo_origin" class="form-control"
-                                    value="{{ $record->cargo_origin }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->cargo_origin }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-4">
                                 <div class="form-label">Customs Decl No</div>
                                 <input type="text" name="customs_decl_no" class="form-control"
-                                    value="{{ $record->customs_decl_no }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->customs_decl_no }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Manifest No</div>
                                 <input type="text" name="manifest_no" class="form-control"
-                                    value="{{ $record->manifest_no }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->manifest_no }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">OCC Bivac</div>
                                 <input type="text" name="occ_bivac" class="form-control"
-                                    value="{{ $record->occ_bivac }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->occ_bivac }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-12">
                                 <div class="form-label">Instructions</div>
                                 <input type="text" name="instructions" class="form-control"
-                                    value="{{ $record->instructions }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->instructions }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                         </div>
@@ -545,7 +545,7 @@
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">FOB Currency</div>
                                 <select class="form-select" name="fob_currency"
-                                    {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                    {{ $record->status > 5 ? 'disabled' : '' }} required>
                                     <option value="" {{ !$record->fob_currency ? 'selected' : '' }}>-- select --
                                     </option>
                                     <option value="USD" {{ $record->fob_currency == 'USD' ? 'selected' : '' }}>USD
@@ -563,11 +563,11 @@
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">FOB Value</div>
                                 <input type="text" name="fob_value" class="form-control"
-                                    value="{{ $record->fob_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->fob_value }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Incoterm</div>
-                                <select class="form-select" name="incoterm" {{ $record->status > 1 ? 'disabled' : '' }}
+                                <select class="form-select" name="incoterm" {{ $record->status > 5 ? 'disabled' : '' }}
                                     required>
                                     <option value="" {{ !$record->incoterm ? 'selected' : '' }}>-- select --
                                     </option>
@@ -608,7 +608,7 @@
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Freight Currency</div>
                                 <select class="form-select" name="freight_currency"
-                                    {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                    {{ $record->status > 5 ? 'disabled' : '' }} required>
                                     <option value="" {{ !$record->freight_currency ? 'selected' : '' }}>-- select
                                         --</option>
                                     <option value="USD" {{ $record->freight_currency == 'USD' ? 'selected' : '' }}>USD
@@ -626,12 +626,12 @@
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Freight Value</div>
                                 <input type="text" name="freight_value" class="form-control"
-                                    value="{{ $record->freight_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->freight_value }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Insurance Currency</div>
                                 <select class="form-select" name="insurance_currency"
-                                    {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                    {{ $record->status > 5 ? 'disabled' : '' }} required>
                                     <option value="" {{ !$record->insurance_currency ? 'selected' : '' }}>-- select
                                         --</option>
                                     <option value="USD" {{ $record->insurance_currency == 'USD' ? 'selected' : '' }}>
@@ -654,12 +654,12 @@
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Insurance Value</div>
                                 <input type="text" name="insurance_value" class="form-control"
-                                    value="{{ $record->insurance_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->insurance_value }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Additional Fees Currency</div>
                                 <select class="form-select" name="additional_fees_currency"
-                                    {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                    {{ $record->status > 5 ? 'disabled' : '' }} required>
                                     <option value="" {{ !$record->additional_fees_currency ? 'selected' : '' }}>--
                                         select --
                                     </option>
@@ -684,7 +684,7 @@
                                 <div class="form-label">Additional Fees Value</div>
                                 <input type="text" name="additional_fees_value" class="form-control"
                                     value="{{ $record->additional_fees_value }}"
-                                    {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             @if ($documents)
                                 @foreach ($documents as $type => $path)
@@ -817,6 +817,17 @@
                     </div>
                 @endif
 
+                @if ($record->status <= 5)
+                    <div class="row">
+                        <div class="col py-3 pt-5 text-end">
+                            <button class="btn btn-md btn-outline-warning" data-bs-toggle="modal"
+                                data-bs-target="#editAppModal">
+                                <span class="d-none d-md-inline">Edit Application</span> <i
+                                    class="fa fa-pencil ms-md-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
         </form>
@@ -878,9 +889,9 @@
 
                         </div>
                         <!-- <h4 class="subheader mt-4">#Leave</h4>
-                                                                                                                                                                                        <div class="list-group list-group-transparent">
-                                                                                                                                                                                            <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
-                                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                            <div class="list-group list-group-transparent">
+                                                                                                                                                                                                                <a href="#" class="list-group-item list-group-item-action">Give Feedback</a>
+                                                                                                                                                                                                            </div> -->
                     </div>
                 </div>
                 <div class="col-12 col-md-10 d-flex flex-column tab-content">
@@ -903,20 +914,20 @@
                                 <div class="col-12 mb-3 col-lg-3">
                                     <div class="form-label">Company Ref</div>
                                     <input type="text" name="company_ref" class="form-control"
-                                        value="{{ $record->company_ref }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        value="{{ $record->company_ref }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                                 </div>
 
                                 <div class="col-12 mb-3 col-lg-3">
                                     <div class="form-label">PO Number</div>
                                     <input type="text" name="po" class="form-control"
-                                        value="{{ $record->po }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        value="{{ $record->po }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                                 </div>
 
                                 <div class="col-12 mb-3 col-lg-3">
                                     <div class="form-label">Entry Border DRC</div>
 
                                     <select class="form-select" name="entry_border_drc"
-                                        {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                        {{ $record->status > 5 ? 'disabled' : '' }} required>
                                         <option value="0"
                                             {{ $record->entry_border_drc == '0' || !$record->entry_border_drc ? 'selected' : '' }}>
                                             -- select --</option>
@@ -934,7 +945,7 @@
                                 <div class="col-12 mb-3 col-lg-4">
                                     <div class="form-label">Final Destination</div>
                                     <select class="form-select" name="final_destination"
-                                        {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                        {{ $record->status > 5 ? 'disabled' : '' }} required>
                                         <option value="" {{ !$record->final_destination ? 'selected' : '' }}>--
                                             select --
                                         </option>
@@ -970,26 +981,26 @@
                                     <label class="form-label">Border ETA</label>
                                     <input type="date" class="form-control" name="arrival_date"
                                         value="{{ $record->arrival_date }}" autocomplete="on"
-                                        {{ $record->status > 1 ? 'disabled' : '' }} required />
+                                        {{ $record->status > 5 ? 'disabled' : '' }} required />
                                 </div>
 
                                 <div class="col-12 mb-3 col-lg-4">
                                     <div class="form-label">Customs Decl No</div>
                                     <input type="text" name="customs_decl_no" class="form-control"
                                         value="{{ $record->customs_decl_no }}"
-                                        {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        {{ $record->status > 5 ? 'disabled' : '' }}>
                                 </div>
                                 <div class="col-12 mb-3 col-lg-6">
                                     <div class="form-label">Arrival Station</div>
                                     <input type="text" name="arrival_station" class="form-control"
                                         value="{{ $record->arrival_station }}"
-                                        {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        {{ $record->status > 5 ? 'disabled' : '' }}>
                                 </div>
                                 <div class="col-12 mb-3 col-lg-6">
                                     <div class="form-label">Truck Details</div>
                                     <input type="text" name="truck_details" class="form-control"
                                         value="{{ $record->truck_details }}"
-                                        {{ $record->status > 1 ? 'disabled' : '' }}>
+                                        {{ $record->status > 5 ? 'disabled' : '' }}>
                                 </div>
 
                             </div>
@@ -1006,7 +1017,7 @@
                             <div class="col-12 col-lg-3 mb-3">
                                 <label class="form-label">Transporter Company</label>
                                 <select class="form-select" name="transporter_company"
-                                    {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    {{ $record->status > 5 ? 'disabled' : '' }}>
                                     <option value="">-- select --</option>
                                     @foreach ($companies as $company)
                                         <option value="{{ $company->id }}"
@@ -1022,19 +1033,19 @@
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Quantity</div>
                                 <input type="text" name="quantity" class="form-control"
-                                    value="{{ $record->quantity }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->quantity }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Weight</div>
                                 <input type="text" name="weight" class="form-control"
-                                    value="{{ $record->weight }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->weight }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Volume</div>
                                 <input type="text" name="volume" class="form-control"
-                                    value="{{ $record->volume }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->volume }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-4">
@@ -1057,11 +1068,11 @@
                             <div class="col-12 mb-3 col-lg-12">
                                 <div class="form-label">Importer Name</div>
                                 <input type="text" name="importer_name" class="form-control"
-                                    value="{{ $record->importer_name }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->importer_name }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
                             <div class="col-12 mb-3 col-lg-12">
                                 <label class="form-label">CF Agent</label>
-                                <select class="form-select" name="cf_agent" {{ $record->status > 1 ? 'disabled' : '' }}
+                                <select class="form-select" name="cf_agent" {{ $record->status > 5 ? 'disabled' : '' }}
                                     required>
                                     <option value="" {{ !$record->cf_agent ? 'selected' : '' }}>-- select --
                                     </option>
@@ -1149,13 +1160,13 @@
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Exporter Name</div>
                                 <input type="text" name="exporter_name" class="form-control"
-                                    value="{{ $record->exporter_name }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->exporter_name }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Freight Currency</div>
                                 <select class="form-select" name="freight_currency"
-                                    {{ $record->status > 1 ? 'disabled' : '' }} required>
+                                    {{ $record->status > 5 ? 'disabled' : '' }} required>
                                     <option value="" {{ !$record->freight_currency ? 'selected' : '' }}>-- select
                                         --</option>
                                     <option value="USD" {{ $record->freight_currency == 'USD' ? 'selected' : '' }}>USD
@@ -1174,25 +1185,25 @@
                             <div class="col-12 mb-3 col-lg-3">
                                 <div class="form-label">Freight Value</div>
                                 <input type="text" name="freight_value" class="form-control"
-                                    value="{{ $record->freight_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->freight_value }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">FOB Value</div>
                                 <input type="text" name="fob_value" class="form-control"
-                                    value="{{ $record->fob_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->fob_value }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-6">
                                 <div class="form-label">Insurance Value</div>
                                 <input type="text" name="insurance_value" class="form-control"
-                                    value="{{ $record->insurance_value }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->insurance_value }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
                             <div class="col-12 mb-3 col-lg-12">
                                 <div class="form-label">Instructions</div>
                                 <input type="text" name="instructions" class="form-control"
-                                    value="{{ $record->instructions }}" {{ $record->status > 1 ? 'disabled' : '' }}>
+                                    value="{{ $record->instructions }}" {{ $record->status > 5 ? 'disabled' : '' }}>
                             </div>
 
 
@@ -1536,11 +1547,11 @@
                     </form>
                 </div>
                 <!-- <div class="modal-footer">
-                                                                                                                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                                                                                                                            <button type="button" class="btn btn-primary">
-                                                                                                                                                                                send <i class="fa fa-paper-plane ms-2"></i>
-                                                                                                                                                                            </button>
-                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                                                                                                                                                <button type="button" class="btn btn-primary">
+                                                                                                                                                                                                    send <i class="fa fa-paper-plane ms-2"></i>
+                                                                                                                                                                                                </button>
+                                                                                                                                                                                            </div> -->
             </div>
         </div>
     </div>
